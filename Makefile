@@ -14,7 +14,7 @@ LIBRARY=-LSDL2/lib
 INCLUDES=-ISDL2/include -lmingw32 -lSDL2main -lSDL2
 
 $(OUT_FILE): $(SRC_FILES) 
-	$(CC) $(SRC_FILES) -o $(OUT_FILE) $(CPP_FLAG) $(INCLUDES)
+	$(CC) $(SRC_FILES) -o $(OUT_FILE) $(CPP_FLAG) $(LIBRARY) $(INCLUDES)
 
 run: $(OUT_FILE)
 	./$(OUT_FILE)
