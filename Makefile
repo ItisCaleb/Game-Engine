@@ -1,7 +1,7 @@
 SRC_DIR=src
 BUILD_DIR=build
 
-SRC_FILES=$(wildcard $(SRC_DIR)/*.cpp)
+SRC_FILES=$(wildcard $(SRC_DIR)/*.cc) $(wildcard $(SRC_DIR)/*/*.cc)
 
 OUT_FILE=$(BUILD_DIR)/game.exe
 
