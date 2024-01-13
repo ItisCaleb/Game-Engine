@@ -18,3 +18,6 @@ $(OUT_FILE): $(SRC_FILES)
 
 run: $(OUT_FILE)
 	./$(OUT_FILE)
+
+lint:
+	cpplint --filter=-legal/copyright,-build/include_subdir,-whitespace/line_length $(SRC_FILES)

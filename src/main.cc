@@ -8,16 +8,18 @@ int main(int argc, char **argv) {
     int height = 720;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("Error: SDL failed to initialize\nSDL Error: '%s'\n", SDL_GetError());
+        printf("Error: SDL failed to initialize\nSDL Error: '%s'\n",
+                SDL_GetError());
         return 1;
     }
 
     SDL_Window *window = SDL_CreateWindow("SLD test",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        width, height,
-        SDL_WINDOW_RESIZABLE);
+                                          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                          width, height,
+                                          SDL_WINDOW_RESIZABLE);
     if (!window) {
-        printf("Error: Failed to open window\nSDL Error: '%s'\n", SDL_GetError());
+        printf("Error: Failed to open window\nSDL Error: '%s'\n",
+                SDL_GetError());
         SDL_Quit();
         return 1;
     }
