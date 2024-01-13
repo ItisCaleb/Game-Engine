@@ -2,7 +2,7 @@
 #include "../entity/player.h"
 
 Game::Game(SDL_Renderer *renderer, int width, int height)
-:renderer(renderer),width(width),height(height){
+:renderer(renderer){
     this->entities.push_back(new Player());
 
 }
