@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
         SDL_WINDOW_RESIZABLE);
     if (!window) {
         printf("Error: Failed to open window\nSDL Error: '%s'\n", SDL_GetError());
+        SDL_Quit();
         return 1;
     }
 
@@ -29,7 +30,7 @@ int main(int argc, char **argv) {
 
     bool running = true;
     float last_time = 0.0f;
-    Game game(renderer);
+    Game game(renderer, width, height);
     while (running) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -45,14 +46,15 @@ int main(int argc, char **argv) {
                     break;
             }
         }
-        float current_time = SDL_GetTicks() / 1000;
+        float current_time = SDL_GetTicks() / 1000.0f;
         float delta = current_time - last_time;
         last_time = current_time;
-
         game.update(delta);
 
         game.render();
     }
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     return 0;
 }
