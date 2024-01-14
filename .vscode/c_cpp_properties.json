@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/src/**",
-                "${workspaceFolder}/vcpkg/installed/x64-windows/include"
+                "${workspaceFolder}/vcpkg/installed/x64-mingw-dynamic/include"
             ],
             "defines":[
                 "_DEBUG",
