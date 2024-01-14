@@ -2,7 +2,7 @@
 #define GAME_H_
 #include <SDL2/SDL.h>
 #include <vector>
-#include "../entity/entity.h"
+#include "entity/entity.h"
 
 class Game {
     public:

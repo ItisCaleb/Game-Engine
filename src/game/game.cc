@@ -1,6 +1,6 @@
 #include "game.h"
 
-#include "../entity/player.h"
+#include "entity/player.h"
 
 Game::Game(SDL_Renderer *renderer, int width, int height)
     : renderer(renderer) {

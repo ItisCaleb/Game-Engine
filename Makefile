@@ -11,10 +11,12 @@ CPP_FLAG=-w -g
 
 LIBRARY=-LSDL2/lib
 
-INCLUDES=-ISDL2/include -lmingw32 -lSDL2main -lSDL2
+Linker=-lmingw32 -lSDL2main -lSDL2
+
+INCLUDES=-ISDL2/include -Isrc
 
 $(OUT_FILE): $(SRC_FILES) 
-	$(CC) $(SRC_FILES) -o $(OUT_FILE) $(CPP_FLAG) $(LIBRARY) $(INCLUDES)
+	$(CC) $(SRC_FILES) -o $(OUT_FILE) $(CPP_FLAG) $(LIBRARY) $(Linker) $(INCLUDES)
 
 run: $(OUT_FILE)
 	./$(OUT_FILE)
