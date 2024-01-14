@@ -6,20 +6,25 @@
 #include "utils/resource_manager.h"
 
 int main(int argc, char **argv) {
-    int width = 1280;
-    int height = 720;
 
     // Init everything
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {//handle error
         printf("Error: SDL failed to initialize\nSDL Error: '%s'\n",
                 SDL_GetError());
         return 1;
     }
+    //get screen size
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    printf("screen_width: %d, screen_height: %d\n", DM.w, DM.h);
+    int width = DM.w;
+    int height = DM.h-60;//-60 for the taskbar
 
-    SDL_Window *window = SDL_CreateWindow("SLD test",
+    SDL_Window *window = SDL_CreateWindow("SDL test",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                           width, height,
                                           SDL_WINDOW_RESIZABLE);
+
     if (!window) {
         printf("Error: Failed to open window\nSDL Error: '%s'\n",
                 SDL_GetError());
