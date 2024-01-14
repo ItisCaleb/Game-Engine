@@ -8,17 +8,19 @@
 int main(int argc, char **argv) {
 
     // Init everything
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {//handle error
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        //handle error
         printf("Error: SDL failed to initialize\nSDL Error: '%s'\n",
                 SDL_GetError());
         return 1;
     }
     //get screen size
-    SDL_DisplayMode DM;
-    SDL_GetCurrentDisplayMode(0, &DM);
-    printf("screen_width: %d, screen_height: %d\n", DM.w, DM.h);
-    int width = DM.w;
-    int height = DM.h-60;//-60 for the taskbar
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+    printf("screen_width: %d, screen_height: %d\n", dm.w, dm.h);
+    int width = dm.w;
+    //-60 for the taskbar
+    int height = dm.h-60;
 
     SDL_Window *window = SDL_CreateWindow("SDL test",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
