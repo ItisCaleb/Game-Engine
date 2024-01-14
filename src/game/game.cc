@@ -8,6 +8,10 @@ Game::Game(SDL_Renderer *renderer, int width, int height)
 }
 
 Game::~Game() {
+    SDL_DestroyRenderer(this->renderer);
+    for (auto e : this->entities) {
+        delete e;
+    }
 }
 
 void Game::update(float dt) {

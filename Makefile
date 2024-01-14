@@ -6,6 +6,8 @@ HEADER_FILES=$(wildcard $(SRC_DIR)/*/*.h)
 
 OUT_FILE=game.exe
 
+OUT_PATH=$(BUILD_DIR)/$(OUT_FILE)
+
 CC=g++
 
 CPP_FLAG=-w -g -std=c++17
@@ -18,10 +20,10 @@ Linker=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 
 INCLUDES=-I$(VCPKG_INSTALL)/include -Isrc
 
-$(OUT_FILE): $(SRC_FILES) $(HEADER_FILES)
-	$(CC) $(SRC_FILES) -o $(BUILD_DIR)/$(OUT_FILE) $(CPP_FLAG) $(LIBRARY) $(Linker) $(INCLUDES)
+$(OUT_PATH): $(SRC_FILES) $(HEADER_FILES)
+	$(CC) $(SRC_FILES) -o $(OUT_PATH) $(CPP_FLAG) $(LIBRARY) $(Linker) $(INCLUDES)
 
-run: $(OUT_FILE)
+run: $(OUT_PATH)
 	cd $(BUILD_DIR) && $(OUT_FILE)
 
 lint:

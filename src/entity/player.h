@@ -8,9 +8,7 @@ class Player : public Entity{
         ~Player();
         void update(float dt);
         void render(SDL_Renderer *renderer);
-    private:
-        float x,y;
-        float width, height;
+        
 };
 
 #endif
