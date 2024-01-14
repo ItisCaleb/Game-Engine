@@ -1,7 +1,9 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 
 #include "game/game.h"
+#include "utils/resource_manager.h"
 
 int main(int argc, char **argv) {
     int width = 1280;
@@ -25,11 +27,20 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    int img_flag = IMG_INIT_PNG | IMG_INIT_JPG;
+    if(!(IMG_Init(img_flag) & img_flag)){
+        printf("Error: SDL_image could not initialize! SDL_image Error: %s\n",
+                IMG_GetError() );
+        return 1;
+    }
+
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
         printf("Error: Failed to create renderer\nSDL Error: '%s'\n", SDL_GetError());
         return 1;
     }
+
+    ResourceManager::init(renderer);
 
     // Game loop start
     bool running = true;
@@ -63,6 +74,7 @@ int main(int argc, char **argv) {
     }
 
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
     return 0;
 }

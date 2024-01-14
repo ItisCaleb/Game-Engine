@@ -2,14 +2,16 @@
 
 #include <SDL2/SDL.h>
 
+#include "utils/resource_manager.h"
+
 Player::Player()
-    : x(640), y(360), width(50), height(50) {}
-Player::~Player() {}
-void Player::update(float dt) {
+:x(640), y(360), width(50), height(50){
+    this->sprites.push_back(ResourceManager::loadSprite("test.png"));
 }
+Player::~Player() {}
+void Player::update(float dt) {}
 void Player::render(SDL_Renderer *renderer) {
-    SDL_Rect rect = {.x = this->x - width / 2, .y = this->y - height / 2,
-                     .w = this->width, .h = this->height};
-    SDL_SetRenderDrawColor(renderer, 0xff, 0, 0, 0xFF);
-    SDL_RenderFillRect(renderer, &rect);
+    for(auto sprite: this->sprites){
+        sprite->render(renderer, this->x, this->y);
+    }
 }
