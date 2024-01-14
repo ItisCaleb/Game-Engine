@@ -5,7 +5,7 @@
 #include "utils/resource_manager.h"
 
 Player::Player()
-:x(640), y(360), width(50), height(50){
+:Entity(640, 360, 50, 50){
     this->sprites.push_back(ResourceManager::loadSprite("test.png"));
 }
 Player::~Player() {}
