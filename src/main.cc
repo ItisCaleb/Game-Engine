@@ -7,6 +7,7 @@ int main(int argc, char **argv) {
     int width = 1280;
     int height = 720;
 
+    // Init everything
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Error: SDL failed to initialize\nSDL Error: '%s'\n",
                 SDL_GetError());
@@ -30,10 +31,12 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    // Game loop start
     bool running = true;
     float last_time = 0.0f;
     Game game(renderer, width, height);
     while (running) {
+        // input
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -48,15 +51,18 @@ int main(int argc, char **argv) {
                     break;
             }
         }
+
+        // update
         float current_time = SDL_GetTicks() / 1000.0f;
         float delta = current_time - last_time;
         last_time = current_time;
         game.update(delta);
 
+        // render
         game.render();
     }
+
     SDL_DestroyWindow(window);
     SDL_Quit();
-
     return 0;
 }
