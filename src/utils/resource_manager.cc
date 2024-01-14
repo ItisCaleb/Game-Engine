@@ -7,11 +7,7 @@ void ResourceManager::init(SDL_Renderer* renderer){
     ResourceManager::renderer = renderer;
 }
 
-void ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &result){
-
-}
-
-Sprite* ResourceManager::loadSprite(std::string resource){
+SDL_Texture* ResourceManager::loadTexture(std::string resource){
     std::filesystem::path resPath = resource;
     if( resPath.extension() == ".png" || 
         resPath.extension() == ".jpg" || 
@@ -28,9 +24,8 @@ Sprite* ResourceManager::loadSprite(std::string resource){
                     ,resource.c_str(), SDL_GetError());
             return nullptr;
         }
-        Sprite *sprite = new Sprite(texture, 0, 0, surface->w, surface->h);
         SDL_FreeSurface(surface);
-        return sprite;
+        return texture;
     }else{
         printf("Error: Unsupported format: \"%s\". Can't load sprite from %s",
             resPath.extension().c_str(),
@@ -38,4 +33,23 @@ Sprite* ResourceManager::loadSprite(std::string resource){
         return nullptr;
     }
 
+}
+
+void ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &result, int clipW, int clipH){
+    std::filesystem::path resPath = resource;
+    SDL_Texture *texture = ResourceManager::loadTexture(resource);
+    int w, h;
+    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+    for(int i=0;i<w/clipW;i++){
+        for(int j=0;i<h/clipH;i++){
+            result.push_back(new Sprite(texture, clipW*i, clipH*j, clipW, clipH));
+        }
+    }
+}
+
+Sprite* ResourceManager::loadSprite(std::string resource){
+    SDL_Texture *texture = ResourceManager::loadTexture(resource);
+    int w, h;
+    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+    return new Sprite(texture, 0, 0, w, h);
 }
