@@ -10,7 +10,7 @@ CC=g++
 
 CPP_FLAG=-w -g
 
-VCPKG_INSTALL=./vcpkg/installed/x64-windows
+VCPKG_INSTALL=./vcpkg/installed/x64-mingw-dynamic
 
 LIBRARY=-L$(VCPKG_INSTALL)/lib
 
