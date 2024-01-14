@@ -8,9 +8,8 @@
 
 After cloned
 ```sh
-$ git submodule update
 $ ./vcpkg/bootstrap-vcpkg.bat
-$ ./vcpkg/vcpkg.exe install sdl2 sdl-image
+$ ./vcpkg/vcpkg.exe install sdl2 sdl2-image --triplet=x64-mingw-dynamic --host-triplet=x64-mingw-dynamic
 ```
 
 ## compile
