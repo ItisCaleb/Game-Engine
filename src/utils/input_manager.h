@@ -12,14 +12,22 @@ public:
         D = 8,  
         SPACE = 16 
     };
-
+    //get the instance of InputManager
+    static InputManager& getInstance();  
+    // forbid copy constructor
+    InputManager(const InputManager&) = delete;           
+    // forbid assignment operator
+    InputManager& operator=(const InputManager&) = delete; 
     InputManager();
     ~InputManager();
-    void update();  // 更新按鍵狀態
-    bool isKeyPressed(Key key);  // 檢查特定按鍵是否被按下
+    //update the key state
+    void update();  
+    //check if the key is pressed
+    bool isKeyPressed(Key key); 
 
 private:
-    long long keyState;  // 用於儲存按鍵狀態的整數
+    //store the key state by bit operation
+    long long keyState;  
 };
 
 #endif

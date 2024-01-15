@@ -2,8 +2,16 @@
 
 InputManager::InputManager() : keyState(0) {}
 InputManager::~InputManager() {}
+
+// Singleton pattern
+InputManager& InputManager::getInstance() {
+    // static variable will only be initialized once
+    static InputManager instance;  
+    return instance;
+}
 void InputManager::update() {
-    keyState = 0;  // 重置按鍵狀態
+    // reset the key state
+    keyState = 0;  
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     if (state[SDL_SCANCODE_W]) keyState |= W;

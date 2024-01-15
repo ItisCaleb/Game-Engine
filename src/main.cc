@@ -54,7 +54,6 @@ int main(int argc, char **argv) {
     bool running = true;
     float last_time = 0.0f;
     Game game(renderer, width, height);
-    InputManager inputManager;
     while (running) {
         // input
         SDL_Event event;
@@ -72,6 +71,10 @@ int main(int argc, char **argv) {
                     break;
             }
         }
+        //InputManager Example
+        //get the instance of InputManager
+        InputManager& inputManager = InputManager::getInstance();
+        //update the key state
         inputManager.update();
         if(inputManager.isKeyPressed(InputManager::Key::W)){
             printf("W is pressed\n");
