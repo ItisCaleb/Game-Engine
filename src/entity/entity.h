@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "utils/sprite.h"
+#include "misc/sprite.h"
 
 class Entity{
     public:
