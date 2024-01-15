@@ -1,4 +1,4 @@
-#include "utils/sprite.h"
+#include "misc/sprite.h"
 
 Sprite::Sprite(SDL_Texture *texture, int offX, int offY, int w, int h)
 :texture(texture),offX(offX),offY(offY),w(w),h(h){}

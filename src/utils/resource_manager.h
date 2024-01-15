@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "utils/sprite.h"
+#include "misc/sprite.h"
 
 class ResourceManager {
     public:
