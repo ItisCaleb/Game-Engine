@@ -15,7 +15,9 @@ Game::~Game() {
 }
 
 void Game::update(float dt) {
-    return;
+    for (auto e : this->entities) {
+        e->update(dt);
+    }
 }
 
 void Game::render() {

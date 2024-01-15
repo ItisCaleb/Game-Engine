@@ -54,6 +54,8 @@ int main(int argc, char **argv) {
     bool running = true;
     float last_time = 0.0f;
     Game game(renderer, width, height);
+     //get the instance of InputManager
+    InputManager& inputManager = InputManager::getInstance();
     while (running) {
         // input
         SDL_Event event;
@@ -71,26 +73,10 @@ int main(int argc, char **argv) {
                     break;
             }
         }
-        //InputManager Example
-        //get the instance of InputManager
-        InputManager& inputManager = InputManager::getInstance();
+       
+        
         //update the key state
         inputManager.update();
-        if(inputManager.isKeyPressed(InputManager::Key::W)){
-            printf("W is pressed\n");
-        }
-        if(inputManager.isKeyPressed(InputManager::Key::A)){
-            printf("A is pressed\n");
-        }
-        if(inputManager.isKeyPressed(InputManager::Key::S)){
-            printf("S is pressed\n");
-        }
-        if(inputManager.isKeyPressed(InputManager::Key::D)){
-            printf("D is pressed\n");
-        }
-        if(inputManager.isKeyPressed(InputManager::Key::SPACE)){
-            printf("SPACE is pressed\n");
-        }
         //get delta time in milliseconds
         float current_time = SDL_GetTicks() / 1000.0f;
         float delta = current_time - last_time;

@@ -8,13 +8,13 @@
 
 class Entity{
     public:
-        Entity(int x, int y, int width, int height)
+        Entity(float x, float y, int width, int height)
             :x(x), y(y), width(width), height(height){};
         virtual void update(float dt) = 0;
         virtual void render(SDL_Renderer *renderer) = 0;
     protected:
         std::vector<Sprite*> sprites;
-        int x,y;
+        float x,y;
         int width, height;
 };
 
