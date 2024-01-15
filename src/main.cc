@@ -1,27 +1,44 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 
 #include "game/game.h"
+#include "utils/resource_manager.h"
+#include "utils/input_manager.h"
 
 int main(int argc, char **argv) {
-    int width = 1280;
-    int height = 720;
 
     // Init everything
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        //handle error
         printf("Error: SDL failed to initialize\nSDL Error: '%s'\n",
                 SDL_GetError());
         return 1;
     }
+    //get screen size
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+    printf("screen_width: %d, screen_height: %d\n", dm.w, dm.h);
+    int width = dm.w;
+    //-60 for the taskbar
+    int height = dm.h-60;
 
-    SDL_Window *window = SDL_CreateWindow("SLD test",
+    SDL_Window *window = SDL_CreateWindow("SDL test",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                           width, height,
                                           SDL_WINDOW_RESIZABLE);
+
     if (!window) {
         printf("Error: Failed to open window\nSDL Error: '%s'\n",
                 SDL_GetError());
         SDL_Quit();
+        return 1;
+    }
+
+    int img_flag = IMG_INIT_PNG | IMG_INIT_JPG;
+    if(!(IMG_Init(img_flag) & img_flag)){
+        printf("Error: SDL_image could not initialize! SDL_image Error: %s\n",
+                IMG_GetError() );
         return 1;
     }
 
@@ -31,13 +48,18 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    ResourceManager::init(renderer);
+
     // Game loop start
     bool running = true;
     float last_time = 0.0f;
     Game game(renderer, width, height);
+     //get the instance of InputManager
+    InputManager& inputManager = InputManager::getInstance();
     while (running) {
         // input
         SDL_Event event;
+        
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
@@ -51,11 +73,16 @@ int main(int argc, char **argv) {
                     break;
             }
         }
-
-        // update
+       
+        
+        //update the key state
+        inputManager.update();
+        //get delta time in milliseconds
         float current_time = SDL_GetTicks() / 1000.0f;
         float delta = current_time - last_time;
         last_time = current_time;
+
+        // update
         game.update(delta);
 
         // render
@@ -63,6 +90,7 @@ int main(int argc, char **argv) {
     }
 
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
     return 0;
 }

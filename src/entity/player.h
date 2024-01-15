@@ -1,6 +1,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 #include "entity.h"
+#include "misc/collide_shape.h"
 
 class Player : public Entity{
     public:
@@ -9,8 +10,9 @@ class Player : public Entity{
         void update(float dt);
         void render(SDL_Renderer *renderer);
     private:
-        float x,y;
-        float width, height;
+        BoxCollideShape hitbox;
+        int speed;
+        
 };
 
 #endif
