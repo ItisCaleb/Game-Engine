@@ -41,7 +41,7 @@ void ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &re
     int w, h;
     SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
     for(int i=0;i<w/clipW;i++){
-        for(int j=0;i<h/clipH;i++){
+        for(int j=0;j<h/clipH;j++){
             result.push_back(new Sprite(texture, clipW*i, clipH*j, clipW, clipH));
         }
     }

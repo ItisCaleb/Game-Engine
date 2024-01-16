@@ -6,22 +6,24 @@
 #include "utils/input_manager.h"
 
 Player::Player()
-:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(200){
-    this->sprites.push_back(ResourceManager::loadSprite("test.png"));
+:Entity(0, 0, 50, 50), hitbox(x, y, x+width, y+width), speed(200){
+    //this->sprites.push_back(ResourceManager::loadSprite("test.png"));
+    ResourceManager::loadSprites("./asset/player/Sci-fi Character Pack 10/idle.png",this->sprites,126,39);
 }
 Player::~Player() {}
 void Player::update(float dt) {
-    float vx = 0, vy = 0;
-
+    static float vx = 0, vy = 0;
     InputManager &input = InputManager::getInstance();
     if(input.isKeyPressed(InputManager::Key::A))
-        vx += -this->speed;
+        vx = -this->speed;
     if(input.isKeyPressed(InputManager::Key::D))
-        vx += this->speed;
+        vx = this->speed;
     if(input.isKeyPressed(InputManager::Key::W))
-        vy += -this->speed;
+        vy = -this->speed;
     if(input.isKeyPressed(InputManager::Key::S))
-        vy += this->speed;
+        vy = this->speed;
+    vx = vx * 0.9987;
+    vy = vy * 0.9987;
     this->x += vx * dt;
     this->y += vy * dt;
     this->hitbox.x1 = x;
@@ -30,7 +32,8 @@ void Player::update(float dt) {
     this->hitbox.y2 = y + height;
 }
 void Player::render(SDL_Renderer *renderer) {
-    for(auto sprite: this->sprites){
-        sprite->render(renderer, this->x, this->y);
-    }
+    sprites[1]->render(renderer, this->x, this->y);
+    // for(auto sprite: this->sprites){
+    //     sprite->render(renderer, this->x, this->y);
+    // }
 }

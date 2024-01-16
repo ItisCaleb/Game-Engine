@@ -21,7 +21,7 @@ void Game::update(float dt) {
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(this->renderer, 0, 255, 255, 255);
+    SDL_SetRenderDrawColor(this->renderer, 210, 190, 170, 255);
     SDL_RenderClear(this->renderer);
     for (auto e : this->entities) {
         e->render(this->renderer);
