@@ -12,18 +12,16 @@ Player::Player()
 }
 Player::~Player() {}
 void Player::update(float dt) {
-    static float vx = 0, vy = 0;
-    InputManager &input = InputManager::getInstance();
-    if(input.isKeyPressed(InputManager::Key::A))
-        vx = -this->speed;
-    if(input.isKeyPressed(InputManager::Key::D))
-        vx = this->speed;
-    if(input.isKeyPressed(InputManager::Key::W))
-        vy = -this->speed;
-    if(input.isKeyPressed(InputManager::Key::S))
-        vy = this->speed;
-    vx = vx * 0.9987;
-    vy = vy * 0.9987;
+    float vx = 0, vy = 0;
+
+    if(InputManager::isKeyHold(InputManager::Key::A))
+        vx += -this->speed;
+    if(InputManager::isKeyHold(InputManager::Key::D))
+        vx += this->speed;
+    if(InputManager::isKeyHold(InputManager::Key::W))
+        vy += -this->speed;
+    if(InputManager::isKeyHold(InputManager::Key::S))
+        vy += this->speed;
     this->x += vx * dt;
     this->y += vy * dt;
     this->hitbox.x1 = x;

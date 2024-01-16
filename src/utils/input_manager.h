@@ -12,22 +12,16 @@ public:
         D = 8,  
         SPACE = 16 
     };
-    //get the instance of InputManager
-    static InputManager& getInstance();  
-    // forbid copy constructor
-    InputManager(const InputManager&) = delete;           
-    // forbid assignment operator
-    InputManager& operator=(const InputManager&) = delete; 
-    InputManager();
-    ~InputManager();
     //update the key state
-    void update();  
+    static void update();  
     //check if the key is pressed
-    bool isKeyPressed(Key key); 
-
+    static bool isKeyHold(Key key); 
+    static bool isKeyRelease(Key key);
+    static bool isKeyDown(Key key);
 private:
     //store the key state by bit operation
-    long long keyState;  
+    inline static Uint64 keyState=0;
+    inline static Uint64 prevKeyState=0;
 };
 
 #endif

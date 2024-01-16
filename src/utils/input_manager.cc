@@ -1,16 +1,9 @@
 #include "input_manager.h"
 
-InputManager::InputManager() : keyState(0) {}
-InputManager::~InputManager() {}
 
-// Singleton pattern
-InputManager& InputManager::getInstance() {
-    // static variable will only be initialized once
-    static InputManager instance;  
-    return instance;
-}
 void InputManager::update() {
     // reset the key state
+    prevKeyState = keyState;
     keyState = 0;  
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
@@ -21,6 +14,16 @@ void InputManager::update() {
     if (state[SDL_SCANCODE_SPACE]) keyState |= SPACE;
 }
 
-bool InputManager::isKeyPressed(Key key) {
+bool InputManager::isKeyHold(Key key) {
     return keyState & key;
+}
+
+bool InputManager::isKeyRelease(Key key) {
+    // prev->1 now->0
+    return !(keyState & key) && (prevKeyState & key);
+}
+
+bool InputManager::isKeyDown(Key key) {
+    // prev->0 now->1
+    return (keyState & key) && !(prevKeyState & key);
 }
