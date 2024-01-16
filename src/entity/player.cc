@@ -13,14 +13,13 @@ Player::~Player() {}
 void Player::update(float dt) {
     float vx = 0, vy = 0;
 
-    InputManager &input = InputManager::getInstance();
-    if(input.isKeyPressed(InputManager::Key::A))
+    if(InputManager::isKeyHold(InputManager::Key::A))
         vx += -this->speed;
-    if(input.isKeyPressed(InputManager::Key::D))
+    if(InputManager::isKeyHold(InputManager::Key::D))
         vx += this->speed;
-    if(input.isKeyPressed(InputManager::Key::W))
+    if(InputManager::isKeyHold(InputManager::Key::W))
         vy += -this->speed;
-    if(input.isKeyPressed(InputManager::Key::S))
+    if(InputManager::isKeyHold(InputManager::Key::S))
         vy += this->speed;
     this->x += vx * dt;
     this->y += vy * dt;

@@ -3,9 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <filesystem>
 
-void ResourceManager::init(SDL_Renderer* renderer){
-    ResourceManager::renderer = renderer;
-}
+#include "game/game.h"
 
 SDL_Texture* ResourceManager::loadTexture(std::string resource){
     std::filesystem::path resPath = resource;
@@ -18,7 +16,7 @@ SDL_Texture* ResourceManager::loadTexture(std::string resource){
                     ,resource.c_str(), IMG_GetError());
             return nullptr;
         }
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(ResourceManager::renderer, surface);
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::getRenderer(), surface);
         if(!surface){
             printf("Error: Unable to create texture from: %s. SDL Error %s\n"
                     ,resource.c_str(), SDL_GetError());
@@ -41,7 +39,7 @@ void ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &re
     int w, h;
     SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
     for(int i=0;i<w/clipW;i++){
-        for(int j=0;i<h/clipH;i++){
+        for(int j=0;j<h/clipH;j++){
             result.push_back(new Sprite(texture, clipW*i, clipH*j, clipW, clipH));
         }
     }

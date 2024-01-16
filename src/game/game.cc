@@ -2,29 +2,40 @@
 
 #include "entity/player.h"
 
-Game::Game(SDL_Renderer *renderer, int width, int height)
-    : renderer(renderer) {
-    this->entities.push_back(new Player());
+void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int height){
+    if(Game::already_init) return;
+    Game::already_init = true;
+    Game::renderer = renderer;
+    Game::window = window;
+    Game::entities.push_back(new Player());
 }
 
-Game::~Game() {
-    SDL_DestroyRenderer(this->renderer);
-    for (auto e : this->entities) {
+void Game::destroy() {
+    SDL_DestroyRenderer(Game::renderer);
+    SDL_DestroyWindow(Game::window);
+    for (auto e : Game::entities) {
         delete e;
     }
 }
 
 void Game::update(float dt) {
-    for (auto e : this->entities) {
+    for (auto e : Game::entities) {
         e->update(dt);
     }
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(this->renderer, 0, 255, 255, 255);
-    SDL_RenderClear(this->renderer);
-    for (auto e : this->entities) {
-        e->render(this->renderer);
+    SDL_SetRenderDrawColor(Game::renderer, 0, 255, 255, 255);
+    SDL_RenderClear(Game::renderer);
+    for (auto e : Game::entities) {
+        e->render(Game::renderer);
     }
-    SDL_RenderPresent(this->renderer);
+    SDL_RenderPresent(Game::renderer);
+}
+
+SDL_Window* Game::getWindow(){
+    return Game::window;
+}
+SDL_Renderer* Game::getRenderer(){
+    return Game::renderer;
 }

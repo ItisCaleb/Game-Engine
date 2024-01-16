@@ -48,14 +48,11 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    ResourceManager::init(renderer);
-
     // Game loop start
     bool running = true;
     float last_time = 0.0f;
-    Game game(renderer, width, height);
+    Game::init(renderer, window, width, height);
      //get the instance of InputManager
-    InputManager& inputManager = InputManager::getInstance();
     while (running) {
         // input
         SDL_Event event;
@@ -76,20 +73,20 @@ int main(int argc, char **argv) {
        
         
         //update the key state
-        inputManager.update();
+        InputManager::update();
         //get delta time in milliseconds
         float current_time = SDL_GetTicks() / 1000.0f;
         float delta = current_time - last_time;
         last_time = current_time;
 
         // update
-        game.update(delta);
+        Game::update(delta);
 
         // render
-        game.render();
+        Game::render();
     }
 
-    SDL_DestroyWindow(window);
+    Game::destroy();
     IMG_Quit();
     SDL_Quit();
     return 0;
