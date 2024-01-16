@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL_image.h>
 #include <filesystem>
+#include <fstream>
 
 #include "game/game.h"
 
@@ -50,4 +51,9 @@ Sprite* ResourceManager::loadSprite(std::string resource){
     int w, h;
     SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
     return new Sprite(texture, 0, 0, w, h);
+}
+
+nlohmann::json ResourceManager::loadJSON(std::string resource){
+    std::ifstream f(resource);
+    return nlohmann::json::parse(f);
 }

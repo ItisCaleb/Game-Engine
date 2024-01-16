@@ -47,12 +47,12 @@ int main(int argc, char **argv) {
         printf("Error: Failed to create renderer\nSDL Error: '%s'\n", SDL_GetError());
         return 1;
     }
-
+    
     // Game loop start
     bool running = true;
     float last_time = 0.0f;
     Game::init(renderer, window, width, height);
-     //get the instance of InputManager
+
     while (running) {
         // input
         SDL_Event event;
