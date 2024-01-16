@@ -16,15 +16,22 @@ VCPKG_INSTALL=./vcpkg/installed/x64-mingw-dynamic
 
 LIBRARY=-L$(VCPKG_INSTALL)/lib
 
-Linker=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+LINKER=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 
 INCLUDES=-I$(VCPKG_INSTALL)/include -Isrc
 
-$(OUT_PATH): $(SRC_FILES) $(HEADER_FILES)
-	$(CC) $(SRC_FILES) -o $(OUT_PATH) $(CPP_FLAG) $(LIBRARY) $(Linker) $(INCLUDES)
+INCLUDE_LIB=precompiled/lib.h
+PRECOMP_LIB=precompiled/lib.h.gch
+
+$(OUT_PATH): $(SRC_FILES) $(HEADER_FILES) $(PRECOMP_LIB)
+	$(CC) $(SRC_FILES) -o $(OUT_PATH) $(CPP_FLAG) $(LIBRARY) $(LINKER) $(INCLUDES) -include $(INCLUDE_LIB)
+
+$(PRECOMP_LIB):$(INCLUDE_LIB)
+	$(CC) $(INCLUDE_LIB) $(CPP_FLAG) $(INCLUDES)
 
 run: $(OUT_PATH)
 	cd $(BUILD_DIR) && $(OUT_FILE)
 
 lint:
 	cpplint --filter=-legal/copyright,-build/include_subdir,-whitespace/line_length $(SRC_FILES)
+	
