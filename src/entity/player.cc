@@ -7,7 +7,7 @@
 
 Player::Player()
 :Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(200){
-    this->sprites.push_back(ResourceManager::loadSprite("test.png"));
+    this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
 }
 Player::~Player() {}
 void Player::update(float dt) {

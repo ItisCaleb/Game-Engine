@@ -6,15 +6,32 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 
 #include "misc/sprite.h"
+#include "misc/resource.h"
 
 class ResourceManager {
     public:
-        static SDL_Texture* loadTexture(std::string resource);
-        static void loadSprites(std::string resource, std::vector<Sprite*>& result, int clipW, int clipH);
-        static Sprite* loadSprite(std::string resource);
-        static nlohmann::json loadJSON(std::string resource);
+        // worker function
+        friend int asyncIOWorker(void *data);
+
+        // synchronous load
+        template <class T> static T* load(std::string resource);
+
+        // asynchronous load
+        template <class T> static AsyncResource<T>* loadAsync(std::string resource);
+        static std::vector<Sprite*>* loadSprites(std::string resource, int clipW, int clipH);
+
+        // start worker thread, cant only run once
+        static void startWorkerThread();
+    private:
+        static void pushToWorker(void* res);
+        
+        // used by async load
+        inline static std::queue<void*> workQueue;
+        inline static SDL_mutex* mutex = nullptr;
 };
+
 
 #endif
