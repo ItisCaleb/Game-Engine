@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
                 SDL_GetError());
         return 1;
     }
+
     //get screen size
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
@@ -52,7 +53,7 @@ int main(int argc, char **argv) {
     bool running = true;
     float last_time = 0.0f;
     Game::init(renderer, window, width, height);
-     //get the instance of InputManager
+
     while (running) {
         // input
         SDL_Event event;
