@@ -51,9 +51,12 @@ box.onclick = () => {
   const rect = new fabric.Rect({
     width: 50, height: 50,
     left: 100, top: 100,
-    fill: null, stroke: 'red'
+    fill: null, stroke: 'red',
+    strokeUniform: true
   })
-  rect.set('lockRotation', true)
+  rect.setControlsVisibility({
+    'mtr':false
+  });
   canvas.add(rect)
 }
 
@@ -61,21 +64,28 @@ circle.onclick = () => {
   const circle = new fabric.Circle({
     radius: 25,
     left: 100, top: 100,
-    fill: null, stroke: 'red'
+    fill: null, stroke: 'red',
+    strokeUniform: true
   })
-  circle.set('lockRotation', true)
+  circle.setControlsVisibility({
+    'ml':false,'mb':false,
+    'mr':false,'mt':false,
+    'mtr':false
+  });
   canvas.add(circle)
 }
 
 line.onclick = () => {
-  const line = new fabric.Line([50, 100, 200, 200], {
+  const line = new fabric.Line([50, 100, 100, 150], {
     left: 170,
     top: 150,
-    stroke: 'red'
+    stroke: 'red',
+    strokeUniform: true
   })
   canvas.add(line)
 }
 
+json.onclick = output_json
 
 document.addEventListener('keydown', function (event) {
   const key = event.key; // const {key} = event; ES6+
@@ -114,7 +124,8 @@ document.getElementById('imgLoader').onchange = function handleImage(e) {
       var imgObj = new Image();
       imgObj.src = event.target.result;
       imgObj.onload = function () {
-        var image = new fabric.Image(imgObj);
+        canvas.remove(image)
+        image = new fabric.Image(imgObj);
         image.set({
               angle: 0,
               padding: 10,
@@ -134,3 +145,76 @@ document.getElementById('imgLoader').onchange = function handleImage(e) {
     }
     reader.readAsDataURL(e.target.files[0]);
   }
+
+function toRadians (angle) {
+  return angle * (Math.PI / 180);
+}
+
+function copyToClipboard() {
+  // Get the text field
+  var copyText = json_output
+
+  // Select the text field
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+
+   // Copy the text inside the text field
+  navigator.clipboard.writeText(copyText.value);
+
+}
+
+function output_json(){
+  canvas.remove(oGridGroup)
+  canvas.remove(image)
+  const obj = canvas.getObjects()
+  const result = [];
+  console.log(obj)
+  for(let shape of obj){
+    if(shape == oGridGroup || shape == image) continue
+    let coords = shape.getCoords()
+    let gridCoords = oGridGroup.getCoords()
+    coords.map((t)=>{
+      t.x = Number(((t.x - gridCoords[0].x)/canvas.getZoom()).toFixed(2))
+      t.y = Number(((t.y - gridCoords[0].y)/canvas.getZoom()).toFixed(2))
+    })
+    switch(shape.type){
+      case 'rect':
+        let rect = {
+          'type':'box',
+          'x1':coords[0].x,
+          'y1':coords[0].y,
+          'x2':coords[2].x,
+          'y2':coords[2].y
+        }
+        result.push(rect);
+        break
+      case 'circle':
+        let realRadius = shape.radius * shape.scaleX
+        let circle = {
+          'type':'circle',
+          'x':(coords[0].x+realRadius).toFixed(2),
+          'y':(coords[0].y+realRadius).toFixed(2),
+          'r':realRadius.toFixed(2),
+        }
+        result.push(circle);
+        break
+      case 'line':
+        let line = {
+          'type':'line',
+          'x1':coords[0].x,
+          'y1':coords[0].y,
+          'x2':coords[2].x,
+          'y2':coords[2].y
+        }
+        result.push(line);
+        break
+    }
+  }
+  console.log(result)
+  json_output.value = JSON.stringify(result)
+  if(image){
+    canvas.add(image)
+    canvas.moveTo(image, 0);
+  }
+  draw_grid(size);
+}
