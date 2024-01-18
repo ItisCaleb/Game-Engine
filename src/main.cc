@@ -48,12 +48,12 @@ int main(int argc, char **argv) {
         printf("Error: Failed to create renderer\nSDL Error: '%s'\n", SDL_GetError());
         return 1;
     }
-
+    
     // Game loop start
     bool running = true;
     float last_time = 0.0f;
+    ResourceManager::startWorkerThread();
     Game::init(renderer, window, width, height);
-
     while (running) {
         // input
         SDL_Event event;
