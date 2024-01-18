@@ -15,6 +15,13 @@ template <class T> class AsyncResource{
         friend int asyncIOWorker(void *data);
         AsyncResource(std::string resource, ResourceType type)
             :path(resource),type(type),available(0){};
+        ~AsyncResource(){
+            // if delete before loaded
+            if(!available){
+                while (!available){}
+                delete resource;
+            }
+        };
         std::string getPath(){
             return path;
         }
