@@ -1,41 +1,49 @@
-#include "Camera.h"
+#include "camera.h"
 
-Camera::Camera(SDL_Renderer *renderer, int width, int height, int window_height) : renderer(renderer), width(width), height(height), window_height(window_height), x(0), y(0) {
-    target_width = width + CAMERA_BORDER * 2;
-    target_height = height + CAMERA_BORDER * 2;
-    target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, target_width, target_height);
-    SDL_assert(target);
-    SDL_SetTextureBlendMode(target, SDL_BLENDMODE_BLEND);
+void Camera::update(float targetX, float targetY) {
+    x = targetX - (view_width / 2.0f ) ;
+    y = targetY - (view_height / 2.0f );
+    x=targetX;
+    y=targetY;  
+    printf("camera update: %f %f\n", x, y);
 }
 
-void Camera::update(float newX, float newY) {
-    x = newX;
-    y = newY;
+void Camera::apply(SDL_Renderer* renderer) {
+    // SDL_Rect rect = getViewRect();
+    // SDL_RenderSetViewport(renderer, &rect);
+    int viewportX = static_cast<int>(x);
+    int viewportY = static_cast<int>(y);
+    SDL_Rect viewport = {viewportX, viewportY, static_cast<int>(view_width), static_cast<int>(view_height )};
+    printf("apply: %d %d %d %d\n", viewportX, viewportY, static_cast<int>(view_width), static_cast<int>(view_height ));
+    SDL_RenderSetViewport(renderer, &viewport);
 }
 
-void Camera::render() {
-    // Camera target
-    SDL_SetRenderTarget(renderer, target);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
-    SDL_RenderClear(renderer);
+void Camera::setZoom(float zoomLevel) {
+    zoom = zoomLevel > 0 ? zoomLevel : 1;
+}
 
-    // Draw Sprite logic should go here...
+float Camera::getZoom(){
+    return zoom;
+}
+float Camera::getX() {
+    return x;
+}
+float Camera::getY() {
+    return y;
+}
 
-    // Screen target
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0xFF, 0xFF);
-    SDL_RenderClear(renderer);
+SDL_Rect Camera::getViewRect() const {
+    int viewportWidth = static_cast<int>(view_width / zoom);
+    int viewportHeight = static_cast<int>(view_height / zoom);
 
-    // Draw camera texture
-    float pixel_h = (float)window_height / height;  // Window_Height should be defined elsewhere or passed to the method
-    float correction_x = (int)x - x;
-    float correction_y = (int)y - y;
+    int viewportX = static_cast<int>(x - viewportWidth / 2);
+    int viewportY = static_cast<int>(y - viewportHeight / 2);
 
-    SDL_Rect dst;
-    dst.x = correction_x * pixel_h - pixel_h * CAMERA_BORDER;
-    dst.y = correction_y * pixel_h - pixel_h * CAMERA_BORDER;
-    dst.w = target_width * pixel_h;
-    dst.h = target_height * pixel_h;
-
-    SDL_RenderCopy(renderer, target, NULL, &dst);
+    return {viewportX, viewportY, viewportWidth, viewportHeight};
+    // int viewportX = static_cast<int>((x - view_width / 2.0f) * zoom);
+    // int viewportY = static_cast<int>((y - view_height / 2.0f) * zoom);
+    // int viewportWidth = static_cast<int>(view_width * zoom);
+    // int viewportHeight = static_cast<int>(view_height * zoom);
+    // printf("getViewRect:  %d %d %d %d\n", static_cast<int>(x * zoom), static_cast<int>(y * zoom), static_cast<int>(view_width * zoom), static_cast<int>(view_height * zoom));
+    // return {viewportX, viewportY, viewportWidth, viewportHeight};
 }

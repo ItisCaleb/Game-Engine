@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "game/game.h"
+#include "entity/player.h"
 #include "utils/resource_manager.h"
 #include "utils/input_manager.h"
 
@@ -36,11 +37,10 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    int img_flag = IMG_INIT_PNG | IMG_INIT_JPG;
-    if(!(IMG_Init(img_flag) & img_flag)){
-        printf("Error: SDL_image could not initialize! SDL_image Error: %s\n",
-                IMG_GetError() );
-        return 1;
+    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        printf("Error: SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        return -1;
     }
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -54,6 +54,7 @@ int main(int argc, char **argv) {
     float last_time = 0.0f;
     ResourceManager::startWorkerThread();
     Game::init(renderer, window, width, height);
+    Game::setBackground("C:\\Github\\Some-Game\\build\\test_background.png");
     while (running) {
         // input
         SDL_Event event;
@@ -83,8 +84,20 @@ int main(int argc, char **argv) {
         // update
         Game::update(delta);
 
+        Player *player = dynamic_cast<Player *>(Game::getPlayer());  // 假设Game类提供了获取玩家实例的方法
+        if (player) {
+            printf("player x: %f, y: %f\n", player->getX(), player->getY());
+            Game::getCamera().update(player->getX(), player->getY());
+        }
+
+
+        Game::getCamera().apply(renderer);
+
         // render
         Game::render();
+
+        // reset viewport
+        // SDL_RenderSetViewport(renderer, NULL);
     }
 
     Game::destroy();

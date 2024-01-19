@@ -1,28 +1,26 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef CAMERA_H_
+#define CAMERA_H_
 
 #include <SDL2/SDL.h>
 
-#define CAMERA_BORDER 1
-
 class Camera {
    public:
-    Camera(SDL_Renderer *renderer, int width, int height, int window_height);
+    // Default constructor
+    Camera() : x(0), y(0), view_width(0), view_height(0), zoom(1.0f) {}
+    Camera(int width, int height, float initialZoom) : x(0), y(0), view_width(width), view_height(height), zoom(initialZoom) {}
 
-    void update(float x, float y);
-    void render();
-
-   private:
-    SDL_Renderer *renderer;
-    SDL_Texture *target;
-
-    int width;
-    int height;
-    int target_width;
-    int target_height;
-    int window_height;
-
+    void update(float targetX, float targetY);
+    void apply(SDL_Renderer* renderer);
+    void setZoom(float zoomLevel);
+    float getZoom();
+    float getX();
+    float getY();
+//    private:
     float x, y;
+    int view_width, view_height;
+    float zoom;
+
+    SDL_Rect getViewRect() const;
 };
 
-#endif  
+#endif
