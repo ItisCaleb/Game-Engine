@@ -35,6 +35,12 @@ $(OUT_PATH): $(OBJ_FILES) $(HEADER_FILES) $(PRECOMP_LIB)
 run: $(OUT_PATH)
 	cd $(BUILD_DIR) && $(OUT_FILE)
 
+clean:
+ifeq ($(OS),Windows_NT)
+	del $(PRECOMPILE_DIR)\*.o
+	del $(BUILD_DIR)\$(OUT_FILE)
+endif
+
 lint:
 	cpplint --filter=-legal/copyright,-build/include_subdir,-whitespace/line_length $(SRC_FILES)
 	
