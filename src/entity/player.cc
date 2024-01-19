@@ -6,9 +6,8 @@
 #include "utils/input_manager.h"
 
 Player::Player()
-:Entity(0, 0, 50, 50), hitbox(x, y, x+width, y+width), speed(200){
-    //this->sprites.push_back(ResourceManager::loadSprite("test.png"));
-    ResourceManager::loadSprites("./asset/player/Sci-fi Character Pack 10/idle.png",this->sprites,126,39);
+:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(200){
+    this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
 }
 Player::~Player() {}
 void Player::update(float dt) {
