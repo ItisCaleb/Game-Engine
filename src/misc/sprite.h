@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 
+
 class Sprite {
     private:
         SDL_Texture *texture;
