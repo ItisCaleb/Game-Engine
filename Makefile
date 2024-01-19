@@ -3,8 +3,9 @@ BUILD_DIR=build
 PRECOMPILE_DIR=precompiled
 
 SRC_FILES=$(wildcard $(SRC_DIR)/*.cc) $(wildcard $(SRC_DIR)/*/*.cc)
-OBJ_FILES=$(SRC_FILES:.cc=.o)
-HEADER_FILES=$(wildcard $(SRC_DIR)/*/*.h)
+OBJ_FILES=$(addprefix $(PRECOMPILE_DIR)/,$(notdir $(SRC_FILES:.cc=.o)))
+HEADER_FILES=$(wildcard $(SRC_DIR)/**/*.h)
+SRC_DIRS=$(sort $(dir $(SRC_FILES)))
 
 OUT_FILE=game.exe
 
@@ -22,17 +23,14 @@ LINKER=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 
 INCLUDES=-I$(VCPKG_INSTALL)/include -Isrc
 
-INCLUDE_LIB=$(PRECOMPILE_DIR)/lib.h
-PRECOMP_LIB=$(PRECOMPILE_DIR)/lib.h.gch
+VPATH = $(SRC_DIR) $(SRC_DIRS)
 
-%.o: %.cc
-	$(CC) -c $< -o $@ $(CPP_FLAG) $(INCLUDES) -include $(INCLUDE_LIB)
+$(PRECOMPILE_DIR)/%.o: %.cc | $(PRECOMPILE_DIR)
+	$(CC) -c $< -o $@ $(CPP_FLAG) $(INCLUDES)
 
 $(OUT_PATH): $(OBJ_FILES) $(HEADER_FILES) $(PRECOMP_LIB)
-	$(CC) $(OBJ_FILES) -o $(OUT_PATH) $(CPP_FLAG) $(LIBRARY) $(LINKER) $(INCLUDES) -include $(INCLUDE_LIB)
+	$(CC) $(OBJ_FILES) -o $(OUT_PATH) $(CPP_FLAG) $(LIBRARY) $(LINKER) $(INCLUDES)
 
-$(PRECOMP_LIB):$(INCLUDE_LIB)
-	$(CC) $(INCLUDE_LIB) $(CPP_FLAG) $(INCLUDES)
 
 run: $(OUT_PATH)
 	cd $(BUILD_DIR) && $(OUT_FILE)
