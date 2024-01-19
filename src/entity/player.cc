@@ -6,9 +6,10 @@
 #include "utils/input_manager.h"
 
 Player::Player()
-:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(200){
-    this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
+:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+height), speed(200) , hurtbox(x, y, x+width, y+height){
+    this->sprites=(ResourceManager::loadSprites("asset/player/120x80_PNGSheets/_Idle.png",120,80));
 }
+
 Player::~Player() {}
 void Player::update(float dt) {
     float vx = 0, vy = 0;
@@ -29,7 +30,7 @@ void Player::update(float dt) {
     this->hitbox.y2 = y + height;
 }
 void Player::render(SDL_Renderer *renderer) {
-    sprites[1]->render(renderer, this->x, this->y);
+    (*sprites)[0]->render(renderer, this->x, this->y);
     // for(auto sprite: this->sprites){
     //     sprite->render(renderer, this->x, this->y);
     // }

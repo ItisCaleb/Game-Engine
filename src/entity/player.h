@@ -11,8 +11,8 @@ class Player : public Entity{
         void render(SDL_Renderer *renderer);
     private:
         BoxCollideShape hitbox;
+        BoxCollideShape hurtbox;
         int speed;
-        
 };
 
 #endif

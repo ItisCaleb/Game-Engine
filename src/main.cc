@@ -19,9 +19,9 @@ int main(int argc, char **argv) {
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
     printf("screen_width: %d, screen_height: %d\n", dm.w, dm.h);
-    int width = (dm.w)/4;
+    int width = (dm.w)/2;
     //-60 for the taskbar
-    int height = (dm.h)/4-60;
+    int height = (dm.h)/2-60;
 
     SDL_Window *window = SDL_CreateWindow("SDL test",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
