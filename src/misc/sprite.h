@@ -3,11 +3,15 @@
 
 #include <SDL2/SDL.h>
 
+#include "game/game.h"
+
 class Sprite {
     private:
         SDL_Texture *texture;
         int offX, offY;
         int w, h;
+        
+
     public:
         Sprite(SDL_Texture *texture, int offX, int offY, int w, int h);
         ~Sprite();

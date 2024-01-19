@@ -10,7 +10,8 @@ class Camera {
     Camera(int width, int height, float initialZoom) : x(0), y(0), view_width(width), view_height(height), zoom(initialZoom) {}
 
     void update(float targetX, float targetY);
-    void apply(SDL_Renderer* renderer);
+    SDL_Rect apply(SDL_Renderer* renderer, SDL_Rect rect);
+    // SDL_Rect applyRect;
     SDL_Rect getCameraRect() const;
     void setZoom(float zoomLevel);
     float getZoom();

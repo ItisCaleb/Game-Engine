@@ -7,16 +7,19 @@ void Camera::update(float targetX, float targetY) {
     // y=targetY;  
     printf("camera update: %f %f\n", x, y);
 }
-
-void Camera::apply(SDL_Renderer* renderer) {
-    // SDL_Rect rect = getViewRect();
-    // SDL_RenderSetViewport(renderer, &rect);
-    int viewportX = static_cast<int>(x);
-    int viewportY = static_cast<int>(y);
-    SDL_Rect viewport = {viewportX, viewportY, static_cast<int>(view_width), static_cast<int>(view_height )};
-    printf("apply: %d %d %d %d\n", viewportX, viewportY, static_cast<int>(view_width), static_cast<int>(view_height ));
-    SDL_RenderSetViewport(renderer, &viewport);
+SDL_Rect Camera::apply(SDL_Renderer* renderer, SDL_Rect rect) {
+    return SDL_Rect{.x = rect.x - (int)this->x, .y = rect.y - (int)this->y, .w = rect.w, .h = rect.h};
 }
+// void Camera::apply(SDL_Renderer* renderer) {
+//     return SDL_Rect{.x = rect.x - (int)this->x, .y = rect.y - (int)this->y, .w = rect.w, .h = rect.h};
+//     // SDL_Rect rect = getViewRect();
+//     // SDL_RenderSetViewport(renderer, &rect);
+//     int viewportX = static_cast<int>(x);
+//     int viewportY = static_cast<int>(y);
+//     SDL_Rect viewport = {viewportX, viewportY, static_cast<int>(view_width), static_cast<int>(view_height )};
+//     printf("apply: %d %d %d %d\n", viewportX, viewportY, static_cast<int>(view_width), static_cast<int>(view_height ));
+//     SDL_RenderSetViewport(renderer, &viewport);
+// }
 SDL_Rect Camera::getCameraRect() const {
     // 计算相对于背景图像的源矩形
     int camX = static_cast<int>(x);

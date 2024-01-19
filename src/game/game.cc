@@ -24,13 +24,29 @@ void Game::setBackground(const std::string& backgroundPath) {
     backgroundTexture = ResourceManager::load<SDL_Texture>(backgroundPath);
 }
 
-void Game::renderBackground(SDL_Renderer* renderer) {
+void Game::renderBackground(SDL_Renderer* renderer, const Camera& cam) {
     if (backgroundTexture) {
-        Camera& cam = getCamera();
-        SDL_Rect srcRect = cam.getCameraRect();
-        SDL_Rect destRect = {0, 0, cam.view_width, cam.view_height};  // 根据实际窗口大小调整
+        // 获取背景图像原始尺寸
+        int bgWidth, bgHeight;
+        SDL_QueryTexture(backgroundTexture, nullptr, nullptr, &bgWidth, &bgHeight);
 
-        SDL_RenderCopy(renderer, backgroundTexture, &destRect, &srcRect);
+        // 计算摄像头视口应该显示的背景区域
+        float zoom = camera.getZoom();
+        SDL_Rect srcRect;
+        srcRect.w = static_cast<int>(camera.view_width / zoom);
+        srcRect.h = static_cast<int>(camera.view_height / zoom);
+        srcRect.x = static_cast<int>(camera.getX() - srcRect.w / 2);
+        srcRect.y = static_cast<int>(camera.getY() - srcRect.h / 2);
+
+        // 调整源矩形以确保不超出背景图像边界
+        srcRect.x = std::max(0, std::min(srcRect.x, bgWidth - srcRect.w));
+        srcRect.y = std::max(0, std::min(srcRect.y, bgHeight - srcRect.h));
+
+        // 目标矩形覆盖整个屏幕
+        SDL_Rect destRect = {0, 0, camera.view_width, camera.view_height};
+        destRect= camera.apply(renderer, destRect);
+        // 渲染背景
+        SDL_RenderCopy(renderer, backgroundTexture, &srcRect, &destRect);
     }
 }
 
@@ -55,7 +71,7 @@ Camera& Game::getCamera() {
 void Game::render() {
     SDL_SetRenderDrawColor(Game::renderer, 0, 255, 255, 255);
     SDL_RenderClear(Game::renderer);
-    renderBackground(Game::renderer);
+    renderBackground(Game::renderer, camera);
     for (auto e : Game::entities) {
         e->render(Game::renderer);
     }

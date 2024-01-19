@@ -3,10 +3,11 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>   
-#include "entity/entity.h"
-#include "misc/camera.h"
 
-class Player;
+#include "misc/camera.h"
+#include "entity/player.h"
+
+
 class Game {
     public:
         static void init(SDL_Renderer *renderer, SDL_Window *window, int width, int height);
@@ -19,7 +20,7 @@ class Game {
         static Player *getPlayer();
         static void setPlayer(Player *player);
         static void setBackground(const std::string &backgroundPath);
-        static void renderBackground(SDL_Renderer *renderer);
+        static void renderBackground(SDL_Renderer *renderer, const Camera &cam);
 
        private:
         inline static bool already_init;
