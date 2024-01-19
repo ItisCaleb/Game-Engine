@@ -19,7 +19,7 @@ class Game {
         static Player *getPlayer();
         static void setPlayer(Player *player);
         static void setBackground(const std::string &backgroundPath);
-        static void renderBackground(SDL_Renderer *renderer, const Camera &camera);
+        static void renderBackground(SDL_Renderer *renderer);
 
        private:
         inline static bool already_init;

@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
         }
 
 
-        Game::getCamera().apply(renderer);
+        // Game::getCamera().apply(renderer);
 
         // render
         Game::render();

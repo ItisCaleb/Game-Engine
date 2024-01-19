@@ -3,8 +3,8 @@
 void Camera::update(float targetX, float targetY) {
     x = targetX - (view_width / 2.0f ) ;
     y = targetY - (view_height / 2.0f );
-    x=targetX;
-    y=targetY;  
+    // x=targetX;
+    // y=targetY;  
     printf("camera update: %f %f\n", x, y);
 }
 
@@ -17,7 +17,14 @@ void Camera::apply(SDL_Renderer* renderer) {
     printf("apply: %d %d %d %d\n", viewportX, viewportY, static_cast<int>(view_width), static_cast<int>(view_height ));
     SDL_RenderSetViewport(renderer, &viewport);
 }
-
+SDL_Rect Camera::getCameraRect() const {
+    // 计算相对于背景图像的源矩形
+    int camX = static_cast<int>(x);
+    int camY = static_cast<int>(y);
+    int camW = static_cast<int>(view_width );
+    int camH = static_cast<int>(view_height );
+    return {camX, camY, camW, camH};
+}
 void Camera::setZoom(float zoomLevel) {
     zoom = zoomLevel > 0 ? zoomLevel : 1;
 }

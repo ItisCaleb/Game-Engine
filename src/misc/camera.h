@@ -11,6 +11,7 @@ class Camera {
 
     void update(float targetX, float targetY);
     void apply(SDL_Renderer* renderer);
+    SDL_Rect getCameraRect() const;
     void setZoom(float zoomLevel);
     float getZoom();
     float getX();
