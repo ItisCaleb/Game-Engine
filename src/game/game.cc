@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "entity/player.h"
+#include "entity/box.h"
 
 void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int height){
     if (Game::already_init) return;
@@ -16,6 +17,8 @@ void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int heigh
     Game::currentPlayer = player;
     Game::camera = Camera(width, height, 5.0f);
 
+    Game::entities.push_back(new Box());
+    
 }
 
 Player* Game::getPlayer() {
