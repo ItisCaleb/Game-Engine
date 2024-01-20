@@ -1,9 +1,7 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 #include <SDL2/SDL.h>
-
 #include <vector>
-
 #include "misc/sprite.h"
 
 class Entity{

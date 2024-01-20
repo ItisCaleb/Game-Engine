@@ -9,6 +9,9 @@ class Player : public Entity{
         ~Player();
         void update(float dt);
         void render(SDL_Renderer *renderer);
+        float getX() const;
+        float getY() const;
+
     private:
         BoxCollideShape hitbox;
         int speed;

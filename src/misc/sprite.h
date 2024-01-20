@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 
+
 class Sprite {
     private:
         SDL_Texture *texture;
@@ -12,6 +13,8 @@ class Sprite {
         Sprite(SDL_Texture *texture, int offX, int offY, int w, int h);
         ~Sprite();
         void render(SDL_Renderer *renderer, int x, int y);
+        int getWidth();
+        int getHeight();
 };
 
 

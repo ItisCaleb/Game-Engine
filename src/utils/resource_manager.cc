@@ -20,7 +20,7 @@ SDL_Texture* ResourceManager::load(std::string resource) {
             return nullptr;
         }
         SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::getRenderer(), surface);
-        if (!surface) {
+        if (!texture) {
             printf("Error: Unable to create texture from: %s. SDL Error %s\n", resource.c_str(), SDL_GetError());
             return nullptr;
         }
