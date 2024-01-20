@@ -4,10 +4,13 @@
 
 #include "utils/resource_manager.h"
 #include "utils/input_manager.h"
+#include "game/game.h"
 
 Player::Player()
-:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(200){
+:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
     this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
+    this->width = this->sprites[0]->getWidth();
+    this->height = this->sprites[0]->getHeight();
 }
 Player::~Player() {}
 float Player::getX() const {
@@ -18,11 +21,9 @@ float Player::getY() const {
     return y;
 }
 
-// set the screen width and height
-const int SCREEN_WIDTH = 2560;
-const int SCREEN_HEIGHT = 1440;
 void Player::update(float dt) {
-
+    int maxWidth = Game::getScene()->getWidth();
+    int maxHeight = Game::getScene()->getHeight();
     //calculate velocity
     float vx = 0, vy = 0;
     //handle keyboard input
@@ -41,14 +42,14 @@ void Player::update(float dt) {
     //boundary check
     if (newX < 0) {
         newX = 0;
-    } else if (newX + width > SCREEN_WIDTH) {
-        newX = SCREEN_WIDTH - width;
+    } else if (newX + width > maxWidth) {
+        newX = maxWidth - width;
     }
 
     if (newY < 0) {
         newY = 0;
-    } else if (newY + height > SCREEN_HEIGHT) {
-        newY = SCREEN_HEIGHT - height;
+    } else if (newY + height > maxHeight) {
+        newY = maxHeight - height;
     }
     //update position
     this->x = newX;

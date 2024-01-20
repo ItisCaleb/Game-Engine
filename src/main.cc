@@ -6,6 +6,7 @@
 #include "entity/player.h"
 #include "utils/resource_manager.h"
 #include "utils/input_manager.h"
+#include "scene/main_scene.h"
 
 int main(int argc, char **argv) {
 
@@ -54,8 +55,7 @@ int main(int argc, char **argv) {
     float last_time = 0.0f;
     ResourceManager::startWorkerThread();
     Game::init(renderer, window, width, height);
-    Game::loadBackground("test_background.png");
-    
+    Game::setScene(new MainScene);
     while (running) {
         // input
         SDL_Event event;
@@ -84,13 +84,6 @@ int main(int argc, char **argv) {
 
         // update
         Game::update(delta);
-
-        //get player
-        Player *player = Game::getPlayer();  
-        if (player) {
-            //update camera position
-            Game::getCamera().update(player->getX(), player->getY());
-        }
 
         // render
         Game::render();

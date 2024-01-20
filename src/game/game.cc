@@ -26,39 +26,21 @@ Camera& Game::getCamera() {
     return camera;
 }
 
+Scene* Game::getScene() {
+    return scene;
+}
+
 void Game::setPlayer(Player* player) {
     currentPlayer = player;
 }
 
-void Game::loadBackground(const std::string& backgroundPath) {
-    backgroundTexture = ResourceManager::load<SDL_Texture>(backgroundPath);
-}
-
-void Game::renderBackground(SDL_Renderer* renderer, const Camera& cam) {
-    if (backgroundTexture) {
-        // get background texture size
-        int bgWidth, bgHeight;
-        SDL_QueryTexture(backgroundTexture, nullptr, nullptr, &bgWidth, &bgHeight);
-
-        // set source rect to cover the whole background
-        SDL_Rect srcRect;
-        srcRect.w = Game::width;
-        srcRect.h = Game::height;
-        srcRect.x = (int)camera.getX();
-        srcRect.y = (int)camera.getY();
-
-        //check if source rect is out of bounds
-        srcRect.x = std::max(0, std::min(srcRect.x, bgWidth - srcRect.w));
-        srcRect.y = std::max(0, std::min(srcRect.y, bgHeight - srcRect.h));
-
-        // set destination rect to cover the whole screen
-        SDL_Rect destRect = {0, 0, Game::width, Game::height};
-        // apply camera
-        destRect = camera.apply( destRect);
-        // render
-        SDL_RenderCopy(renderer, backgroundTexture, &srcRect, &destRect);
+void Game::setScene(Scene *scene) {
+    if(Game::scene){
+        delete Game::scene;
     }
+    Game::scene = scene;
 }
+
 
 void Game::destroy() {
     SDL_DestroyRenderer(Game::renderer);
@@ -77,7 +59,7 @@ void Game::update(float dt) {
 void Game::render() {
     SDL_SetRenderDrawColor(Game::renderer, 0, 255, 255, 255);
     SDL_RenderClear(Game::renderer);
-    renderBackground(Game::renderer, camera);
+    Game::scene->render(Game::renderer);
     for (auto e : Game::entities) {
         e->render(Game::renderer);
     }
@@ -91,3 +73,10 @@ SDL_Renderer* Game::getRenderer() {
     return Game::renderer;
 }
 
+int Game::getWidth(){
+    return Game::width;
+}
+
+int Game::getHeight(){
+    return Game::height;
+}

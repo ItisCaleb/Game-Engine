@@ -6,7 +6,7 @@
 
 #include "entity/player.h"
 #include "misc/camera.h"
-#include "../utils/resource_manager.h"
+#include "scene/scene.h"
 
 class Game {
     public:
@@ -15,22 +15,26 @@ class Game {
         static void update(float dt);
         static void render();
         static void setPlayer(Player *player);
-        static void loadBackground(const std::string &backgroundPath);
-        static void renderBackground(SDL_Renderer *renderer, const Camera &cam);
+        static void setScene(Scene *scene);
         static SDL_Window* getWindow();
         static SDL_Renderer* getRenderer();
         static Camera &getCamera();
         static Player *getPlayer();
+        static Scene *getScene();
+        static int getWidth();
+        static int getHeight();
 
     private:
         inline static bool already_init;
+
+        // window width and height
         inline static int width, height;
         inline static SDL_Window *window;
         inline static SDL_Renderer *renderer;
         inline static std::vector<Entity*> entities;
         inline static Camera camera;
         inline static Player *currentPlayer = nullptr;
-        inline static SDL_Texture *backgroundTexture = nullptr;
+        inline static Scene *scene;
 };
 
 #endif

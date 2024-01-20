@@ -13,3 +13,11 @@ void Sprite::render(SDL_Renderer *renderer, int x, int y){
     renderRect = camera.apply(renderRect);
     SDL_RenderCopy(renderer, this->texture, &clipRect, &renderRect);
 }
+
+int Sprite::getWidth(){
+    return this->w;
+}
+
+int Sprite::getHeight(){
+    return this->h;
+}
