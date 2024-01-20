@@ -10,19 +10,51 @@ Player::Player()
     this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
 }
 Player::~Player() {}
-void Player::update(float dt) {
-    float vx = 0, vy = 0;
+float Player::getX() const {
+    return x;
+}
 
-    if(InputManager::isKeyHold(InputManager::Key::A))
+float Player::getY() const {
+    return y;
+}
+
+// set the screen width and height
+const int SCREEN_WIDTH = 2560;
+const int SCREEN_HEIGHT = 1440;
+void Player::update(float dt) {
+
+    //calculate velocity
+    float vx = 0, vy = 0;
+    //handle keyboard input
+    if (InputManager::isKeyHold(InputManager::Key::A))
         vx += -this->speed;
-    if(InputManager::isKeyHold(InputManager::Key::D))
+    if (InputManager::isKeyHold(InputManager::Key::D))
         vx += this->speed;
-    if(InputManager::isKeyHold(InputManager::Key::W))
+    if (InputManager::isKeyHold(InputManager::Key::W))
         vy += -this->speed;
-    if(InputManager::isKeyHold(InputManager::Key::S))
+    if (InputManager::isKeyHold(InputManager::Key::S))
         vy += this->speed;
-    this->x += vx * dt;
-    this->y += vy * dt;
+    //calculate new position
+    float newX = this->x + vx * dt;
+    float newY = this->y + vy * dt;
+
+    //boundary check
+    if (newX < 0) {
+        newX = 0;
+    } else if (newX + width > SCREEN_WIDTH) {
+        newX = SCREEN_WIDTH - width;
+    }
+
+    if (newY < 0) {
+        newY = 0;
+    } else if (newY + height > SCREEN_HEIGHT) {
+        newY = SCREEN_HEIGHT - height;
+    }
+    //update position
+    this->x = newX;
+    this->y = newY;
+
+    //update hitbox
     this->hitbox.x1 = x;
     this->hitbox.x2 = x + width;
     this->hitbox.y1 = y;
@@ -33,3 +65,4 @@ void Player::render(SDL_Renderer *renderer) {
         sprite->render(renderer, this->x, this->y);
     }
 }
+
