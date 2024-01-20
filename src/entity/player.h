@@ -12,7 +12,7 @@ class Player : public Entity{
         float getX() const;
         float getY() const;
 
-       private:
+    private:
         BoxCollideShape hitbox;
         int speed;
         

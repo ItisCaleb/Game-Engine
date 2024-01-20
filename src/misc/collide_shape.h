@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-enum ShapeType {
+enum class ShapeType {
     Box,
     Circle,
     Line,
