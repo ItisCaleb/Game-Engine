@@ -10,6 +10,7 @@ After cloned
 ```sh
 $ ./vcpkg/bootstrap-vcpkg.bat
 $ ./vcpkg/vcpkg.exe install sdl2 sdl2-image nlohmann-json  --triplet=x64-mingw-dynamic --host-triplet=x64-mingw-dynamic
+
 ```
 
 ## compile

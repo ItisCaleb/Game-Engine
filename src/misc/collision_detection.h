@@ -1,46 +1,34 @@
 #ifndef COLLISION_DETECTION_H
 #define COLLISION_DETECTION_H
 
-#include "collide_shape.h"
+#include "misc/collide_shape.h"
 #include <SDL2/SDL.h>
+#include <cmath>
 
-// collide_shape 
-template<class T> class CollisionDetection{
+// enum class ShapeType {
+//     Box,
+//     Circle,
+//     Line,
+//     Point
+// };
+// BB BC BL BP 
+// CC CL CP
+// LL LP
+// PP
+
+class CollisionDetection{
     public:
-        bool checkCollision(BoxCollideShape a,BoxCollideShape b){
-
-        }
-
-        // sdl_rect
-        bool checkCollision( SDL_Rect a, SDL_Rect b )
-        {
-            //The sides of the rectangles
-            int leftA, leftB;
-            int rightA, rightB;
-            int topA, topB;
-            int bottomA, bottomB;
-
-            //Calculate the sides of rect A
-            leftA = a.x;
-            rightA = a.x + a.w;
-            topA = a.y;
-            bottomA = a.y + a.h;
-
-            //Calculate the sides of rect B
-            leftB = b.x;
-            rightB = b.x + b.w;
-            topB = b.y;
-            bottomB = b.y + b.h;
-
-            //If any of the sides from A are outside of B
-            if( bottomA <= topB ){return false;}
-            if( topA >= bottomB ){return false;}
-            if( rightA <= leftB ){return false;}
-            if( leftA >= rightB ){return false;}
-
-            //If none of the sides from A are outside B
-            return true;
-        }
+        float dis(float ax,float ay,float bx,float by);
+        bool checkCollisionBB(BoxCollideShape a,BoxCollideShape b);
+        bool checkCollisionBC(BoxCollideShape a,CircleCollideShape b);
+        bool checkCollisionBL(BoxCollideShape a,LineCollideShape b);
+        bool checkCollisionBP(BoxCollideShape a,PointCollideShape b);
+        bool checkCollisionCC(CircleCollideShape a,CircleCollideShape b);
+        bool checkCollisionCP(CircleCollideShape a,PointCollideShape b);
+        bool checkCollisionCL(CircleCollideShape a,LineCollideShape b);
+        bool checkCollisionLL(LineCollideShape a,LineCollideShape b);
+        bool checkCollisionLP(LineCollideShape a,PointCollideShape b);
+        bool checkCollisionPP(PointCollideShape a,PointCollideShape b);
 };
 
 #endif

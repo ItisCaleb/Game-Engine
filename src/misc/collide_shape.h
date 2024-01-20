@@ -19,33 +19,33 @@ class CollideShape {
 
 class BoxCollideShape : protected CollideShape {
     public:
-        BoxCollideShape(int x1, int y1, int x2, int y2)
+        BoxCollideShape(float x1, float y1, float x2, float y2)
             : CollideShape(ShapeType::Box), x1(x1), y1(y1), x2(x2), y2(y2) {}
-        int x1, y1;
-        int x2, y2;
+        float x1, y1;
+        float x2, y2;
 };
 
 class CircleCollideShape : protected CollideShape {
     public:
-        CircleCollideShape(int x, int y, int r)
+        CircleCollideShape(float x, float y, float r)
             : CollideShape(ShapeType::Circle), x(x), y(y), r(r) {}
-        int x, y;
-        int r;
+        float x, y;
+        float r;
 };
 
 class LineCollideShape : protected CollideShape {
     public:
-        LineCollideShape(int x1, int y1, int x2, int y2)
+        LineCollideShape(float x1, float y1, float x2, float y2)
             : CollideShape(ShapeType::Line), x1(x1), y1(y1), x2(x2), y2(y2) {}
-        int x1, y1;
-        int x2, y2;
+        float x1, y1;
+        float x2, y2;
 };
 
 class PointCollideShape : protected CollideShape {
     public:
-        PointCollideShape(int x, int y)
+        PointCollideShape(float x, float y)
             : CollideShape(ShapeType::Point), x(x), y(y) {}
-        int x, y;
+        float x, y;
 };
 
 #endif
