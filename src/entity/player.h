@@ -15,7 +15,8 @@ class Player : public Entity{
     private:
         BoxCollideShape hitbox;
         BoxCollideShape hurtbox;
-        int speed;
+        int velocity;
+        int acceleration;
 };
 
 #endif

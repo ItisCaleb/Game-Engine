@@ -7,7 +7,7 @@
 #include "game/game.h"
 
 Player::Player()
-:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
+:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), velocity(400), hurtbox(x, y, x+width, y+width){
     //this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
     this->sprites=(ResourceManager::loadSprites("asset/player/120x80_PNGSheets/_Idle.png",120,80));
     //this->width = this->sprites[0]->getWidth();
@@ -30,13 +30,13 @@ void Player::update(float dt) {
     float vx = 0, vy = 0;
     //handle keyboard input
     if (InputManager::isKeyHold(InputManager::Key::A))
-        vx += -this->speed;
+        vx += -this->velocity;
     if (InputManager::isKeyHold(InputManager::Key::D))
-        vx += this->speed;
+        vx += this->velocity;
     if (InputManager::isKeyHold(InputManager::Key::W))
-        vy += -this->speed;
+        vy += -this->velocity;
     if (InputManager::isKeyHold(InputManager::Key::S))
-        vy += this->speed;
+        vy += this->velocity;
     //calculate new position
     float newX = this->x + vx * dt;
     float newY = this->y + vy * dt;
