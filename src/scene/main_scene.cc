@@ -30,17 +30,19 @@ void MainScene::update(float dt){
     for (auto o : this->objects) {
         o->update(dt);
     }
-}
-
-void MainScene::render(SDL_Renderer* renderer){
-    renderBackground(renderer);
     //get player
     Player *player = Game::getPlayer();  
     if (player) {
         //update camera position
         Game::getCamera().update(player->getX(), player->getY());
     }
-    player->render(renderer);
+}
+
+void MainScene::render(SDL_Renderer* renderer){
+    renderBackground(renderer);
+    for (auto o : this->objects) {
+        o->render(renderer);
+    }
 }
 
 void MainScene::destroy(){
