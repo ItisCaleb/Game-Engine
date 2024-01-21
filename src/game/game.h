@@ -16,6 +16,7 @@ class Game {
         static void render();
         static void setPlayer(Player *player);
         static void setScene(Scene *scene);
+        static void addCollideShape(CollideShape *shape);
         static SDL_Window* getWindow();
         static SDL_Renderer* getRenderer();
         static Camera &getCamera();
@@ -23,7 +24,7 @@ class Game {
         static Scene *getScene();
         static int getWidth();
         static int getHeight();
-
+        static std::vector<CollideShape*>* getCollided(CollideShape *shape);
     private:
         inline static bool already_init;
 
@@ -32,6 +33,7 @@ class Game {
         inline static SDL_Window *window;
         inline static SDL_Renderer *renderer;
         inline static std::vector<Entity*> entities;
+        inline static std::vector<CollideShape*> shapes;
         inline static Camera camera;
         inline static Player *currentPlayer = nullptr;
         inline static Scene *scene;

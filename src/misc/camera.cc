@@ -10,6 +10,13 @@ SDL_Rect Camera::apply(SDL_Rect rect) {
     return SDL_Rect{.x = rect.x - (int)this->x, .y = rect.y - (int)this->y, .w = rect.w, .h = rect.h};
 }
 
+int Camera::applyX(int x){
+    return x - this->x;
+}
+int Camera::applyY(int y){
+    return y - this->y;
+}
+
 void Camera::setZoom(float zoomLevel) {
     zoom = zoomLevel > 0 ? zoomLevel : 1;
 }

@@ -41,6 +41,10 @@ void Game::setScene(Scene *scene) {
     Game::scene = scene;
 }
 
+void Game::addCollideShape(CollideShape *shape) {
+    Game::shapes.push_back(shape);
+}
+
 
 void Game::destroy() {
     SDL_DestroyRenderer(Game::renderer);
@@ -63,6 +67,9 @@ void Game::render() {
     for (auto e : Game::entities) {
         e->render(Game::renderer);
     }
+    for (auto s : Game::shapes) {
+        s->render(Game::renderer);
+    }
     SDL_RenderPresent(Game::renderer);
 }
 
@@ -79,4 +86,14 @@ int Game::getWidth(){
 
 int Game::getHeight(){
     return Game::height;
+}
+
+
+std::vector<CollideShape*>* Game::getCollided(CollideShape *shape){
+    auto v = new std::vector<CollideShape*>;
+    for(auto s: Game::shapes){
+        if(shape == s) continue;
+        if(shape->isCollide(s)) v->push_back(s);
+    }
+    return v;
 }

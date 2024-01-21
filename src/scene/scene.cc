@@ -1,6 +1,7 @@
 #include "scene/scene.h"
 
 #include "game/game.h"
+#include "utils/resource_manager.h"
 
 void Scene::renderBackground(SDL_Renderer* renderer){
     if(!this->background) return;
@@ -27,6 +28,26 @@ void Scene::renderBackground(SDL_Renderer* renderer){
 
 Scene::Scene(int width, int height)
 :width(width), height(height){}
+
+void Scene::loadScene(std::string path){
+    auto j = ResourceManager::load<nlohmann::json>(path);
+    for (auto& element : *j) {
+        if(element["type"] == "box"){
+            float x1 = element["x1"], y1 = element["y1"];
+            float x2 = element["x2"], y2 = element["y2"];
+            Game::addCollideShape(new BoxCollideShape(x1,y1,x2,y2));
+        }else if(element["type"] == "circle"){
+            float x = element["x"], y = element["y"];
+            float r = element["r"];
+            Game::addCollideShape(new CircleCollideShape(x,y,r));
+        }else if(element["type"] == "line"){
+            float x1 = element["x1"], y1 = element["y1"];
+            float x2 = element["x2"], y2 = element["y2"];
+            Game::addCollideShape(new LineCollideShape(x1,y1,x2,y2));
+        }
+    }
+    delete j;
+}
 
 int Scene::getWidth(){
     return this->width;

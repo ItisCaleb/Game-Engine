@@ -164,8 +164,6 @@ function copyToClipboard() {
 }
 
 function output_json(){
-  canvas.remove(oGridGroup)
-  canvas.remove(image)
   const obj = canvas.getObjects()
   const result = [];
   console.log(obj)
@@ -192,9 +190,9 @@ function output_json(){
         let realRadius = shape.radius * shape.scaleX
         let circle = {
           'type':'circle',
-          'x':(coords[0].x+realRadius).toFixed(2),
-          'y':(coords[0].y+realRadius).toFixed(2),
-          'r':realRadius.toFixed(2),
+          'x':Number((coords[0].x+realRadius).toFixed(2)),
+          'y':Number((coords[0].y+realRadius).toFixed(2)),
+          'r':Number(realRadius.toFixed(2)),
         }
         result.push(circle);
         break
@@ -212,9 +210,4 @@ function output_json(){
   }
   console.log(result)
   json_output.value = JSON.stringify(result)
-  if(image){
-    canvas.add(image)
-    canvas.moveTo(image, 0);
-  }
-  draw_grid(size);
 }
