@@ -1,8 +1,10 @@
 SRC_DIR=src
 BUILD_DIR=build
 PRECOMPILE_DIR=precompiled
+rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
-SRC_FILES=$(wildcard $(SRC_DIR)/*.cc) $(wildcard $(SRC_DIR)/*/*.cc)
+
+SRC_FILES=$(call rwildcard,src/,*.cc)
 OBJ_FILES=$(addprefix $(PRECOMPILE_DIR)/,$(notdir $(SRC_FILES:.cc=.o)))
 HEADER_FILES=$(wildcard $(SRC_DIR)/**/*.h)
 SRC_DIRS=$(sort $(dir $(SRC_FILES)))

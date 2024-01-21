@@ -32,7 +32,9 @@ class ResourceManager {
         
         // used by async load
         inline static std::queue<void*> workQueue;
-        inline static SDL_mutex* mutex = nullptr;
+        inline static SDL_mutex* qmutex = nullptr;
+        inline static SDL_mutex* wmutex = nullptr;
+        inline static SDL_cond* wakeup = nullptr;
 };
 
 

@@ -2,6 +2,7 @@
 #define COLLIDE_SHAPE_H_
 
 #include <SDL2/SDL.h>
+#include "object/object.h"
 
 enum class ShapeType {
     Box,

@@ -14,7 +14,9 @@ protected:
     void loadScene(std::string path);
 public:
     Scene(int width, int height);
+    virtual void update(float dt) = 0;
     virtual void render(SDL_Renderer *renderer) = 0;
+    virtual void destroy() = 0;
 
     //get this scene width and height.
     int getWidth();
