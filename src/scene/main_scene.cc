@@ -6,6 +6,7 @@
 MainScene::MainScene()
 :Scene(Game::getWidth(), Game::getHeight()){
     this->background = ResourceManager::load<SDL_Texture>("test_background.png");
+    this->loadScene("test.json");
 }
 
 MainScene::~MainScene(){

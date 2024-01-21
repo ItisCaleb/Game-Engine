@@ -11,6 +11,7 @@ Player::Player()
     this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
     this->width = this->sprites[0]->getWidth();
     this->height = this->sprites[0]->getHeight();
+    Game::addCollideShape(&this->hitbox);
 }
 Player::~Player() {}
 float Player::getX() const {
@@ -60,6 +61,9 @@ void Player::update(float dt) {
     this->hitbox.x2 = x + width;
     this->hitbox.y1 = y;
     this->hitbox.y2 = y + height;
+    auto v = Game::getCollided(&this->hitbox);
+    //printf("collided %d objects\n",v->size());
+    delete v;
 }
 void Player::render(SDL_Renderer *renderer) {
     for(auto sprite: this->sprites){
