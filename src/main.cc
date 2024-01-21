@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
+#include <algorithm>
 
 #include "game/game.h"
-#include "entity/player.h"
 #include "utils/resource_manager.h"
 #include "utils/input_manager.h"
 #include "scene/main_scene.h"
@@ -52,14 +52,25 @@ int main(int argc, char **argv) {
     
     // Game loop start
     bool running = true;
-    float last_time = 0.0f;
+    float target_fps = 60;
+    float frame_limit = 1000.f/target_fps;
+    float delta = frame_limit;
+    int countedFrames = 0;
+    
     ResourceManager::startWorkerThread();
     Game::init(renderer, window, width, height);
     Game::setScene(new MainScene);
     while (running) {
         // input
         SDL_Event event;
-        
+
+        auto begin = SDL_GetTicks();
+
+        float avgFPS = countedFrames / (begin/1000.0f);
+        //printf("fps: %f\n",avgFPS);
+        if( avgFPS > 2000000 ){
+            avgFPS = 0;
+        }
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
@@ -77,16 +88,19 @@ int main(int argc, char **argv) {
         
         //update the key state
         InputManager::update();
-        //get delta time in milliseconds
-        float current_time = SDL_GetTicks() / 1000.0f;
-        float delta = current_time - last_time;
-        last_time = current_time;
 
         // update
-        Game::update(delta);
+        Game::update(delta/1000.f);
 
         // render
         Game::render();
+        countedFrames++;
+        auto end = SDL_GetTicks();
+        delta = end - begin;
+        if(delta < frame_limit){
+            SDL_Delay(frame_limit-delta);
+            delta = frame_limit;
+        }
     }
 
     Game::destroy();

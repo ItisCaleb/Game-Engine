@@ -11,7 +11,7 @@ Player::Player()
     this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
     this->width = this->sprites[0]->getWidth();
     this->height = this->sprites[0]->getHeight();
-    Game::addCollideShape(&this->hitbox);
+    Game::addCollideShape(&this->hitbox, this);
 }
 Player::~Player() {}
 float Player::getX() const {
@@ -62,6 +62,10 @@ void Player::update(float dt) {
     this->hitbox.y1 = y;
     this->hitbox.y2 = y + height;
     auto v = Game::getCollided(&this->hitbox);
+    /*for(auto s:*v){
+        Object *o = Game::getObjectByShape(s);
+        if(o) printf("object type is %d\n",o->type);
+    }*/
     //printf("collided %d objects\n",v->size());
     delete v;
 }

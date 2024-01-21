@@ -30,7 +30,7 @@ Scene::Scene(int width, int height)
 :width(width), height(height){}
 
 void Scene::loadScene(std::string path){
-    auto j = ResourceManager::load<nlohmann::json>(path);
+    /*auto j = ResourceManager::load<nlohmann::json>(path);
     for (auto& element : *j) {
         if(element["type"] == "box"){
             float x1 = element["x1"], y1 = element["y1"];
@@ -46,7 +46,7 @@ void Scene::loadScene(std::string path){
             Game::addCollideShape(new LineCollideShape(x1,y1,x2,y2));
         }
     }
-    delete j;
+    delete j;*/
 }
 
 int Scene::getWidth(){
