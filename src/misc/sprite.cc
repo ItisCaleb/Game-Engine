@@ -6,10 +6,11 @@ Sprite::Sprite(SDL_Texture *texture, int offX, int offY, int w, int h)
 Sprite::~Sprite(){}
 
 void Sprite::render(SDL_Renderer *renderer, int x, int y){
-    SDL_Rect renderRect = {x, y, this->w, this->h};
+    Camera &camera = Game::getCamera();
+    float zoom = camera.getZoom();
+    SDL_Rect renderRect = {x * zoom, y * zoom, this->w * zoom, this->h * zoom};
     SDL_Rect clipRect = {this->offX, this->offY, this->w, this->h};
     // Apply camera
-    Camera &camera = Game::getCamera();
     renderRect = camera.apply(renderRect);
     SDL_RenderCopy(renderer, this->texture, &clipRect, &renderRect);
 }

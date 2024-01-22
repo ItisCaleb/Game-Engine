@@ -69,6 +69,10 @@ int main(int argc, char **argv) {
                     width = event.window.data1;
                     height = event.window.data2;
                     SDL_SetWindowSize(window, width, height);
+                    break;
+                case SDL_MOUSEWHEEL:
+                    InputManager::updateMouseWheelScroll(event.wheel.y);
+                    break;
                 default:
                     break;
             }
@@ -77,6 +81,14 @@ int main(int argc, char **argv) {
         
         //update the key state
         InputManager::update();
+
+        Camera &camera = Game::getCamera();
+        if (InputManager::getMouseWheelScroll() != 0) {
+            float zoom = camera.getZoom() + InputManager::getMouseWheelScroll() * 0.15;  
+            camera.updateZoom(zoom);
+            InputManager::resetMouseWheelScroll();
+        }
+
         //get delta time in milliseconds
         float current_time = SDL_GetTicks() / 1000.0f;
         float delta = current_time - last_time;

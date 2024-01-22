@@ -18,10 +18,16 @@ public:
     static bool isKeyHold(Key key); 
     static bool isKeyRelease(Key key);
     static bool isKeyDown(Key key);
-private:
+    //get the mouse wheel scroll
+    static int getMouseWheelScroll();
+    static void updateMouseWheelScroll(int scroll);
+    static void resetMouseWheelScroll();
+
+   private:
     //store the key state by bit operation
     inline static Uint64 keyState=0;
     inline static Uint64 prevKeyState=0;
+    inline static int mouseWheelScroll = 0;
 };
 
 #endif
