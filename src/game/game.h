@@ -36,7 +36,7 @@ class Game {
         inline static SDL_Renderer *renderer;
         inline static std::vector<CollideShape*> shapes;
         inline static std::unordered_map<CollideShape*, Object*> shapeToObject;
-        inline static Camera camera;
+        inline static Camera *camera;
         inline static Player *currentPlayer = nullptr;
         inline static Scene *scene;
 };
