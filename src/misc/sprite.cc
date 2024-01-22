@@ -8,7 +8,7 @@ Sprite::~Sprite(){}
 void Sprite::render(SDL_Renderer *renderer, int x, int y){
     Camera &camera = Game::getCamera();
     float zoom = camera.getZoom();
-    SDL_Rect renderRect = {x * zoom, y * zoom, this->w * zoom, this->h * zoom};
+    SDL_Rect renderRect = {x, y, this->w, this->h};
     SDL_Rect clipRect = {this->offX, this->offY, this->w, this->h};
     // Apply camera
     renderRect = camera.apply(renderRect);

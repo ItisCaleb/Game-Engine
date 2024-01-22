@@ -37,8 +37,12 @@ void Camera::update(float targetX, float targetY) {
 }
 
 // screen = world - camera
-SDL_Rect Camera::apply(SDL_Rect rect) {
-    return SDL_Rect{.x = rect.x - (int)this->x, .y = rect.y - (int)this->y, .w = rect.w, .h = rect.h};
+SDL_Rect Camera::apply(SDL_Rect &rect) {
+    return SDL_Rect{
+        .x = (int)((rect.x - (int)this->x) * zoom) , 
+        .y = (int)((rect.y - (int)this->y) * zoom), 
+        .w = (int)(rect.w * zoom), 
+        .h = (int)(rect.h * zoom)};
 }
 
 void Camera::updateZoom(float targetZoom) {

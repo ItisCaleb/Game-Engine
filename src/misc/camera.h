@@ -10,7 +10,7 @@ public:
     Camera(int width, int height) : x(0), y(0), view_width(width), view_height(height), zoom(1.0f) {}
     
     void update(float targetX, float targetY);
-    SDL_Rect apply(SDL_Rect rect);
+    SDL_Rect apply(SDL_Rect &rect);
     void updateZoom(float targetZoom);
     int applyX(int x);
     int applyY(int y);
