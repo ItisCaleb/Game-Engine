@@ -3,13 +3,12 @@
 void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int height){
     if (Game::already_init) return;
 
+    Game::camera = new Camera(width, height);
     Game::already_init = true;
     Game::renderer = renderer;
     Game::window = window;
     Game::width = width;
     Game::height = height;
-    Game::camera = Camera(width, height, 5.0f);
-
 }
 
 Player* Game::getPlayer() {
@@ -17,7 +16,7 @@ Player* Game::getPlayer() {
 }
 
 Camera& Game::getCamera() {
-    return camera;
+    return *camera;
 }
 
 Scene* Game::getScene() {
