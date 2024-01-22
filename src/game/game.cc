@@ -8,7 +8,7 @@ void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int heigh
     Game::window = window;
     Game::width = width;
     Game::height = height;
-    Game::camera = Camera(width, height, 5.0f);
+    Game::camera = Camera(width, height);
 
 }
 

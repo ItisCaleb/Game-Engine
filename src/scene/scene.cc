@@ -15,13 +15,15 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     srcRect.h = Game::getHeight();
     srcRect.x = (int)camera.getX();
     srcRect.y = (int)camera.getY();
+
+
     //check if source rect is out of bounds
     srcRect.x = std::max(0, std::min(srcRect.x, bgWidth - srcRect.w));
     srcRect.y = std::max(0, std::min(srcRect.y, bgHeight - srcRect.h));
     // set destination rect to cover the whole screen
-    SDL_Rect destRect = {0, 0, Game::getWidth(), Game::getHeight()};
+    SDL_Rect destRect = {0, 0, srcRect.w, srcRect.h};
     // apply camera
-    destRect = camera.apply( destRect);
+    destRect = camera.apply(destRect);
     // render
     SDL_RenderCopy(renderer, this->background, &srcRect, &destRect);
 }

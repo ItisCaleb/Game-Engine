@@ -41,17 +41,18 @@ void Player::update(float dt) {
     float newY = this->y + vy * dt;
 
     //boundary check
-    if (newX < 0) {
-        newX = 0;
-    } else if (newX + width > maxWidth) {
-        newX = maxWidth - width;
+    if (newX < -1280) {
+        newX = x;
+    } else if (newX + width > 3000) {
+        newX = 3000 - width;
     }
 
-    if (newY < 0) {
-        newY = 0;
-    } else if (newY + height > maxHeight) {
-        newY = maxHeight - height;
+    if (newY < -720) {
+        newY = y;
+    } else if (newY + height > 2000) {
+        newY = 2000 - height;
     }
+
     //update position
     this->x = newX;
     this->y = newY;

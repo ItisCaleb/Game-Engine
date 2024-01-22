@@ -4,7 +4,9 @@
 void InputManager::update() {
     // reset the key state
     prevKeyState = keyState;
-    keyState = 0;  
+    keyState = 0;
+    // reset the mouse wheel scroll
+    updateMouseWheelScroll(mouseWheelScroll);
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     if (state[SDL_SCANCODE_W]) keyState |= W;
@@ -14,6 +16,16 @@ void InputManager::update() {
     if (state[SDL_SCANCODE_SPACE]) keyState |= SPACE;
 }
 
+int InputManager::getMouseWheelScroll() {
+    return mouseWheelScroll;
+}
+
+void InputManager::updateMouseWheelScroll(int scroll) {
+    mouseWheelScroll = scroll;
+}
+void InputManager::resetMouseWheelScroll() {
+    mouseWheelScroll = 0;
+}
 bool InputManager::isKeyHold(Key key) {
     return keyState & key;
 }
