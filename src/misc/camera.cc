@@ -40,9 +40,20 @@ void Camera::update(float targetX, float targetY) {
 SDL_Rect Camera::apply(SDL_Rect rect) {
     return SDL_Rect{.x = rect.x - (int)this->x, .y = rect.y - (int)this->y, .w = rect.w, .h = rect.h};
 }
+
 void Camera::updateZoom(float targetZoom) {
     this->targetZoom = std::max(0.5f, std::min(targetZoom, 3.0f));
-    ;
+}
+
+int Camera::applyX(int x){
+    return x - this->x;
+}
+int Camera::applyY(int y){
+    return y - this->y;
+}
+
+void Camera::setZoom(float zoomLevel) {
+    zoom = zoomLevel > 0 ? zoomLevel : 1;
 }
 
 

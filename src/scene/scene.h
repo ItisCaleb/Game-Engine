@@ -2,6 +2,7 @@
 #define SCENE_H_
 
 #include <SDL2/SDL.h>
+#include <string>
 
 class Scene
 {
@@ -10,9 +11,12 @@ protected:
     SDL_Texture *background;
     SDL_Texture *foreground;
     void renderBackground(SDL_Renderer *renderer);
+    void loadScene(std::string path);
 public:
     Scene(int width, int height);
+    virtual void update(float dt) = 0;
     virtual void render(SDL_Renderer *renderer) = 0;
+    virtual void destroy() = 0;
 
     //get this scene width and height.
     int getWidth();

@@ -64,9 +64,10 @@ std::vector<Sprite*>* ResourceManager::loadSprites(std::string resource, int cli
 
 
 inline void ResourceManager::pushToWorker(void* res){
-    SDL_LockMutex(ResourceManager::mutex);
+    SDL_LockMutex(ResourceManager::qmutex);
     workQueue.push(res);
-    SDL_UnlockMutex(ResourceManager::mutex);
+    SDL_UnlockMutex(ResourceManager::qmutex);
+    SDL_CondSignal(ResourceManager::wakeup);
 }
 
 // async resource load functions
@@ -94,38 +95,45 @@ AsyncResource<nlohmann::json>* ResourceManager::loadAsync(std::string resource) 
 // worker function to load resource
 int asyncIOWorker(void* data) {
     while (true) {
+        SDL_LockMutex(ResourceManager::wmutex);
+        SDL_CondWait(ResourceManager::wakeup, ResourceManager::wmutex);
+        SDL_UnlockMutex(ResourceManager::wmutex);
         // if no request in queue, then continue
-        if (ResourceManager::workQueue.empty()) continue;
+        while (!ResourceManager::workQueue.empty()){
 
-        // queue isn't thread-safe, so we need to lock
-        SDL_LockMutex(ResourceManager::mutex);
-        auto res = (AsyncResource<void>*)ResourceManager::workQueue.front();
-        ResourceManager::workQueue.pop();
-        SDL_UnlockMutex(ResourceManager::mutex);
-
-        // load resource based on type
-        switch (res->type) {
-            case ResourceType::Texture:
-                res->resource = ResourceManager::load<SDL_Texture>(res->getPath());
-                break;
-            case ResourceType::Sprite:
-                res->resource = ResourceManager::load<Sprite>(res->getPath());
-                break;
-            case ResourceType::JSON:
-                res->resource = ResourceManager::load<nlohmann::json>(res->getPath());
-                break;
-            default:
-                res->resource = nullptr;
-                break;
+            // queue isn't thread-safe, so we need to lock
+            SDL_LockMutex(ResourceManager::qmutex);
+            auto res = (AsyncResource<void>*)ResourceManager::workQueue.front();
+            ResourceManager::workQueue.pop();
+            SDL_UnlockMutex(ResourceManager::qmutex);
+    
+            // load resource based on type
+            switch (res->type) {
+                case ResourceType::Texture:
+                    res->resource = ResourceManager::load<SDL_Texture>(res->getPath());
+                    break;
+                case ResourceType::Sprite:
+                    res->resource = ResourceManager::load<Sprite>(res->getPath());
+                    break;
+                case ResourceType::JSON:
+                    res->resource = ResourceManager::load<nlohmann::json>(res->getPath());
+                    break;
+                default:
+                    res->resource = nullptr;
+                    break;
+            }
+            res->available = true;
         }
-        res->available = true;
     }
+    
     return 0;
 }
 
 void ResourceManager::startWorkerThread() {
-    if (mutex) return;
-    mutex = SDL_CreateMutex();
+    if (qmutex) return;
+    qmutex = SDL_CreateMutex();
+    wmutex = SDL_CreateMutex();
+    wakeup = SDL_CreateCond();
     SDL_Thread* thread = SDL_CreateThread(asyncIOWorker, "Resource Worker", nullptr);
     if (!thread) {
         printf("Unable to create thread: %s\n", SDL_GetError());

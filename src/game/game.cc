@@ -1,7 +1,5 @@
 #include "game.h"
 
-#include "entity/player.h"
-
 void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int height){
     if (Game::already_init) return;
 
@@ -10,10 +8,6 @@ void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int heigh
     Game::window = window;
     Game::width = width;
     Game::height = height;
-    Player* player = new Player();
-    Game::entities.push_back(player);
-
-    Game::currentPlayer = player;
     Game::camera = Camera(width, height);
 
 }
@@ -41,27 +35,32 @@ void Game::setScene(Scene *scene) {
     Game::scene = scene;
 }
 
+void Game::addCollideShape(CollideShape *shape, Object *object) {
+    auto result = Game::shapeToObject.find(shape);
+    //non exist
+    if (result == Game::shapeToObject.end()){
+        Game::shapes.push_back(shape);
+        Game::shapeToObject[shape] = object;
+    }
+    
+}
+
 
 void Game::destroy() {
     SDL_DestroyRenderer(Game::renderer);
     SDL_DestroyWindow(Game::window);
-    for (auto e : Game::entities) {
-        delete e;
-    }
 }
 
 void Game::update(float dt) {
-    for (auto e : Game::entities) {
-        e->update(dt);
-    }
+    Game::scene->update(dt);
 }
 
 void Game::render() {
     SDL_SetRenderDrawColor(Game::renderer, 0, 255, 255, 255);
     SDL_RenderClear(Game::renderer);
     Game::scene->render(Game::renderer);
-    for (auto e : Game::entities) {
-        e->render(Game::renderer);
+    for (auto s : Game::shapes) {
+        s->render(Game::renderer);
     }
     SDL_RenderPresent(Game::renderer);
 }
@@ -79,4 +78,21 @@ int Game::getWidth(){
 
 int Game::getHeight(){
     return Game::height;
+}
+
+ Object* Game::getObjectByShape(CollideShape *shape){
+    auto result = Game::shapeToObject.find(shape);
+    if (result == Game::shapeToObject.end())
+        return nullptr;
+ 
+    return Game::shapeToObject[shape];
+ }
+
+std::vector<CollideShape*>* Game::getCollided(CollideShape *shape){
+    auto v = new std::vector<CollideShape*>;
+    for(auto s: Game::shapes){
+        if(shape == s) continue;
+        if(shape->isCollide(s)) v->push_back(s);
+    }
+    return v;
 }

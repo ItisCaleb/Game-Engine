@@ -3,8 +3,9 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
-#include "entity/player.h"
+#include "object/entity/player.h"
 #include "misc/camera.h"
 #include "scene/scene.h"
 
@@ -16,6 +17,7 @@ class Game {
         static void render();
         static void setPlayer(Player *player);
         static void setScene(Scene *scene);
+        static void addCollideShape(CollideShape *shape, Object *object);
         static SDL_Window* getWindow();
         static SDL_Renderer* getRenderer();
         static Camera &getCamera();
@@ -23,7 +25,8 @@ class Game {
         static Scene *getScene();
         static int getWidth();
         static int getHeight();
-
+        static Object* getObjectByShape(CollideShape *shape);
+        static std::vector<CollideShape*>* getCollided(CollideShape *shape);
     private:
         inline static bool already_init;
 
@@ -31,7 +34,8 @@ class Game {
         inline static int width, height;
         inline static SDL_Window *window;
         inline static SDL_Renderer *renderer;
-        inline static std::vector<Entity*> entities;
+        inline static std::vector<CollideShape*> shapes;
+        inline static std::unordered_map<CollideShape*, Object*> shapeToObject;
         inline static Camera camera;
         inline static Player *currentPlayer = nullptr;
         inline static Scene *scene;
