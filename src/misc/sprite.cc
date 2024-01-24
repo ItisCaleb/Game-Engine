@@ -22,3 +22,7 @@ int Sprite::getWidth(){
 int Sprite::getHeight(){
     return this->h;
 }
+
+SDL_Texture* Sprite::getTexture(){
+    return this->texture;
+}

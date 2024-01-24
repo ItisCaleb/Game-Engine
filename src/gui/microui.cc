@@ -519,6 +519,16 @@ void mu_draw_icon(mu_Context *ctx, int id, mu_Rect rect, mu_Color color) {
   if (clipped) { mu_set_clip(ctx, unclipped_rect); }
 }
 
+void mu_draw_image(mu_Context *ctx, void *texture, mu_Rect rect) {
+  mu_Command *cmd;
+  rect = intersect_rects(rect, mu_get_clip_rect(ctx));
+  if (rect.w > 0 && rect.h > 0) {
+    cmd = mu_push_command(ctx, MU_COMMAND_IMAGE, sizeof(mu_ImageCommand));
+    cmd->image.rect = rect;
+    cmd->image.texture = texture;
+  }
+}
+
 
 /*============================================================================
 ** layout
@@ -726,6 +736,13 @@ void mu_text(mu_Context *ctx, const char *text) {
 
 void mu_label(mu_Context *ctx, const char *text) {
   mu_draw_control_text(ctx, text, mu_layout_next(ctx), MU_COLOR_TEXT, 0);
+}
+
+void mu_image(mu_Context *ctx, void* texture, int w, int h){
+  mu_Rect r = mu_layout_next(ctx);
+  r.w = w;
+  r.h = h;
+  mu_draw_image(ctx, texture, r);
 }
 
 

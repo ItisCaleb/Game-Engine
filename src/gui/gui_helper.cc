@@ -71,13 +71,21 @@ void drawRect(SDL_Renderer *renderer, mu_Rect *rect, mu_Color &color){
     SDL_RenderFillRect(renderer, r);
 }
 
+void drawImage(SDL_Renderer *renderer, void* texture, mu_Rect *rect){
+    SDL_Rect renderRect = {rect->x, rect->y, rect->w, rect->h};
+    SDL_RenderCopy(renderer, (SDL_Texture *)texture, NULL, &renderRect);
+}
+
 void GUIHelper::handleRender(SDL_Renderer *renderer){
     mu_Command *cmd = NULL;
     while (mu_next_command(ctx, &cmd)) {
       switch (cmd->type) {
         //case MU_COMMAND_TEXT: r_draw_text(cmd->text.str, cmd->text.pos, cmd->text.color); break;
-        case MU_COMMAND_RECT: 
+        case MU_COMMAND_RECT:
             drawRect(renderer,&cmd->rect.rect, cmd->rect.color); 
+            break;
+        case MU_COMMAND_IMAGE:
+            drawImage(renderer, cmd->image.texture, &cmd->image.rect);
             break;
         //case MU_COMMAND_ICON: r_draw_icon(cmd->icon.id, cmd->icon.rect, cmd->icon.color); break;
         //case MU_COMMAND_CLIP: r_set_clip_rect(cmd->clip.rect); break;
@@ -94,7 +102,8 @@ void GUIHelper::end(){
 }
 
 bool GUIHelper::beginWindow(std::string name, SDL_Rect &rect){
-    return mu_begin_window(ctx, name.c_str(), mu_rect(rect.w, rect.y, rect.w, rect.h));
+    return mu_begin_window_ex(ctx, name.c_str(), mu_rect(rect.x, rect.y, rect.w, rect.h)
+    , MU_OPT_NOCLOSE);
 }
 
 void GUIHelper::endWindow(){
@@ -103,5 +112,9 @@ void GUIHelper::endWindow(){
 
 bool GUIHelper::button(std::string name){
     return mu_button(ctx, name.c_str());
+}
+
+bool GUIHelper::image(SDL_Texture *texture, int w, int h){
+    mu_image(ctx, texture, w, h);
 }
 

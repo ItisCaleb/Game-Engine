@@ -6,6 +6,7 @@
 #include <string>
 #include "gui/microui.h"
 
+
 class GUIHelper{
     public:
         static void init();
@@ -16,6 +17,7 @@ class GUIHelper{
         static void begin();
         static bool beginWindow(std::string name, SDL_Rect &rect);
         static bool button(std::string name);
+        static bool image(SDL_Texture *texture, int w, int h);
         static void endWindow();
         static void end();
     private:
