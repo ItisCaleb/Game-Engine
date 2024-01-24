@@ -51,7 +51,6 @@ int main(int argc, char **argv) {
     }
     
     // Game loop start
-    bool running = true;
     float target_fps = 60;
     float frame_limit = 1000.f/target_fps;
     float delta = frame_limit;
@@ -60,10 +59,7 @@ int main(int argc, char **argv) {
     ResourceManager::startWorkerThread();
     Game::init(renderer, window, width, height);
     Game::setScene(new MainScene);
-    while (running) {
-        // input
-        SDL_Event event;
-
+    while (Game::isRunning()) {
         auto begin = SDL_GetTicks();
 
         float avgFPS = countedFrames / (begin/1000.0f);
@@ -71,27 +67,9 @@ int main(int argc, char **argv) {
         if( avgFPS > 2000000 ){
             avgFPS = 0;
         }
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    running = false;
-                    break;
-                case SDL_WINDOWEVENT_RESIZED:
-                    width = event.window.data1;
-                    height = event.window.data2;
-                    SDL_SetWindowSize(window, width, height);
-                    break;
-                case SDL_MOUSEWHEEL:
-                    InputManager::updateMouseWheelScroll(event.wheel.y);
-                    break;
-                default:
-                    break;
-            }
-        }
-       
-        
+        // input
+        Game::handleInput();
         //update the key state
-        InputManager::update();
         Camera &camera = Game::getCamera();
         if (InputManager::getMouseWheelScroll() != 0) {
             float zoom = camera.getZoom() + InputManager::getMouseWheelScroll() * 0.1;  

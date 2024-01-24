@@ -14,6 +14,7 @@ void InputManager::update() {
     if (state[SDL_SCANCODE_S]) keyState |= S;
     if (state[SDL_SCANCODE_D]) keyState |= D;
     if (state[SDL_SCANCODE_SPACE]) keyState |= SPACE;
+    if (state[SDL_SCANCODE_ESCAPE]) keyState |= ESC;
 }
 
 int InputManager::getMouseWheelScroll() {

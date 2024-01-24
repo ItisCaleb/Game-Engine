@@ -3,6 +3,8 @@
 #include "utils/resource_manager.h"
 #include "game/game.h"
 #include "object/wall.h"
+#include "utils/input_manager.h"
+#include "gui/main_gui.h"
 
 MainScene::MainScene()
 :Scene(Game::getWidth(), Game::getHeight()){
@@ -35,6 +37,13 @@ void MainScene::update(float dt){
     if (player) {
         //update camera position
         Game::getCamera().update(player->getX(), player->getY());
+    }
+    auto menu = MainGUI::getInstance();
+    if(InputManager::isKeyDown(InputManager::Key::ESC)){
+        if(!menu->isOpened())
+            Game::openGUI(menu);
+        else
+            Game::closeGUI(menu);
     }
 }
 
