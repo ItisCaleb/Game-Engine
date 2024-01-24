@@ -10,7 +10,8 @@ public:
         A = 2,  
         S = 4,  
         D = 8,  
-        SPACE = 16 
+        SPACE = 16,
+        ESC = 32
     };
     //update the key state
     static void update();  
