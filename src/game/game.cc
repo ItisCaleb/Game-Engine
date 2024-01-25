@@ -1,14 +1,20 @@
 #include "game.h"
 
+#include "utils/input_manager.h"
+#include "gui/gui_helper.h"
+
 void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int height){
     if (Game::already_init) return;
 
     Game::camera = new Camera(width, height);
     Game::already_init = true;
+    Game::running = true;
     Game::renderer = renderer;
     Game::window = window;
     Game::width = width;
     Game::height = height;
+    
+    GUIHelper::init();
 }
 
 Player* Game::getPlayer() {
@@ -34,6 +40,22 @@ void Game::setScene(Scene *scene) {
     Game::scene = scene;
 }
 
+void Game::openGUI(GUI* gui){
+    if(!gui->isOpened()){
+        guiStack.push_back(gui);
+        gui->opened = true;
+    }
+}
+
+void Game::closeGUI(GUI* gui){
+    if(gui->isOpened()){
+        if(guiStack.back() == gui){
+            guiStack.pop_back();
+            gui->opened = false;
+        }
+    }
+}
+
 void Game::addCollideShape(CollideShape *shape, Object *object) {
     auto result = Game::shapeToObject.find(shape);
     //non exist
@@ -50,8 +72,43 @@ void Game::destroy() {
     SDL_DestroyWindow(Game::window);
 }
 
+void Game::handleInput(){
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) {
+        // handle gui input
+        if(!guiStack.empty())
+            GUIHelper::handleInput(e);
+
+        // handle normal unput
+        switch (e.type) {
+            case SDL_QUIT:
+                Game::running = false;
+                break;
+            case SDL_WINDOWEVENT_RESIZED:
+                width = e.window.data1;
+                height = e.window.data2;
+                SDL_SetWindowSize(window, width, height);
+                break;
+            case SDL_MOUSEWHEEL:
+                InputManager::updateMouseWheelScroll(e.wheel.y);
+                break;
+            default:
+                break;
+        }
+    }
+    InputManager::update();
+}
+
 void Game::update(float dt) {
     Game::scene->update(dt);
+
+    // draw gui
+    if(!guiStack.empty()){
+        for(auto ui: guiStack){
+            ui->draw();
+        }
+    }
+        
 }
 
 void Game::render() {
@@ -61,7 +118,13 @@ void Game::render() {
     for (auto s : Game::shapes) {
         s->render(Game::renderer);
     }
+    if(!guiStack.empty())
+        GUIHelper::handleRender(Game::renderer);
     SDL_RenderPresent(Game::renderer);
+}
+
+bool Game::isRunning(){
+    return Game::running;
 }
 
 SDL_Window* Game::getWindow() {
