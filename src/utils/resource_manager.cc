@@ -1,6 +1,7 @@
 #include "utils/resource_manager.h"
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <filesystem>
 #include <fstream>
@@ -48,6 +49,24 @@ nlohmann::json* ResourceManager::load(std::string resource) {
     return new nlohmann::json(nlohmann::json::parse(f));
 }
 
+template <>
+TTF_Font* ResourceManager::load(std::string resource) {
+    std::filesystem::path resPath = resource;
+    if (resPath.extension() == ".ttf") {
+        TTF_Font* font = TTF_OpenFont(resource.c_str(), 14);
+        if (!font) {
+            printf("Error: Unable to load surface from path: %s. SDL_ttf Error: %s\n", resource.c_str(), TTF_GetError());
+            return nullptr;
+        }
+        return font;
+    } else {
+        printf("Error: Unsupported format: \"%s\". Can't load font from %s",
+               resPath.extension().c_str(),
+               resource.c_str());
+        return nullptr;
+    }
+}
+
 std::vector<Sprite*>* ResourceManager::loadSprites(std::string resource, int clipW, int clipH) {
     std::filesystem::path resPath = resource;
     auto* texture = ResourceManager::load<SDL_Texture>(resource);
@@ -92,6 +111,13 @@ AsyncResource<nlohmann::json>* ResourceManager::loadAsync(std::string resource) 
     return res;
 }
 
+template <>
+AsyncResource<TTF_Font>* ResourceManager::loadAsync(std::string resource) {
+    auto res = new AsyncResource<TTF_Font>(resource, ResourceType::Font);
+    pushToWorker(res);
+    return res;
+}
+
 // worker function to load resource
 int asyncIOWorker(void* data) {
     while (true) {
@@ -117,6 +143,9 @@ int asyncIOWorker(void* data) {
                     break;
                 case ResourceType::JSON:
                     res->resource = ResourceManager::load<nlohmann::json>(res->getPath());
+                    break;
+                case ResourceType::Font:
+                    res->resource = ResourceManager::load<TTF_Font>(res->getPath());
                     break;
                 default:
                     res->resource = nullptr;

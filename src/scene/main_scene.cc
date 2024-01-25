@@ -22,6 +22,9 @@ MainScene::MainScene()
     Player* player = new Player();
     this->objects.push_back(player);
     Game::setPlayer(player);
+
+    auto menu = MainGUI::getInstance();
+    Game::openGUI(menu);
 }
 
 MainScene::~MainScene(){
@@ -37,13 +40,6 @@ void MainScene::update(float dt){
     if (player) {
         //update camera position
         Game::getCamera().update(player->getX(), player->getY());
-    }
-    auto menu = MainGUI::getInstance();
-    if(InputManager::isKeyDown(InputManager::Key::ESC)){
-        if(!menu->isOpened())
-            Game::openGUI(menu);
-        else
-            Game::closeGUI(menu);
     }
 }
 

@@ -5,7 +5,7 @@
 
 void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int height){
     if (Game::already_init) return;
-
+    SDL_RenderSetLogicalSize(renderer, 1280, 720);
     Game::camera = new Camera(width, height);
     Game::already_init = true;
     Game::running = true;
@@ -74,6 +74,7 @@ void Game::destroy() {
 
 void Game::handleInput(){
     SDL_Event e;
+    //SDL_StartTextInput();
     while (SDL_PollEvent(&e)) {
         // handle gui input
         if(!guiStack.empty())
@@ -84,10 +85,21 @@ void Game::handleInput(){
             case SDL_QUIT:
                 Game::running = false;
                 break;
-            case SDL_WINDOWEVENT_RESIZED:
-                width = e.window.data1;
-                height = e.window.data2;
-                SDL_SetWindowSize(window, width, height);
+            
+            case SDL_WINDOWEVENT:
+                switch (e.window.event){
+                    case SDL_WINDOWEVENT_RESIZED:
+                        width = e.window.data1;
+                        height = e.window.data2;
+                        SDL_SetWindowSize(window, width, height);
+                        break;
+                    #ifdef _WIN32
+                    case SDL_WINDOWEVENT_FOCUS_GAINED:
+                        // disable windows ime
+                        ImmAssociateContext(GetForegroundWindow(), NULL);
+                        break;
+                    #endif
+                }
                 break;
             case SDL_MOUSEWHEEL:
                 InputManager::updateMouseWheelScroll(e.wheel.y);

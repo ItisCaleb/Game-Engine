@@ -3,7 +3,7 @@
 //update camera position
 void Camera::update(float targetX, float targetY) {
     //zoom animation (smooth)    
-    printf("zoomStep: %f\n", this->zoomStep);
+    //printf("zoomStep: %f\n", this->zoomStep);
     if (zoom < targetZoom) {
         printf("zoom: %f, targetZoom: %f\n", zoom, targetZoom);
         zoom += this->zoomStep;
