@@ -87,11 +87,9 @@ int Game::getHeight(){
     return Game::shapeToObject[shape];
  }
 
-std::vector<CollideShape*>* Game::getCollided(CollideShape *shape){
-    auto v = new std::vector<CollideShape*>;
+void Game::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
     for(auto s: Game::shapes){
         if(shape == s) continue;
-        if(shape->isCollide(s)) v->push_back(s);
+        if(shape->isCollide(s)) vec.push_back(s);
     }
-    return v;
 }

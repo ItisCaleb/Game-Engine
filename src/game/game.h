@@ -11,12 +11,15 @@
 
 class Game {
     public:
+        // init game
         static void init(SDL_Renderer *renderer, SDL_Window *window, int width, int height);
         static void destroy();
         static void update(float dt);
         static void render();
         static void setPlayer(Player *player);
         static void setScene(Scene *scene);
+        
+        // add shape to collision detection
         static void addCollideShape(CollideShape *shape, Object *object);
         static SDL_Window* getWindow();
         static SDL_Renderer* getRenderer();
@@ -25,8 +28,12 @@ class Game {
         static Scene *getScene();
         static int getWidth();
         static int getHeight();
+
+        // return object attach by shape
         static Object* getObjectByShape(CollideShape *shape);
-        static std::vector<CollideShape*>* getCollided(CollideShape *shape);
+
+        // get all shape collided with this shape
+        static void getCollided(CollideShape *shape, std::vector<CollideShape*> &vec);
     private:
         inline static bool already_init;
 
