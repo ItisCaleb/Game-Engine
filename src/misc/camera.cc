@@ -6,11 +6,11 @@ void Camera::update(float targetX, float targetY) {
     //zoom animation (smooth)    
     //printf("zoomStep: %f\n", this->zoomStep);
     if (zoom < targetZoom) {
-        printf("zoom: %f, targetZoom: %f\n", zoom, targetZoom);
+        //printf("zoom: %f, targetZoom: %f\n", zoom, targetZoom);
         zoom += this->zoomStep;
         if (zoom > targetZoom) zoom = targetZoom;
     } else if (zoom > targetZoom) {
-        printf("zoom: %f, targetZoom: %f\n", zoom, targetZoom);
+        //printf("zoom: %f, targetZoom: %f\n", zoom, targetZoom);
         zoom -= this->zoomStep;
         if (zoom < targetZoom) zoom = targetZoom;
     }
@@ -67,6 +67,10 @@ void Camera::setZoom(float zoomLevel) {
 
 float Camera::getZoom() {
     return zoom;
+}
+
+float Camera::getTargetZoom(){
+    return targetZoom;
 }
 float Camera::getX() {
     return x;

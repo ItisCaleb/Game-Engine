@@ -74,14 +74,7 @@ int main(int argc, char **argv) {
         }
         // input
         Game::handleInput();
-        //update the key state
-        Camera &camera = Game::getCamera();
-        if (InputManager::getMouseWheelScroll() != 0) {
-            float zoom = camera.getZoom() + InputManager::getMouseWheelScroll() * 0.1;  
-            printf("zoomtarget: %f\n", zoom);
-            camera.updateZoom(zoom);
-            InputManager::resetMouseWheelScroll();
-        }
+
         // update
         Game::update(delta/1000.f);
 

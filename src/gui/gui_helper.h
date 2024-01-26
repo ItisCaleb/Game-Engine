@@ -23,9 +23,13 @@ class GUIHelper{
         // microui wrappers
         static void begin();
         static bool beginWindow(std::string name, SDL_Rect &rect, int opt=0);
+        static void bringToFront();
         static bool button(std::string name, int opt=0);
-        static bool image(SDL_Texture *texture, int w, int h);
+        static void image(SDL_Texture *texture, int w, int h);
+        static void label(std::string name);
         static bool textbox(char *buf, size_t len);
+        static bool checkbox(std::string name, int *state);
+        static bool slider(float *state, float low, float high, float step, const char *fmt="%f", int opt=0);
         static void endWindow();
         static void end();
     private:

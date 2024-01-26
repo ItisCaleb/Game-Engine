@@ -46,6 +46,7 @@ void Game::setScene(Scene *scene) {
 void Game::openGUI(GUI* gui){
     if(!gui->isOpened()){
         guiStack.push_back(gui);
+        gui->onOpen();
         gui->opened = true;
     }
 }
@@ -54,6 +55,7 @@ void Game::closeGUI(GUI* gui){
     if(gui->isOpened()){
         if(guiStack.back() == gui){
             guiStack.pop_back();
+            gui->onClose();
             gui->opened = false;
         }
     }
@@ -118,9 +120,11 @@ void Game::update(float dt) {
 
     // draw gui
     if(!guiStack.empty()){
+        GUIHelper::begin();
         for(auto ui: guiStack){
             ui->draw();
         }
+        GUIHelper::end();
     }
         
 }

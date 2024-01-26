@@ -6,7 +6,6 @@ void InputManager::update() {
     prevKeyState = keyState;
     keyState = 0;
     // reset the mouse wheel scroll
-    updateMouseWheelScroll(mouseWheelScroll);
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     if (state[SDL_SCANCODE_W]) keyState |= W;

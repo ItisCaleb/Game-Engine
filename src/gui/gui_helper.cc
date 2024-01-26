@@ -153,11 +153,16 @@ void GUIHelper::endWindow(){
     mu_end_window(ctx);
 }
 
+void GUIHelper::bringToFront(){
+    auto container = mu_get_current_container(ctx);
+    mu_bring_to_front(ctx, container);
+}
+
 bool GUIHelper::button(std::string name, int opt){
     return mu_button_ex(ctx, name.c_str(), NULL, opt);
 }
 
-bool GUIHelper::image(SDL_Texture *texture, int w, int h){
+void GUIHelper::image(SDL_Texture *texture, int w, int h){
     mu_image(ctx, texture, w, h);
 }
 
@@ -180,4 +185,15 @@ bool GUIHelper::textbox(char *buf, size_t len){
     }
 #endif
     return res;
+}
+
+void GUIHelper::label(std::string name){
+    mu_label(ctx, name.c_str());
+}
+
+bool GUIHelper::checkbox(std::string name, int *state){
+    return mu_checkbox(ctx, name.c_str(), state);
+}
+bool GUIHelper::slider(float *state, float low, float high, float step, const char *fmt, int opt){
+    return mu_slider_ex(ctx, state, low, high, step, fmt, opt);
 }

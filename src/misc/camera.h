@@ -20,6 +20,7 @@ public:
     int applyY(int y);
     void setZoom(float zoomLevel);
     float getZoom();
+    float getTargetZoom();
     float getX();
     float getY();
 private:
