@@ -1,4 +1,5 @@
-#include "camera.h"
+#include "misc/camera.h"
+#include "game/game.h"
 
 //update camera position
 void Camera::update(float targetX, float targetY) {
@@ -21,16 +22,18 @@ void Camera::update(float targetX, float targetY) {
     //boundary check
     float newX = x;
     float newY = y;
-    if (newX - view_width < -1280) {
-        newX = view_width - 1280;
-    } else if (newX + view_width > 3000) {
-        newX = 3000 - view_width;
+    int width = Game::getWidth();
+    int height = Game::getHeight();
+    if (newX - width < -1280) {
+        newX = width - 1280;
+    } else if (newX + width > 3000) {
+        newX = 3000 - width;
     }
 
-    if (newY - view_height < -720) {
-        newY = view_height - 720;;
-    } else if (newY + view_height > 2000) {
-        newY = 2000 - view_height;
+    if (newY - height < -720) {
+        newY = height - 720;;
+    } else if (newY + height > 2000) {
+        newY = 2000 - height;
     }
     //update position
     x=newX;
@@ -40,8 +43,8 @@ void Camera::update(float targetX, float targetY) {
 // screen = world - camera
 SDL_Rect Camera::apply(SDL_Rect &rect) {
     return SDL_Rect{
-        .x = (int)((rect.x - (int)this->x) * zoom) + view_width/2, 
-        .y = (int)((rect.y - (int)this->y) * zoom) + view_height/2, 
+        .x = (int)((((rect.x - (int)this->x) * zoom) + Game::getWidth()/2) ), 
+        .y = (int)((((rect.y - (int)this->y) * zoom) + Game::getHeight()/2)), 
         .w = (int)(rect.w * zoom), 
         .h = (int)(rect.h * zoom)};
 }

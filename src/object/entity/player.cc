@@ -55,13 +55,14 @@ void Player::update(float dt) {
     this->hitbox.x2 = x + width;
     this->hitbox.y1 = y;
     this->hitbox.y2 = y + height;
-    auto v = Game::getCollided(&this->hitbox);
+    std::vector<CollideShape*> v;
+    Game::getCollided(&this->hitbox, v);
     /*for(auto s:*v){
         Object *o = Game::getObjectByShape(s);
         if(o) printf("object type is %d\n",o->type);
     }*/
     //printf("collided %d objects\n",v->size());
-    delete v;
+
 }
 void Player::render(SDL_Renderer *renderer) {
     for(auto sprite: this->sprites){

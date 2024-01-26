@@ -13,7 +13,9 @@
 
 class Game {
     public:
-        static void init(SDL_Renderer *renderer, SDL_Window *window, int width, int height);
+        // init game
+        static void init(SDL_Renderer *renderer, SDL_Window *window,
+            int windowWidth, int windowHeight, int width, int height);
         static void destroy();
         static void handleInput();
         static void update(float dt);
@@ -23,21 +25,38 @@ class Game {
         static void setScene(Scene *scene);
         static void openGUI(GUI* gui);
         static void closeGUI(GUI* gui);
+
+        // add shape to collision detection
         static void addCollideShape(CollideShape *shape, Object *object);
         static SDL_Window* getWindow();
         static SDL_Renderer* getRenderer();
         static Camera &getCamera();
         static Player *getPlayer();
         static Scene *getScene();
+
+        // this is for logical width, to get window width, use Game::getWindowWidth()
         static int getWidth();
+        // this is for logical height, to get window width, use Game::getWindowHeight()
         static int getHeight();
+
+        // get window width
+        static int getWindowWidth();
+
+        // get window height
+        static int getWindowHeight();
+
+        // return object attach by shape
         static Object* getObjectByShape(CollideShape *shape);
-        static std::vector<CollideShape*>* getCollided(CollideShape *shape);
+
+        // get all shape collided with this shape
+        static void getCollided(CollideShape *shape, std::vector<CollideShape*> &vec);
     private:
         inline static bool already_init;
         inline static bool running;
         // window width and height
-        inline static int width, height;
+        inline static int windowWidth, windowHeight;
+        // game base resolution
+        inline static int logicWidth, logicHeight;
         inline static SDL_Window *window;
         inline static SDL_Renderer *renderer;
         inline static std::vector<CollideShape*> shapes;

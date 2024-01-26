@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     int countedFrames = 0;
     
     ResourceManager::startWorkerThread();
-    Game::init(renderer, window, width, height);
+    Game::init(renderer, window, width, height, 1280, 768);
     Game::setScene(new MainScene);
     while (Game::isRunning()) {
         auto begin = SDL_GetTicks();

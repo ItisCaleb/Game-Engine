@@ -3,15 +3,19 @@
 #include "utils/input_manager.h"
 #include "gui/gui_helper.h"
 
-void Game::init(SDL_Renderer *renderer, SDL_Window *window, int width, int height){
+void Game::init(SDL_Renderer *renderer, SDL_Window *window,
+     int windowWidth, int windowHeight, int width, int height){
     if (Game::already_init) return;
+    SDL_RenderSetLogicalSize(renderer, width, height);
     Game::camera = new Camera(width, height);
     Game::already_init = true;
     Game::running = true;
     Game::renderer = renderer;
     Game::window = window;
-    Game::width = width;
-    Game::height = height;
+    Game::windowWidth = windowWidth;
+    Game::windowHeight = windowHeight;
+    Game::logicWidth = width;
+    Game::logicHeight = height;
     
     GUIHelper::init();
 }
@@ -88,9 +92,8 @@ void Game::handleInput(){
             case SDL_WINDOWEVENT:
                 switch (e.window.event){
                     case SDL_WINDOWEVENT_RESIZED:
-                        width = e.window.data1;
-                        height = e.window.data2;
-                        SDL_SetWindowSize(window, width, height);
+                        Game::windowWidth = e.window.data1;
+                        Game::windowHeight = e.window.data2;
                         break;
                     #ifdef _WIN32
                     case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -145,12 +148,20 @@ SDL_Renderer* Game::getRenderer() {
     return Game::renderer;
 }
 
+int Game::getWindowWidth(){
+    return Game::windowWidth;
+}
+
+int Game::getWindowHeight(){
+    return Game::windowHeight;
+}
+
 int Game::getWidth(){
-    return Game::width;
+    return Game::logicWidth;
 }
 
 int Game::getHeight(){
-    return Game::height;
+    return Game::logicHeight;
 }
 
  Object* Game::getObjectByShape(CollideShape *shape){
@@ -161,11 +172,9 @@ int Game::getHeight(){
     return Game::shapeToObject[shape];
  }
 
-std::vector<CollideShape*>* Game::getCollided(CollideShape *shape){
-    auto v = new std::vector<CollideShape*>;
+void Game::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
     for(auto s: Game::shapes){
         if(shape == s) continue;
-        if(shape->isCollide(s)) v->push_back(s);
+        if(shape->isCollide(s)) vec.push_back(s);
     }
-    return v;
 }
