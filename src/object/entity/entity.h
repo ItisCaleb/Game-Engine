@@ -16,10 +16,10 @@ class Entity: public Object{
         float getY(){
             return y;
         }
-        float getWidth(){
+        int getWidth(){
             return width;
         }
-        float getHeight(){
+        int getHeight(){
             return height;
         }
 

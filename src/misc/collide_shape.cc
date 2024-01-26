@@ -31,9 +31,9 @@ bool BoxCollideShape::isCollide(CollideShape *shape) {
 
 void BoxCollideShape::render(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-    SDL_Rect rect = {.x = this->x1, .y = this->y1, .w = this->x2 - this->x1, .h = this->y2 - this->y1};
-    rect = Game::getCamera().apply(rect);
-    SDL_RenderDrawRect(renderer, &rect);
+    SDL_FRect rect = {.x = this->x1, .y = this->y1, .w = this->x2 - this->x1, .h = this->y2 - this->y1};
+    rect = Game::getCamera()->apply(rect);
+    SDL_RenderDrawRectF(renderer, &rect);
 }
 
 bool CircleCollideShape::isCollide(CollideShape *shape) {
@@ -58,18 +58,18 @@ void CircleCollideShape::render(SDL_Renderer *renderer) {
     float tx = 1;
     float ty = 1;
     float error = (tx - diameter);
-    int ax = Game::getCamera().applyX(this->x);
-    int ay = Game::getCamera().applyY(this->y);
+    float ax = Game::getCamera()->applyX(this->x);
+    float ay = Game::getCamera()->applyY(this->y);
     while (x >= y) {
         //  Each of the following renders an octant of the circle
-        SDL_RenderDrawPoint(renderer, ax + x, ay - y);
-        SDL_RenderDrawPoint(renderer, ax + x, ay + y);
-        SDL_RenderDrawPoint(renderer, ax - x, ay - y);
-        SDL_RenderDrawPoint(renderer, ax - x, ay + y);
-        SDL_RenderDrawPoint(renderer, ax + y, ay - x);
-        SDL_RenderDrawPoint(renderer, ax + y, ay + x);
-        SDL_RenderDrawPoint(renderer, ax - y, ay - x);
-        SDL_RenderDrawPoint(renderer, ax - y, ay + x);
+        SDL_RenderDrawPointF(renderer, ax + x, ay - y);
+        SDL_RenderDrawPointF(renderer, ax + x, ay + y);
+        SDL_RenderDrawPointF(renderer, ax - x, ay - y);
+        SDL_RenderDrawPointF(renderer, ax - x, ay + y);
+        SDL_RenderDrawPointF(renderer, ax + y, ay - x);
+        SDL_RenderDrawPointF(renderer, ax + y, ay + x);
+        SDL_RenderDrawPointF(renderer, ax - y, ay - x);
+        SDL_RenderDrawPointF(renderer, ax - y, ay + x);
 
         if (error <= 0) {
             ++y;
@@ -100,10 +100,10 @@ bool LineCollideShape::isCollide(CollideShape *shape) {
 
 void LineCollideShape::render(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-    int ax1 = Game::getCamera().applyX(this->x1);
-    int ay1 = Game::getCamera().applyY(this->y1);
-    int ax2 = Game::getCamera().applyX(this->x2);
-    int ay2 = Game::getCamera().applyY(this->y2);
+    float ax1 = Game::getCamera()->applyX(this->x1);
+    float ay1 = Game::getCamera()->applyY(this->y1);
+    float ax2 = Game::getCamera()->applyX(this->x2);
+    float ay2 = Game::getCamera()->applyY(this->y2);
     SDL_RenderDrawLineF(renderer, ax1, ay1, ax2, ay2);
 }
 
@@ -122,8 +122,8 @@ bool PointCollideShape::isCollide(CollideShape *shape) {
 
 void PointCollideShape::render(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-    int ax = Game::getCamera().applyX(this->x);
-    int ay = Game::getCamera().applyY(this->y);
+    float ax = Game::getCamera()->applyX(this->x);
+    float ay = Game::getCamera()->applyY(this->y);
     SDL_RenderDrawPointF(renderer, ax, ay);
 }
 

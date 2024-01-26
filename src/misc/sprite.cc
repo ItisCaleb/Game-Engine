@@ -5,24 +5,12 @@ Sprite::Sprite(SDL_Texture *texture, int offX, int offY, int w, int h)
 
 Sprite::~Sprite(){}
 
-void Sprite::render(SDL_Renderer *renderer, int x, int y){
-    Camera &camera = Game::getCamera();
-    float zoom = camera.getZoom();
-    SDL_Rect renderRect = {x, y, this->w, this->h};
+void Sprite::render(SDL_Renderer *renderer, float x, float y){
+    Camera *camera = Game::getCamera();
+    float zoom = camera->getZoom();
+    SDL_FRect renderRect = {x, y, this->w, this->h};
     SDL_Rect clipRect = {this->offX, this->offY, this->w, this->h};
     // Apply camera
-    renderRect = camera.apply(renderRect);
-    SDL_RenderCopy(renderer, this->texture, &clipRect, &renderRect);
-}
-
-int Sprite::getWidth(){
-    return this->w;
-}
-
-int Sprite::getHeight(){
-    return this->h;
-}
-
-SDL_Texture* Sprite::getTexture(){
-    return this->texture;
+    renderRect = camera->apply(renderRect);
+    SDL_RenderCopyF(renderer, this->texture, &clipRect, &renderRect);
 }

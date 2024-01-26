@@ -53,7 +53,7 @@ template <>
 TTF_Font* ResourceManager::load(std::string resource) {
     std::filesystem::path resPath = resource;
     if (resPath.extension() == ".ttf") {
-        TTF_Font* font = TTF_OpenFont(resource.c_str(), 14);
+        TTF_Font* font = TTF_OpenFont(resource.c_str(), 28);
         if (!font) {
             printf("Error: Unable to load surface from path: %s. SDL_ttf Error: %s\n", resource.c_str(), TTF_GetError());
             return nullptr;

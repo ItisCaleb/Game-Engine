@@ -20,7 +20,6 @@ class Game {
         static void handleInput();
         static void update(float dt);
         static void render();
-        static bool isRunning();
         static void setPlayer(Player *player);
         static void setScene(Scene *scene);
         static void openGUI(GUI* gui);
@@ -28,28 +27,62 @@ class Game {
 
         // add shape to collision detection
         static void addCollideShape(CollideShape *shape, Object *object);
-        static SDL_Window* getWindow();
-        static SDL_Renderer* getRenderer();
-        static Camera &getCamera();
-        static Player *getPlayer();
-        static Scene *getScene();
-
-        // this is for logical width, to get window width, use Game::getWindowWidth()
-        static int getWidth();
-        // this is for logical height, to get window width, use Game::getWindowHeight()
-        static int getHeight();
-
-        // get window width
-        static int getWindowWidth();
-
-        // get window height
-        static int getWindowHeight();
 
         // return object attach by shape
         static Object* getObjectByShape(CollideShape *shape);
 
         // get all shape collided with this shape
         static void getCollided(CollideShape *shape, std::vector<CollideShape*> &vec);
+
+        // getters
+        inline static bool isRunning(){
+            return running;
+        }
+
+        inline static SDL_Window* getWindow(){
+            return window;
+        }
+        inline static SDL_Renderer* getRenderer(){
+            return renderer;
+        }
+        inline static Camera *getCamera(){
+            return camera;
+        }
+        inline static Player *getPlayer(){
+            return currentPlayer;
+        }
+        inline static Scene *getScene(){
+            return scene;
+        }
+
+        // this is for logical width, to get window width, use Game::getWindowWidth()
+        inline static int getWidth(){
+            return logicWidth;
+        }
+        // this is for logical height, to get window width, use Game::getWindowHeight()
+        inline static int getHeight(){
+            return logicHeight;
+        }
+
+        // get window width
+        inline static int getWindowWidth(){
+            return windowWidth;
+        }
+
+        // get window height
+        inline static int getWindowHeight(){
+            return windowHeight;
+        }
+
+        inline static float getRenderScaleX(){
+            return (float)logicWidth / windowWidth;
+        }
+
+        inline static float getRenderScaleY(){
+            return (float)logicHeight / windowHeight;
+        }
+
+
     private:
         inline static bool already_init;
         inline static bool running;
