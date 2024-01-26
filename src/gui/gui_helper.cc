@@ -90,11 +90,12 @@ void drawText(SDL_Renderer *renderer, mu_Font font, char *str, mu_Vec2 pos, mu_C
     SDL_Color c = *((SDL_Color*)(void*)&color);
     SDL_Surface *textSurface = TTF_RenderUTF8_Blended(f, str, c);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-
+    float rw = Game::getRenderScaleX();
+    float rh = Game::getRenderScaleY();
     int w, h;
     auto q = SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-    SDL_Rect renderRect = {pos.x, pos.y - 2, w, h};
-    SDL_RenderCopy(renderer, texture, NULL, &renderRect);
+    SDL_FRect renderRect = {pos.x - 2, pos.y - 2, w/2, h/2};
+    SDL_RenderCopyF(renderer, texture, NULL, &renderRect);
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(texture);
 }
@@ -111,8 +112,8 @@ void setClipRect(SDL_Renderer *renderer, mu_Rect &rect){
 }
 
 void drawImage(SDL_Renderer *renderer, void* texture, mu_Rect *rect){
-    SDL_Rect renderRect = {rect->x, rect->y, rect->w, rect->h};
-    SDL_RenderCopy(renderer, (SDL_Texture *)texture, NULL, &renderRect);
+    SDL_FRect renderRect = {rect->x, rect->y, rect->w, rect->h};
+    SDL_RenderCopyF(renderer, (SDL_Texture *)texture, NULL, &renderRect);
 }
 
 void GUIHelper::handleRender(SDL_Renderer *renderer){

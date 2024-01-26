@@ -7,6 +7,7 @@ void Game::init(SDL_Renderer *renderer, SDL_Window *window,
      int windowWidth, int windowHeight, int width, int height){
     if (Game::already_init) return;
     SDL_RenderSetLogicalSize(renderer, width, height);
+    //SDL_RenderSetScale(renderer, (float)width/windowWidth, (float)height/windowHeight);
     Game::camera = new Camera(width, height);
     Game::already_init = true;
     Game::running = true;
@@ -20,17 +21,6 @@ void Game::init(SDL_Renderer *renderer, SDL_Window *window,
     GUIHelper::init();
 }
 
-Player* Game::getPlayer() {
-    return currentPlayer;
-}
-
-Camera& Game::getCamera() {
-    return *camera;
-}
-
-Scene* Game::getScene() {
-    return scene;
-}
 
 void Game::setPlayer(Player* player) {
     currentPlayer = player;
@@ -141,34 +131,8 @@ void Game::render() {
     SDL_RenderPresent(Game::renderer);
 }
 
-bool Game::isRunning(){
-    return Game::running;
-}
 
-SDL_Window* Game::getWindow() {
-    return Game::window;
-}
-SDL_Renderer* Game::getRenderer() {
-    return Game::renderer;
-}
-
-int Game::getWindowWidth(){
-    return Game::windowWidth;
-}
-
-int Game::getWindowHeight(){
-    return Game::windowHeight;
-}
-
-int Game::getWidth(){
-    return Game::logicWidth;
-}
-
-int Game::getHeight(){
-    return Game::logicHeight;
-}
-
- Object* Game::getObjectByShape(CollideShape *shape){
+Object* Game::getObjectByShape(CollideShape *shape){
     auto result = Game::shapeToObject.find(shape);
     if (result == Game::shapeToObject.end())
         return nullptr;

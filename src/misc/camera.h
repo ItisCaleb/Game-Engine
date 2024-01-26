@@ -14,15 +14,23 @@ public:
 
     // set camera center point
     void update(float targetX, float targetY);
-    SDL_Rect apply(SDL_Rect &rect);
+    SDL_FRect apply(SDL_FRect &rect);
     void updateZoom(float targetZoom);
-    int applyX(int x);
-    int applyY(int y);
+    float applyX(float x);
+    float applyY(float y);
     void setZoom(float zoomLevel);
-    float getZoom();
-    float getTargetZoom();
-    float getX();
-    float getY();
+    float getZoom(){
+        return zoom;
+    }
+    float getTargetZoom(){
+        return targetZoom;
+    }
+    float getX(){
+        return x;
+    }
+    float getY(){
+        return y;
+    }
 private:
     float x, y;
 

@@ -41,40 +41,25 @@ void Camera::update(float targetX, float targetY) {
 }
 
 // screen = world - camera
-SDL_Rect Camera::apply(SDL_Rect &rect) {
-    return SDL_Rect{
-        .x = (int)((((rect.x - (int)this->x) * zoom) + Game::getWidth()/2) ), 
-        .y = (int)((((rect.y - (int)this->y) * zoom) + Game::getHeight()/2)), 
-        .w = (int)(rect.w * zoom), 
-        .h = (int)(rect.h * zoom)};
+SDL_FRect Camera::apply(SDL_FRect &rect) {
+    return SDL_FRect{
+        .x = (((rect.x - this->x) * zoom) + Game::getWidth()/2) , 
+        .y = (((rect.y - this->y) * zoom) + Game::getHeight()/2) , 
+        .w = rect.w * zoom, 
+        .h = rect.h * zoom};
 }
 
 void Camera::updateZoom(float targetZoom) {
     this->targetZoom = std::max(0.5f, std::min(targetZoom, 3.0f));
 }
 
-int Camera::applyX(int x){
+float Camera::applyX(float x){
     return x - this->x;
 }
-int Camera::applyY(int y){
+float Camera::applyY(float y){
     return y - this->y;
 }
 
 void Camera::setZoom(float zoomLevel) {
     zoom = zoomLevel > 0 ? zoomLevel : 1;
-}
-
-
-float Camera::getZoom() {
-    return zoom;
-}
-
-float Camera::getTargetZoom(){
-    return targetZoom;
-}
-float Camera::getX() {
-    return x;
-}
-float Camera::getY() {
-    return y;
 }

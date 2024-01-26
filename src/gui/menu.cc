@@ -16,7 +16,7 @@ Menu* Menu::getInstance(){
 }
 
 void Menu::onOpen(){
-    this->zoom = Game::getCamera().getTargetZoom();
+    this->zoom = Game::getCamera()->getTargetZoom();
 }
 
 
@@ -28,7 +28,7 @@ void Menu::draw(){
         gh::bringToFront();
         gh::label("CameraZoom");
         if(gh::slider(&this->zoom, 0.5f, 3.0f, 0.01f)){
-            Game::getCamera().updateZoom(this->zoom);
+            Game::getCamera()->updateZoom(this->zoom);
         }
         gh::endWindow();
     }

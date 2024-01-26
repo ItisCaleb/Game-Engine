@@ -5,17 +5,24 @@
 
 
 class Sprite {
+    public:
+        Sprite(SDL_Texture *texture, int offX, int offY, int w, int h);
+        ~Sprite();
+        void render(SDL_Renderer *renderer, float x, float y);
+        int getWidth(){
+            return w;
+        }
+        int getHeight(){
+            return h;
+        }
+        SDL_Texture* getTexture(){
+            return texture;
+        }
     private:
         SDL_Texture *texture;
         int offX, offY;
         int w, h;
-    public:
-        Sprite(SDL_Texture *texture, int offX, int offY, int w, int h);
-        ~Sprite();
-        void render(SDL_Renderer *renderer, int x, int y);
-        int getWidth();
-        int getHeight();
-        SDL_Texture* getTexture();
+
 };
 
 
