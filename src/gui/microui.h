@@ -44,7 +44,8 @@ enum {
   MU_COMMAND_RECT,
   MU_COMMAND_TEXT,
   MU_COMMAND_ICON,
-  MU_COMMAND_MAX
+  MU_COMMAND_MAX,
+  MU_COMMAND_IMAGE
 };
 
 enum {
@@ -126,6 +127,7 @@ typedef struct { mu_BaseCommand base; mu_Rect rect; } mu_ClipCommand;
 typedef struct { mu_BaseCommand base; mu_Rect rect; mu_Color color; } mu_RectCommand;
 typedef struct { mu_BaseCommand base; mu_Font font; mu_Vec2 pos; mu_Color color; char str[1]; } mu_TextCommand;
 typedef struct { mu_BaseCommand base; mu_Rect rect; int id; mu_Color color; } mu_IconCommand;
+typedef struct { mu_BaseCommand base; mu_Rect rect; void *texture; } mu_ImageCommand;
 
 typedef union {
   int type;
@@ -135,6 +137,7 @@ typedef union {
   mu_RectCommand rect;
   mu_TextCommand text;
   mu_IconCommand icon;
+  mu_ImageCommand image;
 } mu_Command;
 
 typedef struct {
@@ -213,7 +216,10 @@ struct mu_Context {
   int mouse_pressed;
   int key_down;
   int key_pressed;
-  char input_text[32];
+  char input_text[128];
+  char edit_text[128];
+  int last_edit_size;
+  int editing;
 };
 
 
@@ -247,6 +253,7 @@ void mu_input_scroll(mu_Context *ctx, int x, int y);
 void mu_input_keydown(mu_Context *ctx, int key);
 void mu_input_keyup(mu_Context *ctx, int key);
 void mu_input_text(mu_Context *ctx, const char *text);
+void mu_input_edit(mu_Context *ctx, const char *text);
 
 mu_Command* mu_push_command(mu_Context *ctx, int type, int size);
 int mu_next_command(mu_Context *ctx, mu_Command **cmd);
@@ -255,6 +262,7 @@ void mu_draw_rect(mu_Context *ctx, mu_Rect rect, mu_Color color);
 void mu_draw_box(mu_Context *ctx, mu_Rect rect, mu_Color color);
 void mu_draw_text(mu_Context *ctx, mu_Font font, const char *str, int len, mu_Vec2 pos, mu_Color color);
 void mu_draw_icon(mu_Context *ctx, int id, mu_Rect rect, mu_Color color);
+void mu_draw_image(mu_Context *ctx, void *texture, mu_Rect rect);
 
 void mu_layout_row(mu_Context *ctx, int items, const int *widths, int height);
 void mu_layout_width(mu_Context *ctx, int width);
@@ -280,6 +288,7 @@ void mu_update_control(mu_Context *ctx, mu_Id id, mu_Rect rect, int opt);
 
 void mu_text(mu_Context *ctx, const char *text);
 void mu_label(mu_Context *ctx, const char *text);
+void mu_image(mu_Context *ctx, void* texture, int w, int h);
 int mu_button_ex(mu_Context *ctx, const char *label, int icon, int opt);
 int mu_checkbox(mu_Context *ctx, const char *label, int *state);
 int mu_textbox_raw(mu_Context *ctx, char *buf, int bufsz, mu_Id id, mu_Rect r, int opt);

@@ -14,13 +14,6 @@ Player::Player()
     Game::addCollideShape(&this->hitbox, this);
 }
 Player::~Player() {}
-float Player::getX() const {
-    return x;
-}
-
-float Player::getY() const {
-    return y;
-}
 
 void Player::update(float dt) {
     int maxWidth = Game::getScene()->getWidth();
