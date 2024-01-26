@@ -39,7 +39,10 @@ void MainScene::update(float dt){
     Player *player = Game::getPlayer();  
     if (player) {
         //update camera position
-        Game::getCamera().update(player->getX(), player->getY());
+        float zoom = Game::getCamera().getZoom();
+        float x = player->getX() + player->getWidth()/2;
+        float y = player->getY() + player->getHeight()/2;
+        Game::getCamera().update(x, y);
     }
 }
 

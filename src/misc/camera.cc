@@ -15,20 +15,20 @@ void Camera::update(float targetX, float targetY) {
     }
 
     //keep the target in the center of the screen
-    x = targetX - (view_width / 2.0f);
-    y = targetY - (view_height / 2.0f);
+    x = targetX;
+    y = targetY;
 
     //boundary check
     float newX = x;
     float newY = y;
-    if (newX < -1280) {
-        newX = x;
+    if (newX - view_width < -1280) {
+        newX = view_width - 1280;
     } else if (newX + view_width > 3000) {
         newX = 3000 - view_width;
     }
 
-    if (newY < -720) {
-        newY = y;
+    if (newY - view_height < -720) {
+        newY = view_height - 720;;
     } else if (newY + view_height > 2000) {
         newY = 2000 - view_height;
     }
@@ -40,8 +40,8 @@ void Camera::update(float targetX, float targetY) {
 // screen = world - camera
 SDL_Rect Camera::apply(SDL_Rect &rect) {
     return SDL_Rect{
-        .x = (int)((rect.x - (int)this->x) * zoom) , 
-        .y = (int)((rect.y - (int)this->y) * zoom), 
+        .x = (int)((rect.x - (int)this->x) * zoom) + view_width/2, 
+        .y = (int)((rect.y - (int)this->y) * zoom) + view_height/2, 
         .w = (int)(rect.w * zoom), 
         .h = (int)(rect.h * zoom)};
 }
