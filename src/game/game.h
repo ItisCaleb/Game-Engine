@@ -82,6 +82,10 @@ class Game {
             return (float)logicHeight / windowHeight;
         }
 
+        inline static float getFPS(){
+            return fps;
+        }
+
 
     private:
         inline static bool already_init;
@@ -98,6 +102,8 @@ class Game {
         inline static Player *currentPlayer = nullptr;
         inline static Scene *scene;
         inline static std::vector<GUI*> guiStack;
+        inline static int frameCount;
+        inline static float fps;
 };
 
 #endif

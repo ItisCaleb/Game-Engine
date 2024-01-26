@@ -18,8 +18,12 @@ int main(int argc, char **argv) {
                 SDL_GetError());
         return 1;
     }
+
+    // set hints
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+    
+
     //get screen size
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
@@ -60,7 +64,6 @@ int main(int argc, char **argv) {
     float target_fps = 60;
     float frame_limit = 1000.f/target_fps;
     float delta = frame_limit;
-    int countedFrames = 0;
     
     ResourceManager::startWorkerThread();
     Game::init(renderer, window, width, height, 1280, 768);
@@ -68,11 +71,6 @@ int main(int argc, char **argv) {
     while (Game::isRunning()) {
         auto begin = SDL_GetTicks();
 
-        float avgFPS = countedFrames / (begin/1000.0f);
-        //printf("fps: %f\n",avgFPS);
-        if( avgFPS > 2000000 ){
-            avgFPS = 0;
-        }
         // input
         Game::handleInput();
 
@@ -81,9 +79,10 @@ int main(int argc, char **argv) {
 
         // render
         Game::render();
-        countedFrames++;
+
         auto end = SDL_GetTicks();
         delta = end - begin;
+        
         if(delta < frame_limit){
             SDL_Delay(frame_limit-delta);
             delta = frame_limit;

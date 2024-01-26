@@ -106,6 +106,9 @@ void Game::handleInput(){
 }
 
 void Game::update(float dt) {
+    // update fps
+    Game::fps = 1.0f / dt;
+
     Game::scene->update(dt);
 
     // draw gui
