@@ -14,7 +14,8 @@
 class Game {
     public:
         // init game
-        static void init(SDL_Renderer *renderer, SDL_Window *window, int width, int height);
+        static void init(SDL_Renderer *renderer, SDL_Window *window,
+            int windowWidth, int windowHeight, int width, int height);
         static void destroy();
         static void handleInput();
         static void update(float dt);
@@ -32,8 +33,17 @@ class Game {
         static Camera &getCamera();
         static Player *getPlayer();
         static Scene *getScene();
+
+        // this is for logical width, to get window width, use Game::getWindowWidth()
         static int getWidth();
+        // this is for logical height, to get window width, use Game::getWindowHeight()
         static int getHeight();
+
+        // get window width
+        static int getWindowWidth();
+
+        // get window height
+        static int getWindowHeight();
 
         // return object attach by shape
         static Object* getObjectByShape(CollideShape *shape);
@@ -44,7 +54,9 @@ class Game {
         inline static bool already_init;
         inline static bool running;
         // window width and height
-        inline static int width, height;
+        inline static int windowWidth, windowHeight;
+        // game base resolution
+        inline static int logicWidth, logicHeight;
         inline static SDL_Window *window;
         inline static SDL_Renderer *renderer;
         inline static std::vector<CollideShape*> shapes;
