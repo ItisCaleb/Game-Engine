@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <algorithm>
 
@@ -17,7 +18,7 @@ int main(int argc, char **argv) {
                 SDL_GetError());
         return 1;
     }
-
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
     //get screen size
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
@@ -41,6 +42,10 @@ int main(int argc, char **argv) {
     int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
     if (!(IMG_Init(imgFlags) & imgFlags)) {
         printf("Error: SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        return -1;
+    }
+    if(TTF_Init() == -1){
+        printf("Error: SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
         return -1;
     }
 

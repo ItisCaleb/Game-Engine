@@ -21,7 +21,11 @@ VCPKG_INSTALL=./vcpkg/installed/x64-mingw-dynamic
 
 LIBRARY=-L$(VCPKG_INSTALL)/lib
 
-LINKER=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+LINKER=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+
+ifeq ($(OS),Windows_NT)
+LINKER+= -luser32 -lImm32
+endif
 
 INCLUDES=-I$(VCPKG_INSTALL)/include -Isrc
 

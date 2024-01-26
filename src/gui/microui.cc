@@ -182,6 +182,7 @@ void mu_end(mu_Context *ctx) {
   /* reset input state */
   ctx->key_pressed = 0;
   ctx->input_text[0] = '\0';
+  ctx->edit_text[0] = '\0';
   ctx->mouse_pressed = 0;
   ctx->scroll_delta = mu_vec2(0, 0);
   ctx->last_mouse_pos = ctx->mouse_pos;
@@ -414,9 +415,17 @@ void mu_input_keyup(mu_Context *ctx, int key) {
 
 void mu_input_text(mu_Context *ctx, const char *text) {
   int len = strlen(ctx->input_text);
-  int size = strlen(text) + 1;
+  int size = mu_min(strlen(text) + 1, (int) sizeof(ctx->input_text) - len);
   expect(len + size <= (int) sizeof(ctx->input_text));
   memcpy(ctx->input_text + len, text, size);
+}
+
+void mu_input_edit(mu_Context *ctx, const char *text) {
+  int size = strlen(text) + 1;
+  expect(size <= (int) sizeof(ctx->edit_text));
+  memcpy(ctx->edit_text, text, size);
+  ctx->edit_text[size] = '\0';
+  ctx->editing = 1;
 }
 
 
@@ -517,6 +526,16 @@ void mu_draw_icon(mu_Context *ctx, int id, mu_Rect rect, mu_Color color) {
   cmd->icon.color = color;
   /* reset clipping if it was set */
   if (clipped) { mu_set_clip(ctx, unclipped_rect); }
+}
+
+void mu_draw_image(mu_Context *ctx, void *texture, mu_Rect rect) {
+  mu_Command *cmd;
+  rect = intersect_rects(rect, mu_get_clip_rect(ctx));
+  if (rect.w > 0 && rect.h > 0) {
+    cmd = mu_push_command(ctx, MU_COMMAND_IMAGE, sizeof(mu_ImageCommand));
+    cmd->image.rect = rect;
+    cmd->image.texture = texture;
+  }
 }
 
 
@@ -728,6 +747,16 @@ void mu_label(mu_Context *ctx, const char *text) {
   mu_draw_control_text(ctx, text, mu_layout_next(ctx), MU_COLOR_TEXT, 0);
 }
 
+void mu_image(mu_Context *ctx, void* texture, int w, int h){
+  mu_Rect r = mu_layout_next(ctx);
+  mu_Rect next = r;
+  next.y += h + ctx->style->spacing;
+  mu_layout_set_next(ctx, next, 0);
+  r.w = w;
+  r.h = h;
+  mu_draw_image(ctx, texture, r);
+}
+
 
 int mu_button_ex(mu_Context *ctx, const char *label, int icon, int opt) {
   int res = 0;
@@ -779,7 +808,17 @@ int mu_textbox_raw(mu_Context *ctx, char *buf, int bufsz, mu_Id id, mu_Rect r,
     /* handle text input */
     int len = strlen(buf);
     int n = mu_min(bufsz - len - 1, (int) strlen(ctx->input_text));
-    if (n > 0) {
+    int edit_n = mu_min(bufsz - len - n - 1, (int) strlen(ctx->edit_text));
+    if (n <= 0 && ctx->editing) {
+      ctx->editing = false;
+      memcpy(buf + len - ctx->last_edit_size, ctx->edit_text, edit_n);
+      len += edit_n - ctx->last_edit_size;
+      ctx->last_edit_size = edit_n;
+      buf[len] = '\0';
+      res |= MU_RES_CHANGE;
+    }else if (n > 0) {
+      len -= ctx->last_edit_size;
+      ctx->last_edit_size = 0;
       memcpy(buf + len, ctx->input_text, n);
       len += n;
       buf[len] = '\0';

@@ -15,6 +15,7 @@ class Sprite {
         void render(SDL_Renderer *renderer, int x, int y);
         int getWidth();
         int getHeight();
+        SDL_Texture* getTexture();
 };
 
 

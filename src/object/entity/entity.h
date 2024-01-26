@@ -10,6 +10,18 @@ class Entity: public Object{
         Entity(float x, float y, int width, int height)
             :Object(ObjectType::Entity),
             x(x), y(y), width(width), height(height){};
+        float getX(){
+            return x;
+        }
+        float getY(){
+            return y;
+        }
+        float getWidth(){
+            return width;
+        }
+        float getHeight(){
+            return height;
+        }
 
     protected:
         std::vector<Sprite*> sprites;
