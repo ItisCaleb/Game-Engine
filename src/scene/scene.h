@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <string>
 
+#include "resource/sprite.h"
+
 class Scene{
     public:
         Scene(int width, int height);
@@ -20,8 +22,8 @@ class Scene{
         }
     protected:
         int width, height;
-        SDL_Texture *background;
-        SDL_Texture *foreground;
+        Sprite *background;
+        Sprite *foreground;
         void renderBackground(SDL_Renderer *renderer);
         void loadScene(std::string path);
 

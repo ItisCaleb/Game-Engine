@@ -6,7 +6,7 @@
 #include "utils/resource_manager.h"
 
 enum class ResourceType{
-    Texture, Sprite, JSON, Audio, Font
+    Sprite, JSON, Audio, Font
 };
 
 template <class T> class AsyncResource{

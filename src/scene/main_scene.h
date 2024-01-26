@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "scene/scene.h"
-#include "misc/sprite.h"
+#include "resource/sprite.h"
 #include "object/object.h"
 
 class MainScene: public Scene{

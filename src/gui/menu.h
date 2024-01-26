@@ -1,10 +1,9 @@
 #ifndef MENU_H_
 #define MENU_H_
 
-#include <SDL2/SDL_ttf.h>
-
 #include "gui/gui.h"
-#include "misc/sprite.h"
+#include "resource/sprite.h"
+#include "resource/font.h"
 
 class Menu: public GUI{
     public:
@@ -14,7 +13,7 @@ class Menu: public GUI{
         void onClose(){}
     private:
         inline static Menu *instance = 0;
-        TTF_Font *font;
+        Font *font;
         float zoom;
 
 

@@ -8,7 +8,7 @@
 
 MainScene::MainScene()
 :Scene(Game::getWidth(), Game::getHeight()){
-    this->background = ResourceManager::load<SDL_Texture>("test_background.png");
+    this->background = ResourceManager::load<Sprite>("test_background.png");
     auto j = ResourceManager::load<nlohmann::json>("test.json");
     for (auto& element : *j) {
         if(element["type"] == "box"){

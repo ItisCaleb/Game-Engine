@@ -1,16 +1,17 @@
 #include "utils/resource_manager.h"
 
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 
 #include <filesystem>
 #include <fstream>
 
 #include "game/game.h"
+#include "resource/font.h"
 
 // resource load functions
+
 template <>
-SDL_Texture* ResourceManager::load(std::string resource) {
+Sprite* ResourceManager::load(std::string resource) {
     std::filesystem::path resPath = resource;
     if (resPath.extension() == ".png" ||
         resPath.extension() == ".jpg" ||
@@ -26,7 +27,9 @@ SDL_Texture* ResourceManager::load(std::string resource) {
             return nullptr;
         }
         SDL_FreeSurface(surface);
-        return texture;
+        int w, h;
+        SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+        return new Sprite(texture, 0, 0, w, h);
     } else {
         printf("Error: Unsupported format: \"%s\". Can't load sprite from %s",
                resPath.extension().c_str(),
@@ -36,29 +39,22 @@ SDL_Texture* ResourceManager::load(std::string resource) {
 }
 
 template <>
-Sprite* ResourceManager::load(std::string resource) {
-    auto* texture = ResourceManager::load<SDL_Texture>(resource);
-    int w, h;
-    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-    return new Sprite(texture, 0, 0, w, h);
-}
-
-template <>
 nlohmann::json* ResourceManager::load(std::string resource) {
     std::ifstream f(resource);
     return new nlohmann::json(nlohmann::json::parse(f));
 }
 
 template <>
-TTF_Font* ResourceManager::load(std::string resource) {
+Font* ResourceManager::load(std::string resource) {
     std::filesystem::path resPath = resource;
     if (resPath.extension() == ".ttf") {
-        TTF_Font* font = TTF_OpenFont(resource.c_str(), 28);
+        int fontPt = 28;
+        TTF_Font* font = TTF_OpenFont(resource.c_str(), fontPt);
         if (!font) {
             printf("Error: Unable to load surface from path: %s. SDL_ttf Error: %s\n", resource.c_str(), TTF_GetError());
             return nullptr;
         }
-        return font;
+        return new Font(font, fontPt);
     } else {
         printf("Error: Unsupported format: \"%s\". Can't load font from %s",
                resPath.extension().c_str(),
@@ -69,15 +65,14 @@ TTF_Font* ResourceManager::load(std::string resource) {
 
 std::vector<Sprite*>* ResourceManager::loadSprites(std::string resource, int clipW, int clipH) {
     std::filesystem::path resPath = resource;
-    auto* texture = ResourceManager::load<SDL_Texture>(resource);
-    int w, h;
+    auto* sprite = ResourceManager::load<Sprite>(resource);
     auto* sprites = new std::vector<Sprite*>;
-    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-    for (int i = 0; i < w / clipW; i++) {
-        for (int j = 0; j < h / clipH; j++) {
-            sprites->push_back(new Sprite(texture, clipW * i, clipH * j, clipW, clipH));
+    for (int i = 0; i < sprite->getWidth() / clipW; i++) {
+        for (int j = 0; j < sprite->getHeight() / clipH; j++) {
+            sprites->push_back(new Sprite(sprite->getTexture(), clipW * i, clipH * j, clipW, clipH));
         }
     }
+    delete sprite;
     return sprites;
 }
 
@@ -90,12 +85,6 @@ inline void ResourceManager::pushToWorker(void* res){
 }
 
 // async resource load functions
-template <>
-AsyncResource<SDL_Texture>* ResourceManager::loadAsync(std::string resource) {
-    auto res = new AsyncResource<SDL_Texture>(resource, ResourceType::Texture);
-    pushToWorker(res);
-    return res;
-}
 
 template <>
 AsyncResource<Sprite>* ResourceManager::loadAsync(std::string resource) {
@@ -135,9 +124,6 @@ int asyncIOWorker(void* data) {
     
             // load resource based on type
             switch (res->type) {
-                case ResourceType::Texture:
-                    res->resource = ResourceManager::load<SDL_Texture>(res->getPath());
-                    break;
                 case ResourceType::Sprite:
                     res->resource = ResourceManager::load<Sprite>(res->getPath());
                     break;
@@ -145,7 +131,7 @@ int asyncIOWorker(void* data) {
                     res->resource = ResourceManager::load<nlohmann::json>(res->getPath());
                     break;
                 case ResourceType::Font:
-                    res->resource = ResourceManager::load<TTF_Font>(res->getPath());
+                    res->resource = ResourceManager::load<Font>(res->getPath());
                     break;
                 default:
                     res->resource = nullptr;
