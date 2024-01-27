@@ -63,17 +63,15 @@ Font* ResourceManager::load(std::string resource) {
     }
 }
 
-std::vector<Sprite*>* ResourceManager::loadSprites(std::string resource, int clipW, int clipH) {
+void ResourceManager::loadSprites(std::string resource, int clipW, int clipH, std::vector<Sprite*> &vec) {
     std::filesystem::path resPath = resource;
     auto* sprite = ResourceManager::load<Sprite>(resource);
-    auto* sprites = new std::vector<Sprite*>;
     for (int i = 0; i < sprite->getWidth() / clipW; i++) {
         for (int j = 0; j < sprite->getHeight() / clipH; j++) {
-            sprites->push_back(new Sprite(sprite->getTexture(), clipW * i, clipH * j, clipW, clipH));
+            vec.push_back(new Sprite(sprite->getTexture(), clipW * i, clipH * j, clipW, clipH));
         }
     }
     delete sprite;
-    return sprites;
 }
 
 
