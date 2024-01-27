@@ -15,11 +15,16 @@ struct _Font{
 
 
 int getTextWidth(mu_Font font, const char *str, int len){
-    return 32;
+    _Font *f = (_Font*)(void*)font;
+    int w;
+    TTF_SizeUTF8(f->font, str, &w, NULL);
+    float scale = (float)f->pt / f->basept;
+    return w * scale;
 }
 
 int getTextHeight(mu_Font font){
-    return 18;
+    _Font *f = (_Font*)(void*)font;
+    return f->pt;
 }
 
 
@@ -106,7 +111,7 @@ void drawText(SDL_Renderer *renderer, mu_Font font, char *str, mu_Vec2 pos, mu_C
     SDL_QueryTexture(texture, NULL, NULL, &w, &h);
     float scale = (float)f->pt / f->basept;
 
-    SDL_FRect renderRect = {pos.x - 2, pos.y - 2, w * scale, h * scale};
+    SDL_FRect renderRect = {pos.x, pos.y - 4, w * scale, h * scale};
 
     // free font if not in use
     if(last_font != f){

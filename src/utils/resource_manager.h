@@ -23,7 +23,7 @@ class ResourceManager {
         template <class T> static AsyncResource<T>* loadAsync(std::string resource);
 
         // load sprites
-        static std::vector<Sprite*>* loadSprites(std::string resource, int clipW, int clipH);
+        static void loadSprites(std::string resource, int clipW, int clipH, std::vector<Sprite*> &vec);
 
         // start worker thread, cant only run once
         static void startWorkerThread();
