@@ -17,6 +17,7 @@ OUT_PATH=$(BUILD_DIR)/$(OUT_FILE)
 CC=g++
 
 CPP_FLAG=-w -std=c++17
+debug: CPP_FLAG+= -g
 
 VCPKG_INSTALL=./vcpkg/installed/x64-mingw-dynamic
 
@@ -55,16 +56,17 @@ run: $(OUT_PATH)
 debug: $(OUT_PATH)
 ifeq ($(OS),Windows_NT)
 	if not exist "$(DEBUG_DIR)" mkdir $(DEBUG_DIR)
-	xcopy "$(VCPKG_INSTALL)/debug/bin" $(DEBUG_DIR) /e /h /c /i /y
-	xcopy "$(SRC_DIR)/assets" "$(DEBUG_DIR)/assets"  /e /h /c /i /y
+	xcopy "$(VCPKG_INSTALL)/debug/bin" $(DEBUG_DIR) /e /h /c /i /y /q
+	xcopy "$(SRC_DIR)/assets" "$(DEBUG_DIR)/assets"  /e /h /c /i /y /q
 endif
-	$(CC) $(OBJ_FILES) -o $(OUT_PATH) $(CPP_FLAG) -g $(DEBUG)/lib $(DEBUG_LINKER) $(INCLUDES)
+	$(CC) $(OBJ_FILES) -o $(DEBUG_DIR)/$(OUT_FILE) $(CPP_FLAG) $(DEBUG)/lib $(DEBUG_LINKER) $(INCLUDES)
 
 
 clean:
 ifeq ($(OS),Windows_NT)
 	del $(PRECOMPILE_DIR)\*.o
 	del $(BUILD_DIR)\$(OUT_FILE)
+	del $(DEBUG_DIR)\$(OUT_FILE)
 endif
 
 

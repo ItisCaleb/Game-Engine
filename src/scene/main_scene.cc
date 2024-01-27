@@ -8,8 +8,8 @@
 
 MainScene::MainScene()
 :Scene(Game::getWidth(), Game::getHeight()){
-    this->background = ResourceManager::load<Sprite>("test_background.png");
-    auto j = ResourceManager::load<nlohmann::json>("test.json");
+    this->background = ResourceManager::load<Sprite>("assets/test_background.png");
+    auto j = ResourceManager::load<nlohmann::json>("assets/test.json");
     for (auto& element : *j) {
         if(element["type"] == "box"){
             float x1 = element["x1"], y1 = element["y1"];

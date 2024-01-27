@@ -10,7 +10,7 @@ using gh = typename::GUIHelper;
 Menu* Menu::getInstance(){
     if(!Menu::instance){
         Menu::instance = new Menu();
-        Menu::instance->font = ResourceManager::load<Font>("NotoSansTC-Regular.ttf");
+        Menu::instance->font = ResourceManager::load<Font>("assets/NotoSansTC-Regular.ttf");
     }
     return Menu::instance;
 }

@@ -12,8 +12,8 @@ using gh = typename::GUIHelper;
 MainGUI* MainGUI::getInstance(){
     if(!MainGUI::instance){
         MainGUI::instance = new MainGUI();
-        MainGUI::instance->s = ResourceManager::load<Sprite>("test.png");
-        MainGUI::instance->font = ResourceManager::load<Font>("NotoSansTC-Regular.ttf");
+        MainGUI::instance->s = ResourceManager::load<Sprite>("assets/test.png");
+        MainGUI::instance->font = ResourceManager::load<Font>("assets/NotoSansTC-Regular.ttf");
     }
     return MainGUI::instance;
 }
