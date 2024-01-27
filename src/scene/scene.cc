@@ -6,9 +6,7 @@
 void Scene::renderBackground(SDL_Renderer* renderer){
     if(!this->background) return;
 
-    int bgWidth, bgHeight;
     Camera *camera = Game::getCamera();
-    SDL_QueryTexture(this->background, nullptr, nullptr, &bgWidth, &bgHeight);
     // set source rect to cover the whole background
     SDL_Rect srcRect;
     srcRect.w = Game::getWidth();
@@ -18,14 +16,14 @@ void Scene::renderBackground(SDL_Renderer* renderer){
 
 
     //check if source rect is out of bounds
-    srcRect.x = std::max(0, std::min(srcRect.x, bgWidth - srcRect.w));
-    srcRect.y = std::max(0, std::min(srcRect.y, bgHeight - srcRect.h));
+    srcRect.x = std::max(0, std::min(srcRect.x, this->background->getWidth() - srcRect.w));
+    srcRect.y = std::max(0, std::min(srcRect.y, this->background->getHeight() - srcRect.h));
     // set destination rect to cover the whole screen
     SDL_FRect destRect = {0, 0, srcRect.w, srcRect.h};
     // apply camera
     destRect = camera->apply(destRect);
     // render
-    SDL_RenderCopyF(renderer, this->background, &srcRect, &destRect);
+    SDL_RenderCopyF(renderer, this->background->getTexture(), &srcRect, &destRect);
 }
 
 Scene::Scene(int width, int height)

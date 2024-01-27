@@ -9,6 +9,7 @@
 #include <windows.h>
 #endif
 #include "gui/microui.h"
+#include "resource/font.h"
 
 
 
@@ -17,7 +18,7 @@ class GUIHelper{
         static void init();
         static void handleInput(SDL_Event &e);
         static void handleRender(SDL_Renderer *renderer);
-        static void setCurrentFont(TTF_Font *font);
+        static void setCurrentFont(Font *font, int pt=14);
         static mu_Context* getContext();
 
         // microui wrappers

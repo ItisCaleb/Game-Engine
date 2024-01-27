@@ -1,7 +1,7 @@
 #ifndef WALL_H_
 #define WALL_H_
 #include <SDL2/SDL.h>
-#include "misc/sprite.h"
+#include "resource/sprite.h"
 #include "object/object.h"
 #include "misc/collide_shape.h"
 

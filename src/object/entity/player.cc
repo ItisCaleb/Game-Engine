@@ -8,7 +8,7 @@
 
 Player::Player()
 :Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
-    this->sprites.push_back(ResourceManager::load<Sprite>("test.png"));
+    this->sprites.push_back(ResourceManager::load<Sprite>("assets/test.png"));
     this->width = this->sprites[0]->getWidth();
     this->height = this->sprites[0]->getHeight();
     Game::addCollideShape(&this->hitbox, this);

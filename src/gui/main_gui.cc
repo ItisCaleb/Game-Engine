@@ -12,8 +12,8 @@ using gh = typename::GUIHelper;
 MainGUI* MainGUI::getInstance(){
     if(!MainGUI::instance){
         MainGUI::instance = new MainGUI();
-        MainGUI::instance->s = ResourceManager::load<Sprite>("test.png");
-        MainGUI::instance->font = ResourceManager::load<TTF_Font>("NotoSansTC-Regular.ttf");
+        MainGUI::instance->s = ResourceManager::load<Sprite>("assets/test.png");
+        MainGUI::instance->font = ResourceManager::load<Font>("assets/NotoSansTC-Regular.ttf");
     }
     return MainGUI::instance;
 }
@@ -34,6 +34,11 @@ void MainGUI::draw(){
                 Game::closeGUI(menu);
             }
         }
+        mu_layout_set_next(ctx, mu_rect(100,30,50,50),0);
+        gh::setCurrentFont(font, 20);
+        char fps[10];
+        sprintf(fps, "FPS: %d", (int)Game::getFPS());
+        gh::label(fps);
         gh::endWindow();
     }
 

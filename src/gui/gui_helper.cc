@@ -4,8 +4,14 @@
 
 #include <game/game.h>
 
-char buttonMap[256] = {};
-char keyMap[256] = {};
+static char buttonMap[256] = {};
+static char keyMap[256] = {};
+
+struct _Font{
+    TTF_Font *font;
+    int pt;
+    int basept;
+};
 
 
 int getTextWidth(mu_Font font, const char *str, int len){
@@ -76,25 +82,37 @@ void GUIHelper::handleInput(SDL_Event &e){
     }
 }
 
-void GUIHelper::setCurrentFont(TTF_Font *font){
-    ctx->style->font = font;
+void GUIHelper::setCurrentFont(Font *font, int pt){
+    _Font *f = new _Font();
+    f->font = font->getFont();
+    f->basept = font->getPt();
+    f->pt = pt;
+    ctx->style->font = f;
 }
 
 mu_Context* GUIHelper::getContext(){
     return GUIHelper::ctx;
 }
 
+
+static _Font *last_font = NULL;
 void drawText(SDL_Renderer *renderer, mu_Font font, char *str, mu_Vec2 pos, mu_Color color){
     
-    TTF_Font *f = (TTF_Font*)(void*)font;
+    _Font *f = (_Font*)(void*)font;
     SDL_Color c = *((SDL_Color*)(void*)&color);
-    SDL_Surface *textSurface = TTF_RenderUTF8_Blended(f, str, c);
+    SDL_Surface *textSurface = TTF_RenderUTF8_Blended(f->font, str, c);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    float rw = Game::getRenderScaleX();
-    float rh = Game::getRenderScaleY();
-    int w, h;
-    auto q = SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-    SDL_FRect renderRect = {pos.x - 2, pos.y - 2, w/2, h/2};
+    int w,h;
+    SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+    float scale = (float)f->pt / f->basept;
+
+    SDL_FRect renderRect = {pos.x - 2, pos.y - 2, w * scale, h * scale};
+
+    // free font if not in use
+    if(last_font != f){
+        if(last_font) free(last_font);
+        last_font = f;
+    }
     SDL_RenderCopyF(renderer, texture, NULL, &renderRect);
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(texture);
@@ -172,6 +190,7 @@ bool GUIHelper::textbox(char *buf, size_t len){
     mu_Rect r = mu_layout_next(ctx);
     int res = mu_textbox_raw(ctx, buf, len, id, r, 0);
 #ifdef _WIN32
+    // we want to enable IME after textbox is selected
     mu_update_control(ctx, id, r, MU_OPT_HOLDFOCUS);
     SDL_Rect rect = {
         .x = r.x, .y = r.y + r.h,
