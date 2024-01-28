@@ -4,6 +4,8 @@ let canvas = new fabric.Canvas('canvas')
 let oGridGroup;
 let image;
 let size = 25;
+let gridWidth = canvas.getWidth()
+let gridHeight = canvas.getHeight();
 draw_grid(size);
 
 canvas.on('mouse:wheel', function (opt) {
@@ -137,15 +139,17 @@ document.addEventListener('keydown', function (event) {
 function draw_grid(grid_size) {
   canvas.remove(oGridGroup)
   const gridSize = grid_size
-  const width = canvas.getWidth();
-  const height = canvas.getHeight();
+  const width = gridWidth
+  const height = gridHeight
   const lines = [];
   const lineOption = { stroke: 'rgba(0,0,0,1)', strokeWidth: 1, selectable: false };
-  for (let i = Math.ceil(width / gridSize); i>=0;i--) {
-    lines.push(new fabric.Line([gridSize * i, 0, gridSize * i, height], lineOption));
+  let w = Math.ceil(width / gridSize)
+  let h = Math.ceil(height / gridSize)
+  for (let i = w; i>=0;i--) {
+    lines.push(new fabric.Line([gridSize * i, 0, gridSize * i, h*gridSize], lineOption));
   }
-  for (let i = Math.ceil(height / gridSize); i>=0;i--) {
-    lines.push(new fabric.Line([0, gridSize * i, width, gridSize * i], lineOption));
+  for (let i = h; i>=0;i--) {
+    lines.push(new fabric.Line([0, gridSize * i, w*gridSize, gridSize * i], lineOption));
   }
   oGridGroup = new fabric.Group(lines, { left: 0, top: 0 });
   oGridGroup.set('selectable',false)
@@ -163,18 +167,13 @@ document.getElementById('imgLoader').onchange = function handleImage(e) {
       imgObj.src = event.target.result;
       imgObj.onload = function () {
         canvas.remove(image)
-        image = new fabric.Image(imgObj);
-        image.set({
-              angle: 0,
-              padding: 10,
-              cornersize:10,
-              opacity: 0.5
-        });
+        image = new fabric.Image(imgObj,{
+            opacity: 0.5,
+        })
+        gridWidth = this.width;
+        gridHeight = this.height;
         image.set('selectable',false)
         image.set('hoverCursor','auto')
-        canvas.setWidth(this.width);
-        canvas.setHeight(this.height);
-        canvas.centerObject(image);
         canvas.add(image);
         canvas.moveTo(image, 0);
         draw_grid(size);

@@ -47,7 +47,7 @@ function output_json(){
           break
       }
     }
-    json_output.value = JSON.stringify(result)
+    json_output.value = JSON.stringify(result,null,2)
   }
 
 

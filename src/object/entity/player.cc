@@ -8,9 +8,9 @@
 
 Player::Player()
 :Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
-    this->sprites.push_back(ResourceManager::load<Sprite>("assets/test.png"));
-    this->width = this->sprites[0]->getWidth();
-    this->height = this->sprites[0]->getHeight();
+    ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",this->sprites);
+    this->width = this->sprites[0]->getWidth() * 3;
+    this->height = this->sprites[0]->getHeight() * 3;
     Game::addCollideShape(&this->hitbox, this);
 }
 Player::~Player() {}
@@ -65,8 +65,6 @@ void Player::update(float dt) {
 
 }
 void Player::render(SDL_Renderer *renderer) {
-    for(auto sprite: this->sprites){
-        sprite->render(renderer, this->x, this->y);
-    }
+    sprites[0]->render(renderer, this->x, this->y, 3, 3);
 }
 
