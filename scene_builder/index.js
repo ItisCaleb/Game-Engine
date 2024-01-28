@@ -46,6 +46,10 @@ canvas.on('mouse:up', function (opt) {
   this.selection = true;
 });
 
+canvas.on('object:added', output_json);
+canvas.on('object:removed', output_json);
+
+
 
 box.onclick = () => {
   const rect = new fabric.Rect({
@@ -85,14 +89,47 @@ line.onclick = () => {
   canvas.add(line)
 }
 
-json.onclick = output_json
 
+
+let _copied = null;
 document.addEventListener('keydown', function (event) {
   const key = event.key; // const {key} = event; ES6+
-  if (key === "Backspace" || key === "Delete") {
+  if (key === "Delete") {
     for (let obj of canvas.getActiveObjects()) {
       canvas.remove(obj);
     }
+    return false;
+  }
+  if (event.ctrlKey && (key === 'c' || key === 'C')) {
+      canvas.getActiveObject().clone(cloned=> {
+        _copied = cloned;
+      });
+      return false
+  }
+  if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
+    _copied.clone(clonedObj=>{
+      canvas.discardActiveObject();
+      clonedObj.set({
+        left: clonedObj.left + 10,
+        top: clonedObj.top + 10,
+        evented: true,
+      });
+      if (clonedObj.type === 'activeSelection') {
+        // active selection needs a reference to the canvas.
+        clonedObj.canvas = canvas;
+        clonedObj.forEachObject(function(obj) {
+          canvas.add(obj);
+        });
+        // this should solve the unselectability
+        clonedObj.setCoords();
+      } else {
+        canvas.add(clonedObj);
+      }
+      _copied.top += 10;
+      _copied.left += 10;
+      canvas.setActiveObject(clonedObj);
+      canvas.requestRenderAll();
+    });
     return false;
   }
 });
@@ -114,7 +151,8 @@ function draw_grid(grid_size) {
   oGridGroup.set('selectable',false)
   oGridGroup.set('hoverCursor','auto')
   canvas.add(oGridGroup);
-  canvas.moveTo(oGridGroup, 1);
+  if(image) canvas.moveTo(oGridGroup, 1);
+  else canvas.moveTo(oGridGroup, 0);
 }
 
 document.getElementById('imgLoader').onchange = function handleImage(e) {
@@ -146,9 +184,6 @@ document.getElementById('imgLoader').onchange = function handleImage(e) {
     reader.readAsDataURL(e.target.files[0]);
   }
 
-function toRadians (angle) {
-  return angle * (Math.PI / 180);
-}
 
 function copyToClipboard() {
   // Get the text field
@@ -163,51 +198,3 @@ function copyToClipboard() {
 
 }
 
-function output_json(){
-  const obj = canvas.getObjects()
-  const result = [];
-  console.log(obj)
-  for(let shape of obj){
-    if(shape == oGridGroup || shape == image) continue
-    let coords = shape.getCoords()
-    let gridCoords = oGridGroup.getCoords()
-    coords.map((t)=>{
-      t.x = Number(((t.x - gridCoords[0].x)/canvas.getZoom()).toFixed(2))
-      t.y = Number(((t.y - gridCoords[0].y)/canvas.getZoom()).toFixed(2))
-    })
-    switch(shape.type){
-      case 'rect':
-        let rect = {
-          'type':'box',
-          'x1':coords[0].x,
-          'y1':coords[0].y,
-          'x2':coords[2].x,
-          'y2':coords[2].y
-        }
-        result.push(rect);
-        break
-      case 'circle':
-        let realRadius = shape.radius * shape.scaleX
-        let circle = {
-          'type':'circle',
-          'x':Number((coords[0].x+realRadius).toFixed(2)),
-          'y':Number((coords[0].y+realRadius).toFixed(2)),
-          'r':Number(realRadius.toFixed(2)),
-        }
-        result.push(circle);
-        break
-      case 'line':
-        let line = {
-          'type':'line',
-          'x1':coords[0].x,
-          'y1':coords[0].y,
-          'x2':coords[2].x,
-          'y2':coords[2].y
-        }
-        result.push(line);
-        break
-    }
-  }
-  console.log(result)
-  json_output.value = JSON.stringify(result)
-}

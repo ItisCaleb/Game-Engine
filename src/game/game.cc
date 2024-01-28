@@ -6,7 +6,7 @@
 void Game::init(SDL_Renderer *renderer, SDL_Window *window,
      int windowWidth, int windowHeight, int width, int height){
     if (Game::already_init) return;
-    //SDL_RenderSetLogicalSize(renderer, width, height);
+    SDL_RenderSetLogicalSize(renderer, width, height);
     //SDL_RenderSetScale(renderer, (float)width/windowWidth, (float)height/windowHeight);
     Game::camera = new Camera(width, height);
     Game::already_init = true;
