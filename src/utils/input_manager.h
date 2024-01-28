@@ -11,7 +11,8 @@ public:
         S = 4,  
         D = 8,  
         SPACE = 16,
-        ESC = 32
+        ESC = 32,
+        WASD = 15
     };
     //update the key state
     static void update();  
