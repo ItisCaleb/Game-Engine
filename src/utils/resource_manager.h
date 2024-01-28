@@ -8,8 +8,8 @@
 #include <vector>
 #include <queue>
 
-#include "misc/sprite.h"
-#include "misc/resource.h"
+#include "resource/sprite.h"
+#include "resource/resource.h"
 
 class ResourceManager {
     public:
@@ -23,7 +23,7 @@ class ResourceManager {
         template <class T> static AsyncResource<T>* loadAsync(std::string resource);
 
         // load sprites
-        static std::vector<Sprite*>* loadSprites(std::string resource, int clipW, int clipH);
+        static void loadSprites(std::string resource, int clipW, int clipH, std::vector<Sprite*> &vec);
 
         // start worker thread, cant only run once
         static void startWorkerThread();
@@ -32,7 +32,9 @@ class ResourceManager {
         
         // used by async load
         inline static std::queue<void*> workQueue;
-        inline static SDL_mutex* mutex = nullptr;
+        inline static SDL_mutex* qmutex = nullptr;
+        inline static SDL_mutex* wmutex = nullptr;
+        inline static SDL_cond* wakeup = nullptr;
 };
 
 
