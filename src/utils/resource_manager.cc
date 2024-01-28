@@ -64,14 +64,32 @@ Font* ResourceManager::load(std::string resource) {
 }
 
 void ResourceManager::loadSprites(std::string resource, int clipW, int clipH, std::vector<Sprite*> &vec) {
-    std::filesystem::path resPath = resource;
     auto* sprite = ResourceManager::load<Sprite>(resource);
+    if(!sprite) return;
     for (int i = 0; i < sprite->getWidth() / clipW; i++) {
         for (int j = 0; j < sprite->getHeight() / clipH; j++) {
             vec.push_back(new Sprite(sprite->getTexture(), clipW * i, clipH * j, clipW, clipH));
         }
     }
     delete sprite;
+}
+
+void ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec){
+    auto* sprite = ResourceManager::load<Sprite>(resource);
+    if(!sprite) return;
+
+    std::filesystem::path resPath = resource;
+    auto* config = ResourceManager::load<nlohmann::json>(resPath.replace_extension(".json").string());
+    if(!config) return;
+    for (auto& element : *config) {
+        if(element["type"] == "box"){
+            float x1 = element["x1"], y1 = element["y1"];
+            float x2 = element["x2"], y2 = element["y2"];
+            vec.push_back(new Sprite(sprite->getTexture(), x1, y1, x2-x1, y2-y1));
+        }
+    }
+    delete sprite;
+    delete config;
 }
 
 

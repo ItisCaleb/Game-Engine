@@ -20,12 +20,20 @@
             <input type="file" id="imgLoader" />
             Add Image
         </form>
-        <button id="json" class="btn btn-primary">Output json</button>
+        <form id="uploadJSON">
+            <input type="file" id="jsonLoader" />
+            Load JSON
+        </form>
         <div>Alt+left mouse to drag canvas</div>
+        <label>x:<input id="obj-x"  inputmode="numeric" min="0"></label>
+        <label>y:<input id="obj-y"  inputmode="numeric" min="0"></label>
+        <label>width:<input id="obj-width"  inputmode="numeric" min="0"></label>
+        <label>height:<input id="obj-height"  inputmode="numeric" min="0"></label>
+
     </div>
     <div>
         <textarea style="width: 100%;height: 350px;" id="json_output"></textarea>
-        <button class="btn btn-primary" onclick="copyToClipboard">Copy output</button>
+        <button class="btn btn-primary" onclick="copyToClipboard()">Copy output</button>
     </div>
 </body>
 <style>
@@ -44,7 +52,9 @@
 </style>
 
 <script src="fabric.min.js"></script>
+<script src="json.js"></script>
 <script src="index.js"></script>
+<script src="obj-modify.js"></script>
 </script>
 
 </html>
