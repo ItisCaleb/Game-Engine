@@ -10,6 +10,10 @@ class Timer{
         void unpause();
         int getTicks();
         int getTicksAndRestart();
+        const inline static int TICK_60FRAMES = 17;
+        const inline static int TICK_30FRAMES = 33;
+        const inline static int TICK_24FRAMES = 42;
+        const inline static int TICK_12FRAMES = 83;
     private:
         int startTicks;
         int pauseTicks;

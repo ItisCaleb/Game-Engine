@@ -18,11 +18,15 @@ class Player : public Entity{
         int getSpeed(){
             return this->speed;
         }
+        bool setFlip(bool flip){
+            this->flip = flip;
+        }
     private:
         BoxCollideShape hitbox;
         FSM<Player> *state;
         Animator animator;
         int speed;
+        bool flip;
 
 
     class IdleState: public FSM<Player>{
