@@ -142,6 +142,7 @@ void drawImage(SDL_Renderer *renderer, void* texture, mu_Rect *rect){
 
 void GUIHelper::handleRender(SDL_Renderer *renderer){
     mu_Command *cmd = NULL;
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     while (mu_next_command(ctx, &cmd)) {
       switch (cmd->type) {
         case MU_COMMAND_TEXT:
@@ -159,6 +160,7 @@ void GUIHelper::handleRender(SDL_Renderer *renderer){
             break;
       }
     }
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 }
 
 void GUIHelper::begin(){

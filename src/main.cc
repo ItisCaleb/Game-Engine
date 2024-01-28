@@ -21,9 +21,7 @@ int main(int argc, char **argv) {
     }
 
     // set hints
-    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-    
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");    
 
     //get screen size
     SDL_DisplayMode dm;
