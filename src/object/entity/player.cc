@@ -40,7 +40,7 @@ void Player::update(float dt) {
 }
 
 void Player::render(SDL_Renderer *renderer) {
-    sprites[currentSprite]->render(renderer, this->x, this->y, 3, 3);
+    sprites[currentSprite]->render(renderer, this->x, this->y, 3, 3, this->flip);
 }
 
 
@@ -72,10 +72,14 @@ FSM<Player>* Player::RunningState::update(Player *instance, float dt){
     //calculate velocity
     float vx = 0, vy = 0;
     //handle keyboard input
-    if (InputManager::isKeyHold(InputManager::Key::A))
+    if (InputManager::isKeyHold(InputManager::Key::A)){
         vx += -instance->getSpeed();
-    if (InputManager::isKeyHold(InputManager::Key::D))
+        instance->setFlip(true);
+    }
+    if (InputManager::isKeyHold(InputManager::Key::D)){
         vx += instance->getSpeed();
+        instance->setFlip(false);
+    }
     if (InputManager::isKeyHold(InputManager::Key::W))
         vy += -instance->getSpeed();
     if (InputManager::isKeyHold(InputManager::Key::S))

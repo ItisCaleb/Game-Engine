@@ -14,7 +14,7 @@ class Animator: public FSM<Entity>{
                 this->anim = startIdx;
             }
             FSM<Entity>* update(Entity *instance, float dt){
-                if(timer.getTicks() >= 84){
+                if(timer.getTicks() >= this->animTick){
                     instance->chooseCurrentSprite(anim);
                     this->anim++;
                     if(this->anim > this->endIdx) 
@@ -30,8 +30,13 @@ class Animator: public FSM<Entity>{
                 this->endIdx = endIdx;
                 this->anim = startIdx;
             }
+
+            void setAnimTick(int tick){
+                this->animTick = tick;
+            }
         private:
             Timer timer;
+            int animTick = Timer::TICK_12FRAMES;
             int startIdx, endIdx;
             int anim;
     };
