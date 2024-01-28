@@ -27,8 +27,11 @@ void Menu::draw(){
     auto ctx = gh::getContext();
     if (gh::beginWindow("Menu", wrect, MU_OPT_NOCLOSE)) {
         gh::bringToFront();
+
+        int slider_layout[] ={120,-20};
+        mu_layout_row(ctx, 2, slider_layout, 0);
         gh::label("CameraZoom");
-        if(gh::slider(&this->zoom, 0.5f, 3.0f, 0.01f)){
+        if(gh::slider(&this->zoom, 0.5f, 3.0f, 0.05f)){
             Game::getCamera()->updateZoom(this->zoom);
         }
         gh::textbox(buff, 256);
