@@ -28,10 +28,7 @@ void Player::update(float dt) {
     }
     
     //update hitbox
-    this->hitbox.x1 = x;
-    this->hitbox.x2 = x + width;
-    this->hitbox.y1 = y;
-    this->hitbox.y2 = y + height;
+    this->hitbox.update(x,y,x+width,y+height);
     std::vector<CollideShape*> v;
     Game::getCollided(&this->hitbox, v);
     /*for(auto s:*v){
