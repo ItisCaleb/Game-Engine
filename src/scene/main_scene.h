@@ -13,12 +13,10 @@ class MainScene: public Scene{
     public:
         MainScene();
         ~MainScene();
+        void init();
         void update(float dt);
         void render(SDL_Renderer *renderer);
         void destroy();
-    private:
-        std::vector<Object*> objects;
-        Player *player;
 };
 
 
