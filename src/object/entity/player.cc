@@ -8,7 +8,7 @@
 
 Player::Player()
 :Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
-    this->sprites.push_back(ResourceManager::load<Sprite>("assets/test.png"));
+    ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",120,80,this->sprites);
     this->width = this->sprites[0]->getWidth();
     this->height = this->sprites[0]->getHeight();
     Game::addCollideShape(&this->hitbox, this);
@@ -21,14 +21,18 @@ void Player::update(float dt) {
     //calculate velocity
     float vx = 0, vy = 0;
     //handle keyboard input
-    if (InputManager::isKeyHold(InputManager::Key::A))
+    if (InputManager::isKeyHold(InputManager::Key::A)){
         vx += -this->speed;
-    if (InputManager::isKeyHold(InputManager::Key::D))
+    }
+    if (InputManager::isKeyHold(InputManager::Key::D)){
         vx += this->speed;
-    if (InputManager::isKeyHold(InputManager::Key::W))
+    }
+    if (InputManager::isKeyHold(InputManager::Key::W)){
         vy += -this->speed;
-    if (InputManager::isKeyHold(InputManager::Key::S))
+    }
+    if (InputManager::isKeyHold(InputManager::Key::S)){
         vy += this->speed;
+    }
     //calculate new position
     float newX = this->x + vx * dt;
     float newY = this->y + vy * dt;
