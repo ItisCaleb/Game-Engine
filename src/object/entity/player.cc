@@ -66,6 +66,24 @@ void Player::RunningState::enter(Player *instance){
     instance->getAnimator()->setIdx(10,19);
 }
 
+void move(Player *instance,float dt){
+  
+    //boundary check
+    // if (newX < -1280) {
+    //     newX = x;
+    // } else if (newX + w> 3000) {
+    //     newX = 3000 - w;
+    // }
+
+    // if (newY < -720) {
+    //     newY = y;
+    // } else if (newY + h> 2000) {
+    //     newY = 2000 - h;
+    // }
+
+}
+
+
 FSM<Player>* Player::RunningState::update(Player *instance, float dt){
     instance->getAnimator()->update(instance, dt);
 
@@ -76,42 +94,53 @@ FSM<Player>* Player::RunningState::update(Player *instance, float dt){
     int maxWidth = Game::getScene()->getWidth();
     int maxHeight = Game::getScene()->getHeight();
     //calculate velocity
-    float vx = 0, vy = 0;
-    //handle keyboard input
+
+
+    //for controller 
+    float axisH = 0; // ( -1 ~ 1 ) Horizontal input
+    float axisV = 0; // ( -1 ~ 1 ) Vertical input
+       
+
+    //keyboard    
     if (InputManager::isKeyHold(InputManager::Key::A)){
-        vx += -instance->getSpeed();
+        //vx += -instance->getSpeed();
+        axisV -= 1;
         instance->setFlip(true);
     }
     if (InputManager::isKeyHold(InputManager::Key::D)){
-        vx += instance->getSpeed();
+        //vx += instance->getSpeed();
+        axisV += 1;
         instance->setFlip(false);
     }
-    if (InputManager::isKeyHold(InputManager::Key::W))
-        vy += -instance->getSpeed();
-    if (InputManager::isKeyHold(InputManager::Key::S))
-        vy += instance->getSpeed();
+    if (InputManager::isKeyHold(InputManager::Key::W)){
+        //vy += -instance->getSpeed();
+        axisH -= 1;
+    }
+    if (InputManager::isKeyHold(InputManager::Key::S)){
+        //vy += instance->getSpeed();
+        axisH += 1;
+        //vy+=1;
+    }
     
-    //calculate new position
-    float x = instance->getX();
-    float y = instance->getY();
-    int w = instance->getWidth();
-    int h = instance->getHeight();
-    float newX = x + vx * dt;
-    float newY = y + vy * dt;
-
-    //boundary check
-    if (newX < -1280) {
-        newX = x;
-    } else if (newX + w> 3000) {
-        newX = 3000 - w;
+    
+    //normalize 
+    float normalize = sqrt(axisH*axisH+axisV*axisV);
+    float movementY=0;
+    float movementX=0;
+    if(normalize > 0){
+        movementY = axisH/normalize;
+        movementX = axisV/normalize;
+    }else{
+        movementY = 0;
+        movementX = 0;
     }
 
-    if (newY < -720) {
-        newY = y;
-    } else if (newY + h> 2000) {
-        newY = 2000 - h;
-    }
+    float speed = instance->getSpeed();
+    float newX = instance->getX() + movementX * speed * dt;
+    float newY = instance->getY() + movementY * speed * dt;
+
     instance->setX(newX);
     instance->setY(newY);
+
     return nullptr;
 }
