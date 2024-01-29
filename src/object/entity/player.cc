@@ -22,45 +22,16 @@ Player::Player()
 Player::~Player() {}
 
 void Player::update(float dt) {
-    int maxWidth = Game::getScene()->getWidth();
-    int maxHeight = Game::getScene()->getHeight();
-    //calculate velocity
-    float vx = 0, vy = 0;
-    //handle keyboard input
-    if (InputManager::isKeyHold(InputManager::Key::A))
-        vx += -this->speed;
-    if (InputManager::isKeyHold(InputManager::Key::D))
-        vx += this->speed;
-    if (InputManager::isKeyHold(InputManager::Key::W))
-        vy += -this->speed;
-    if (InputManager::isKeyHold(InputManager::Key::S))
-        vy += this->speed;
-    //calculate new position
-    float newX = this->x + vx * dt;
-    float newY = this->y + vy * dt;
-
-    //boundary check
-    if (newX < -1280) {
-        newX = x;
-    } else if (newX + width > 3000) {
-        newX = 3000 - width;
+    auto _state = this->state->update(this, dt);
+    if(_state){
+        this->state->exit(this);
+        delete this->state;
+        this->state = _state;
+        this->state->enter(this);
     }
-
-    if (newY < -720) {
-        newY = y;
-    } else if (newY + height > 2000) {
-        newY = 2000 - height;
-    }
-
-    //update position
-    this->x = newX;
-    this->y = newY;
-
+    
     //update hitbox
-    this->hitbox.x1 = x;
-    this->hitbox.x2 = x + width;
-    this->hitbox.y1 = y;
-    this->hitbox.y2 = y + height;
+    this->hitbox.update(x,y,x+width,y+height);
     std::vector<CollideShape*> v;
     Game::getCollided(&this->hitbox, v);
     /*for(auto s:*v){
@@ -70,6 +41,7 @@ void Player::update(float dt) {
     //printf("collided %d objects\n",v->size());
 
 }
+
 void Player::render(SDL_Renderer *renderer) {
     auto sp = sprites[currentSprite];
     int x = this->x + this->width/2 - sp->getWidth()*3/2;
@@ -77,3 +49,69 @@ void Player::render(SDL_Renderer *renderer) {
     sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
 }
 
+
+void Player::IdleState::enter(Player *instance){
+    instance->getAnimator()->setIdx(0,9);
+}
+
+FSM<Player>* Player::IdleState::update(Player *instance, float dt){
+    instance->getAnimator()->update(instance, dt);
+    if (InputManager::isKeyHold(InputManager::WASD)){
+        return new Player::RunningState;
+    }
+    return nullptr;
+}
+
+void Player::RunningState::enter(Player *instance){
+    instance->getAnimator()->setIdx(10,19);
+}
+
+FSM<Player>* Player::RunningState::update(Player *instance, float dt){
+    instance->getAnimator()->update(instance, dt);
+
+    if (!InputManager::isKeyHold(InputManager::WASD)){
+        return new Player::IdleState;
+    }
+
+    int maxWidth = Game::getScene()->getWidth();
+    int maxHeight = Game::getScene()->getHeight();
+    //calculate velocity
+    float vx = 0, vy = 0;
+    //handle keyboard input
+    if (InputManager::isKeyHold(InputManager::Key::A)){
+        vx += -instance->getSpeed();
+        instance->setFlip(true);
+    }
+    if (InputManager::isKeyHold(InputManager::Key::D)){
+        vx += instance->getSpeed();
+        instance->setFlip(false);
+    }
+    if (InputManager::isKeyHold(InputManager::Key::W))
+        vy += -instance->getSpeed();
+    if (InputManager::isKeyHold(InputManager::Key::S))
+        vy += instance->getSpeed();
+    
+    //calculate new position
+    float x = instance->getX();
+    float y = instance->getY();
+    int w = instance->getWidth();
+    int h = instance->getHeight();
+    float newX = x + vx * dt;
+    float newY = y + vy * dt;
+
+    //boundary check
+    if (newX < -1280) {
+        newX = x;
+    } else if (newX + w> 3000) {
+        newX = 3000 - w;
+    }
+
+    if (newY < -720) {
+        newY = y;
+    } else if (newY + h> 2000) {
+        newY = 2000 - h;
+    }
+    instance->setX(newX);
+    instance->setY(newY);
+    return nullptr;
+}

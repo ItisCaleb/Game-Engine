@@ -28,6 +28,12 @@ class BoxCollideShape: public CollideShape {
         float x2, y2;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);
+        void update(float x1, float y1, float x2, float y2){
+            this->x1 = x1;
+            this->y1 = y1;
+            this->x2 = x2;
+            this->y2 = y2;
+        }
 };
 
 class CircleCollideShape : public CollideShape {
@@ -38,6 +44,10 @@ class CircleCollideShape : public CollideShape {
         float r;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);
+        void update(float x, float y){
+            this->x = x;
+            this->y = y;
+        }
 };
 
 class LineCollideShape : public CollideShape {
@@ -48,6 +58,12 @@ class LineCollideShape : public CollideShape {
         float x2, y2;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);
+        void update(float x1, float y1, float x2, float y2){
+            this->x1 = x1;
+            this->y1 = y1;
+            this->x2 = x2;
+            this->y2 = y2;
+        }
 };
 
 class PointCollideShape : public CollideShape {
@@ -57,6 +73,10 @@ class PointCollideShape : public CollideShape {
         float x, y;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);
+        void update(float x, float y){
+            this->x = x;
+            this->y = y;
+        }
 };
 
 #endif

@@ -28,7 +28,8 @@ class ResourceManager {
 
         // load sprites, but will retrieve every clip from JSON with same name
         // example: player.png player.json
-        static void loadSprites(std::string resource, std::vector<Sprite*> &vec);
+        // will return number of sprites loaded
+        static int loadSprites(std::string resource, std::vector<Sprite*> &vec);
 
         // start worker thread, cant only run once
         static void startWorkerThread();

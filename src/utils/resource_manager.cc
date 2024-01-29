@@ -78,15 +78,17 @@ int ResourceManager::loadSprites(std::string resource, int clipW, int clipH, int
         }
     }
     delete sprite;
+    return cnt;
 }
 
-void ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec){
+int ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec){
     auto* sprite = ResourceManager::load<Sprite>(resource);
-    if(!sprite) return;
+    if(!sprite) return 0;
 
     std::filesystem::path resPath = resource;
     auto* config = ResourceManager::load<nlohmann::json>(resPath.replace_extension(".json").string());
-    if(!config) return;
+    if(!config) return 0;
+    int cnt;
     for (auto& element : *config) {
         if(element["type"] == "box"){
             float x1 = element["x1"], y1 = element["y1"];
@@ -96,6 +98,7 @@ void ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &ve
     }
     delete sprite;
     delete config;
+    return cnt;
 }
 
 

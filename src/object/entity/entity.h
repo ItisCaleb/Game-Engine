@@ -10,6 +10,21 @@ class Entity: public Object{
         Entity(float x, float y, int width, int height)
             :Object(ObjectType::Entity),
             x(x), y(y), width(width), height(height){};
+        void chooseCurrentSprite(int i){
+            if(i >= sprites.size()) return;
+            this->currentSprite = i;
+        }
+        int getSpritesLength(){
+            return sprites.size();
+        }
+        void setX(float x){
+            this->x = x;
+        }
+
+        void setY(float y){
+            this->y = y;
+        }
+
         float getX(){
             return x;
         }
@@ -24,6 +39,7 @@ class Entity: public Object{
         }
 
     protected:
+        int currentSprite;
         std::vector<Sprite*> sprites;
         float x,y;
         int width, height;
