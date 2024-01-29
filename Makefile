@@ -35,13 +35,18 @@ endif
 LIBRARY=-L$(VCPKG_INSTALL)/lib
 DEBUG=-L$(VCPKG_INSTALL)/debug
 
-LINKER=-lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
-DEBUG_LINKER=-lSDL2maind -lSDL2d -lSDL2_imaged -lSDL2_ttf
-
 ifeq ($(OS),Windows_NT)
-LINKER+= -luser32 -lImm32 -lmingw32 
-DEBUG_LINKER += -luser32 -lImm32 -lmingw32 
+LINKER=-luser32 -lImm32 -lmingw32 
+DEBUG_LINKER=-luser32 -lImm32 -lmingw32 
+else
+LINKER=
+DEBUG_LINKER=
 endif
+
+LINKER+= -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+DEBUG_LINKER+= -lSDL2maind -lSDL2d -lSDL2_imaged -lSDL2_ttf
+
+
 
 
 
