@@ -1,9 +1,9 @@
 #ifndef MAIN_GUI_H_
 #define MAIN_GUI_H_
 
-#include "gui/gui.h"
-#include "resource/sprite.h"
-#include "resource/font.h"
+#include <engine/gui.h>
+#include <engine/sprite.h>
+#include <engine/font.h>
 
 class MainGUI: public GUI{
     public:
