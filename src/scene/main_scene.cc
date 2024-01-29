@@ -5,6 +5,7 @@
 #include "object/wall.h"
 #include "utils/input_manager.h"
 #include "gui/main_gui.h"
+#include "object/entity/soldier_skeleton.h"
 
 MainScene::MainScene()
 :Scene(Game::getWidth(), Game::getHeight()){
@@ -21,8 +22,10 @@ MainScene::MainScene()
     delete j;
     Player* player = new Player();
     this->objects.push_back(player);
+    Skeleton* skeleton = new Skeleton();
+    this->objects.push_back(skeleton);
     Game::setPlayer(player);
-
+    
     auto menu = MainGUI::getInstance();
     Game::openGUI(menu);
 }

@@ -1221,11 +1221,9 @@ int mu_begin_popup(mu_Context *ctx, const char *name) {
   return mu_begin_window_ex(ctx, name, mu_rect(0, 0, 0, 0), opt);
 }
 
-
 void mu_end_popup(mu_Context *ctx) {
   mu_end_window(ctx);
 }
-
 
 void mu_begin_panel_ex(mu_Context *ctx, const char *name, int opt) {
   mu_Container *cnt;
@@ -1239,7 +1237,6 @@ void mu_begin_panel_ex(mu_Context *ctx, const char *name, int opt) {
   push_container_body(ctx, cnt, cnt->rect, opt);
   mu_push_clip_rect(ctx, cnt->body);
 }
-
 
 void mu_end_panel(mu_Context *ctx) {
   mu_pop_clip_rect(ctx);
