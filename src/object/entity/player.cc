@@ -10,10 +10,10 @@ static int _idleWidth = 110;
 static int _idleHeight = 80;
 
 Player::Player()
-:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
+:Entity("Player",640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
     ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
     ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
-    Game::addCollideShape(&this->hitbox, this);
+    Game::getScene()->addCollideShape(&this->hitbox, this);
     this->state = new Player::IdleState();
     this->state->enter(this);
     this->width = 60;
@@ -33,7 +33,7 @@ void Player::update(float dt) {
     //update hitbox
     this->hitbox.update(x,y,x+width,y+height);
     std::vector<CollideShape*> v;
-    Game::getCollided(&this->hitbox, v);
+    Game::getScene()->getCollided(&this->hitbox, v);
     /*for(auto s:*v){
         Object *o = Game::getObjectByShape(s);
         if(o) printf("object type is %d\n",o->type);
