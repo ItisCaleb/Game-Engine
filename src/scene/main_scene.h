@@ -3,9 +3,11 @@
 
 #include <vector>
 
-#include "scene/scene.h"
-#include "resource/sprite.h"
-#include "object/object.h"
+#include <engine/scene.h>
+#include <engine/sprite.h>
+#include <engine/object.h>
+
+#include "object/entity/player.h"
 
 class MainScene: public Scene{
     public:
@@ -16,6 +18,7 @@ class MainScene: public Scene{
         void destroy();
     private:
         std::vector<Object*> objects;
+        Player *player;
 };
 
 

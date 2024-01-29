@@ -1,11 +1,12 @@
 #include "gui/main_gui.h"
 
-#include "gui/gui_helper.h"
-#include "utils/resource_manager.h"
-#include "gui/microui.h"
-#include "game/game.h"
+#include <engine/gui_helper.h>
+#include <engine/resource_manager.h>
+#include <engine/microui.h>
+#include <engine/game.h>
+#include <engine/input_manager.h>
+
 #include "gui/menu.h"
-#include "utils/input_manager.h"
 
 using gh = typename::GUIHelper;
 

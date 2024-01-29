@@ -1,20 +1,26 @@
 SRC_DIR=src
+ENGINE_DIR=lib/engine
 BUILD_DIR=build
 DEBUG_DIR=debug
 PRECOMPILE_DIR=precompiled
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
 
-SRC_FILES=$(call rwildcard,src/,*.cc)
+SRC_FILES=$(call rwildcard,$(SRC_DIR)/,*.cc)
+ENGINE_FILES=$(call rwildcard,$(ENGINE_DIR)/,*.cc)
+
 OBJ_FILES=$(addprefix $(PRECOMPILE_DIR)/,$(notdir $(SRC_FILES:.cc=.o)))
-HEADER_FILES=$(wildcard $(SRC_DIR)/**/*.h)
+ENGINE_OBJ_FILE=$(addprefix $(PRECOMPILE_DIR)/,$(notdir $(ENGINE_FILES:.cc=.o)))
+
 SRC_DIRS=$(sort $(dir $(SRC_FILES)))
+ENGINE_DIRS=$(sort $(dir $(ENGINE_FILES)))
 
 ifeq ($(OS),Windows_NT)
 	OUT_FILE=game.exe
 else
 	OUT_FILE=game
 endif
+ENGINE_LIB=libEngine.a
 
 OUT_PATH=$(BUILD_DIR)/$(OUT_FILE)
 
@@ -32,32 +38,26 @@ else
 	endif
 endif
 
-LIBRARY=-L$(VCPKG_INSTALL)/lib
-DEBUG=-L$(VCPKG_INSTALL)/debug
+LIBRARY=-L$(VCPKG_INSTALL)/lib -L$(PRECOMPILE_DIR)
 
 ifeq ($(OS),Windows_NT)
-LINKER=-luser32 -lImm32 -lmingw32 
-DEBUG_LINKER=-luser32 -lImm32 -lmingw32 
-else
-LINKER=
-DEBUG_LINKER=
+LINKER+=-lEngine -luser32 -lImm32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 endif
 
-LINKER+= -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
-DEBUG_LINKER+= -lSDL2maind -lSDL2d -lSDL2_imaged -lSDL2_ttf
 
 
 
+INCLUDES=-I$(VCPKG_INSTALL)/include -Isrc -Ilib
 
-
-INCLUDES=-I$(VCPKG_INSTALL)/include -Isrc
-
-VPATH = $(SRC_DIR) $(SRC_DIRS)
+VPATH = $(SRC_DIR) $(SRC_DIRS) $(ENGINE_DIR) $(ENGINE_DIRS)
 
 $(PRECOMPILE_DIR)/%.o: %.cc | $(PRECOMPILE_DIR)
 	$(CC) -c $< -o $@ $(CPP_FLAG) $(INCLUDES)
 
-$(OUT_PATH): $(OBJ_FILES) $(HEADER_FILES) $(PRECOMP_LIB)
+$(ENGINE_LIB): $(ENGINE_OBJ_FILE)
+	ar rvs $(PRECOMPILE_DIR)/$(ENGINE_LIB) $(ENGINE_OBJ_FILE)
+
+$(OUT_PATH): $(OBJ_FILES) $(ENGINE_LIB)
 ifeq ($(OS),Windows_NT)
 	if not exist "$(BUILD_DIR)" mkdir $(BUILD_DIR)
 	xcopy "$(VCPKG_INSTALL)/bin" $(BUILD_DIR) /h /c /i /y /q
@@ -76,14 +76,6 @@ ifeq ($(OS),Windows_NT)
 else
 	cd $(BUILD_DIR) && ./$(OUT_FILE)
 endif
-
-debug: $(OUT_PATH)
-ifeq ($(OS),Windows_NT)
-	if not exist "$(DEBUG_DIR)" mkdir $(DEBUG_DIR)
-	xcopy "$(VCPKG_INSTALL)/debug/bin" $(DEBUG_DIR) /e /h /c /i /y /q
-	xcopy "$(SRC_DIR)/assets" "$(DEBUG_DIR)/assets"  /e /h /c /i /y /q
-endif
-	$(CC) $(OBJ_FILES) -o $(DEBUG_DIR)/$(OUT_FILE) $(CPP_FLAG) $(DEBUG)/lib $(DEBUG_LINKER) $(INCLUDES)
 
 
 clean:

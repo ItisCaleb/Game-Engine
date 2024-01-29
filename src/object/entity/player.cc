@@ -2,9 +2,9 @@
 
 #include <SDL2/SDL.h>
 
-#include "utils/resource_manager.h"
-#include "utils/input_manager.h"
-#include "game/game.h"
+#include <engine/resource_manager.h>
+#include <engine/input_manager.h>
+#include <engine/game.h>
 
 static int _idleWidth = 110;
 static int _idleHeight = 80;
