@@ -23,7 +23,8 @@ class ResourceManager {
         template <class T> static AsyncResource<T>* loadAsync(std::string resource);
 
         // load sprites
-        static void loadSprites(std::string resource, int clipW, int clipH, std::vector<Sprite*> &vec);
+        // will return number of sprites loaded
+        static int loadSprites(std::string resource, int clipW, int clipH, int paddingX, int paddingY, std::vector<Sprite*> &vec);
 
         // load sprites, but will retrieve every clip from JSON with same name
         // example: player.png player.json
