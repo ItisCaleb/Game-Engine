@@ -24,7 +24,7 @@ class ResourceManager {
 
         // load sprites
         // will return number of sprites loaded
-        static int loadSprites(std::string resource, int clipW, int clipH, std::vector<Sprite*> &vec);
+        static int loadSprites(std::string resource, int clipW, int clipH, int paddingX, int paddingY, std::vector<Sprite*> &vec);
 
         // load sprites, but will retrieve every clip from JSON with same name
         // example: player.png player.json

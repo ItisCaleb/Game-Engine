@@ -170,6 +170,7 @@ document.getElementById('imgLoader').onchange = function handleImage(e) {
         image = new fabric.Image(imgObj,{
             opacity: 0.5,
         })
+        document.querySelector('#image-size').innerHTML = `Image Size: ${this.width}*${this.height}`
         gridWidth = this.width;
         gridHeight = this.height;
         image.set('selectable',false)
