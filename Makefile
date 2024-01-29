@@ -10,7 +10,11 @@ OBJ_FILES=$(addprefix $(PRECOMPILE_DIR)/,$(notdir $(SRC_FILES:.cc=.o)))
 HEADER_FILES=$(wildcard $(SRC_DIR)/**/*.h)
 SRC_DIRS=$(sort $(dir $(SRC_FILES)))
 
-OUT_FILE=game.exe
+ifeq ($(OS),Windows_NT)
+	OUT_FILE=game.exe
+else
+	OUT_FILE=game
+endif
 
 OUT_PATH=$(BUILD_DIR)/$(OUT_FILE)
 
@@ -19,17 +23,24 @@ CC=g++
 CPP_FLAG=-w -std=c++17
 debug: CPP_FLAG+= -g
 
+ifeq ($(OS),Windows_NT)
 VCPKG_INSTALL=./vcpkg/installed/x64-mingw-dynamic
+else
+	ifeq ($(shell uname -s),Darwin)
+		CPP_FLAG += -Wno-narrowing -Wl,-rpath,"./lib"
+        VCPKG_INSTALL=./vcpkg/installed/arm64-osx-dynamic
+	endif
+endif
 
 LIBRARY=-L$(VCPKG_INSTALL)/lib
 DEBUG=-L$(VCPKG_INSTALL)/debug
 
-LINKER=-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
-DEBUG_LINKER=-lmingw32 -lSDL2maind -lSDL2d -lSDL2_imaged -lSDL2_ttf
+LINKER=-lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+DEBUG_LINKER=-lSDL2maind -lSDL2d -lSDL2_imaged -lSDL2_ttf
 
 ifeq ($(OS),Windows_NT)
-LINKER+= -luser32 -lImm32
-DEBUG_LINKER += -luser32 -lImm32
+LINKER+= -luser32 -lImm32 -lmingw32 
+DEBUG_LINKER += -luser32 -lImm32 -lmingw32 
 endif
 
 
@@ -46,12 +57,20 @@ ifeq ($(OS),Windows_NT)
 	if not exist "$(BUILD_DIR)" mkdir $(BUILD_DIR)
 	xcopy "$(VCPKG_INSTALL)/bin" $(BUILD_DIR) /h /c /i /y /q
 	xcopy "$(SRC_DIR)/assets" "$(BUILD_DIR)/assets"  /e /h /c /i /y /q
+else
+	mkdir -p $(BUILD_DIR)
+	cp -a $(VCPKG_INSTALL)/lib/. $(BUILD_DIR)/lib/
+	cp -a $(SRC_DIR)/assets/. $(BUILD_DIR)/assets/
 endif
 	$(CC) $(OBJ_FILES) -o $(OUT_PATH) $(CPP_FLAG) $(LIBRARY) $(LINKER) $(INCLUDES)
 
 
 run: $(OUT_PATH)
+ifeq ($(OS),Windows_NT)
 	cd $(BUILD_DIR) && $(OUT_FILE)
+else
+	cd $(BUILD_DIR) && ./$(OUT_FILE)
+endif
 
 debug: $(OUT_PATH)
 ifeq ($(OS),Windows_NT)
@@ -67,6 +86,9 @@ ifeq ($(OS),Windows_NT)
 	del $(PRECOMPILE_DIR)\*.o
 	del $(BUILD_DIR)\$(OUT_FILE)
 	del $(DEBUG_DIR)\$(OUT_FILE)
+else
+	rm $(precompiled)\*.o
+	rm -rf $(BUILD_DIR)
 endif
 
 
