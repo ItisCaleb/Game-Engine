@@ -1,8 +1,9 @@
 #include "gui/gui_helper.h"
 
 #include <SDL2/SDL_ttf.h>
+#include <cmath>
 
-#include <game/game.h>
+#include "game/game.h"
 
 static char buttonMap[256] = {};
 static char keyMap[256] = {};
@@ -19,7 +20,7 @@ int getTextWidth(mu_Font font, const char *str, int len){
     int w;
     TTF_SizeUTF8(f->font, str, &w, NULL);
     float scale = (float)f->pt / f->basept;
-    return w * scale;
+    return (int)std::ceil(w * scale);
 }
 
 int getTextHeight(mu_Font font){
@@ -130,7 +131,7 @@ void drawRect(SDL_Renderer *renderer, mu_Rect *rect, mu_Color &color){
 }
 
 void setClipRect(SDL_Renderer *renderer, mu_Rect &rect){
-    SDL_Rect r = {rect.x, Game::getHeight() - (rect.y + rect.h), rect.w, rect.h};
+    SDL_Rect r = {rect.x, rect.y, rect.w, rect.h};
     SDL_RenderSetClipRect(renderer, &r);
 }
 
@@ -141,6 +142,7 @@ void drawImage(SDL_Renderer *renderer, void* texture, mu_Rect *rect){
 
 void GUIHelper::handleRender(SDL_Renderer *renderer){
     mu_Command *cmd = NULL;
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     while (mu_next_command(ctx, &cmd)) {
       switch (cmd->type) {
         case MU_COMMAND_TEXT:
@@ -158,6 +160,7 @@ void GUIHelper::handleRender(SDL_Renderer *renderer){
             break;
       }
     }
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 }
 
 void GUIHelper::begin(){

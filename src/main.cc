@@ -8,6 +8,7 @@
 #include "utils/resource_manager.h"
 #include "utils/input_manager.h"
 #include "scene/main_scene.h"
+#include "utils/timer.h"
 
 int main(int argc, char **argv) {
 
@@ -20,9 +21,7 @@ int main(int argc, char **argv) {
     }
 
     // set hints
-    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-    
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");    
 
     //get screen size
     SDL_DisplayMode dm;
@@ -68,8 +67,9 @@ int main(int argc, char **argv) {
     ResourceManager::startWorkerThread();
     Game::init(renderer, window, width, height, 1280, 768);
     Game::setScene(new MainScene);
+    Timer timer;
     while (Game::isRunning()) {
-        auto begin = SDL_GetTicks();
+        timer.start();
 
         // input
         Game::handleInput();
@@ -80,8 +80,7 @@ int main(int argc, char **argv) {
         // render
         Game::render();
 
-        auto end = SDL_GetTicks();
-        delta = end - begin;
+        delta = timer.getTicks();
         
         if(delta < frame_limit){
             SDL_Delay(frame_limit-delta);
