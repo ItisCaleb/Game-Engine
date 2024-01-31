@@ -23,8 +23,8 @@ class AnimeProperty{
 
 class Animator{
         public:
-            FSM<Entity>* play(Entity *instance, float dt){
-                if(stop) return nullptr;
+            void play(Entity *instance, float dt){
+                if(stop) return;
                 if(timer.getTicks() >= this->animTick){
                     instance->chooseCurrentSprite(anim);
                     this->anim++;
@@ -32,7 +32,6 @@ class Animator{
                         this->anim = currentAnimation->startIdx;
                     this->timer.restart();
                 }
-                return nullptr;
             }
 
             void addAnimation(std::string name, int num){
