@@ -9,8 +9,16 @@
 #include "engine/entity.h"
 #include "engine/timer.h"
 
-struct AnimeProperty{
-    int startIdx, endIdx;
+class AnimeProperty{
+    public:
+        friend class Animator;
+        int getLength(){
+            return endIdx - startIdx;
+        }
+    private:
+        AnimeProperty(int startIdx, int endIdx)
+            :startIdx(startIdx),endIdx(endIdx){}
+        const int startIdx, endIdx;
 };
 
 class Animator: public FSM<Entity>{
@@ -32,9 +40,7 @@ class Animator: public FSM<Entity>{
             void exit(Entity *instance){}
 
             void addAnimation(std::string name, int num){
-                auto anime = new AnimeProperty();
-                anime->startIdx = last;
-                anime->endIdx = last + num;
+                auto anime = new AnimeProperty(last, last+num);
                 last += num;
                 properties[name] = anime;
             }
@@ -56,6 +62,14 @@ class Animator: public FSM<Entity>{
             void setAnimTick(int tick){
                 this->animTick = tick;
             }
+            AnimeProperty* getCurrent(){
+                return currentAnimation;
+            }
+            int getCurrentAnim(){
+                if(!currentAnimation) return -1;
+                return anim - currentAnimation->startIdx;
+            }
+
         private:
             Timer timer;
             int animTick = Timer::TICK_12FRAMES;
