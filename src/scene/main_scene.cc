@@ -9,7 +9,9 @@
 
 
 MainScene::MainScene()
-:Scene(Game::getWidth(), Game::getHeight()){
+:Scene(Game::getWidth(), Game::getHeight()){}
+
+void MainScene::init(){
     this->background = ResourceManager::load<Sprite>("assets/test_background.png");
     auto j = ResourceManager::load<nlohmann::json>("assets/test.json");
     for (auto& element : *j) {
@@ -17,17 +19,15 @@ MainScene::MainScene()
             float x1 = element["x1"], y1 = element["y1"];
             float x2 = element["x2"], y2 = element["y2"];
             Wall *w = new Wall(x1,y1, x2-x1,y2-y1,NULL);
-            this->objects.push_back(w);
+            this->addObject(w);
         }
     }
     delete j;
-    Player* player = new Player();
-    this->objects.push_back(player);
-    Skeleton* skeleton = new Skeleton();
-    this->objects.push_back(skeleton);
 
-    
-    this->player = player;
+    Player* player = new Player();
+    this->addObject(player);
+    Skeleton* skeleton = new Skeleton();
+    this->addObject(skeleton);
     auto menu = MainGUI::getInstance();
     Game::openGUI(menu);
 }
@@ -41,6 +41,7 @@ void MainScene::update(float dt){
         o->update(dt);
     }
     //get player
+    auto player = dynamic_cast<Player*>(this->getObjectByTag("Player"));
     if (player) {
         //update camera position
         float zoom = Game::getCamera()->getZoom();
@@ -54,6 +55,9 @@ void MainScene::render(SDL_Renderer* renderer){
     renderBackground(renderer);
     for (auto o : this->objects) {
         o->render(renderer);
+    }
+    for (auto s : this->shapes) {
+        s->render(renderer);
     }
 }
 

@@ -3,7 +3,6 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>
-#include <unordered_map>
 
 #include "engine/camera.h"
 #include "engine/scene.h"
@@ -23,14 +22,6 @@ class Game {
         static void openGUI(GUI* gui);
         static void closeGUI(GUI* gui);
 
-        // add shape to collision detection
-        static void addCollideShape(CollideShape *shape, Object *object);
-
-        // return object attach by shape
-        static Object* getObjectByShape(CollideShape *shape);
-
-        // get all shape collided with this shape
-        static void getCollided(CollideShape *shape, std::vector<CollideShape*> &vec);
 
         // getters
         inline static bool isRunning(){
@@ -91,8 +82,7 @@ class Game {
         inline static int logicWidth, logicHeight;
         inline static SDL_Window *window;
         inline static SDL_Renderer *renderer;
-        inline static std::vector<CollideShape*> shapes;
-        inline static std::unordered_map<CollideShape*, Object*> shapeToObject;
+
         inline static Camera *camera;
         inline static Scene *scene;
         inline static std::vector<GUI*> guiStack;

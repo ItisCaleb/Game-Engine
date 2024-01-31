@@ -7,9 +7,8 @@
 
 class Entity: public Object{
     public:
-        Entity(float x, float y, int width, int height)
-            :Object(ObjectType::Entity),
-            x(x), y(y), width(width), height(height){};
+        Entity(std::string tag, float x, float y, int width, int height)
+            :Object(tag, 0), x(x), y(y), width(width), height(height){};
         void chooseCurrentSprite(int i){
             if(i >= sprites.size()) return;
             this->currentSprite = i;

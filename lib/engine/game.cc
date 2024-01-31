@@ -87,6 +87,7 @@ void Game::setScene(Scene *scene) {
         delete Game::scene;
     }
     Game::scene = scene;
+    scene->init();
 }
 
 void Game::openGUI(GUI* gui){
@@ -107,15 +108,7 @@ void Game::closeGUI(GUI* gui){
     }
 }
 
-void Game::addCollideShape(CollideShape *shape, Object *object) {
-    auto result = Game::shapeToObject.find(shape);
-    //non exist
-    if (result == Game::shapeToObject.end()){
-        Game::shapes.push_back(shape);
-        Game::shapeToObject[shape] = object;
-    }
-    
-}
+
 
 
 void Game::destroy() {
@@ -185,26 +178,9 @@ void Game::render() {
     SDL_SetRenderDrawColor(Game::renderer, 0, 255, 255, 255);
     SDL_RenderClear(Game::renderer);
     Game::scene->render(Game::renderer);
-    for (auto s : Game::shapes) {
-        s->render(Game::renderer);
-    }
+
     if(!guiStack.empty())
         GUIHelper::handleRender(Game::renderer);
     SDL_RenderPresent(Game::renderer);
 }
 
-
-Object* Game::getObjectByShape(CollideShape *shape){
-    auto result = Game::shapeToObject.find(shape);
-    if (result == Game::shapeToObject.end())
-        return nullptr;
- 
-    return Game::shapeToObject[shape];
- }
-
-void Game::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
-    for(auto s: Game::shapes){
-        if(shape == s) continue;
-        if(shape->isCollide(s)) vec.push_back(s);
-    }
-}
