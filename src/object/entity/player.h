@@ -21,6 +21,9 @@ class Player : public Entity{
         bool setFlip(bool flip){
             this->flip = flip;
         }
+        bool isMove;
+        bool isAttack;
+        bool isFlip;
     private:
         BoxCollideShape hitbox;
         FSM<Player> *state;
@@ -29,7 +32,6 @@ class Player : public Entity{
         float velocity;
         float maxSpeed;
         bool flip;
-
 
     class IdleState: public FSM<Player>{
         public:
@@ -44,6 +46,14 @@ class Player : public Entity{
             FSM<Player>* update(Player *instance, float dt);
             void exit(Player *instance){}
     };
+
+    class AttackingState: public FSM<Player>{
+        public:
+            void enter(Player *instance);
+            FSM<Player>* update(Player *instance, float dt);
+            void exit(Player *instance){}
+    };
+
 };
 
 #endif

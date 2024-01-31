@@ -12,6 +12,7 @@ public:
         D = 8,  
         SPACE = 16,
         ESC = 32,
+        J = 64,
         WASD = 15
     };
     //update the key state
