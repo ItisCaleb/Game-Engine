@@ -21,13 +21,10 @@ class AnimeProperty{
         const int startIdx, endIdx;
 };
 
-class Animator: public FSM<Entity>{
+class Animator{
         public:
-            void enter(Entity *instance){
-                this->timer.start();
-            }
-            FSM<Entity>* update(Entity *instance, float dt){
-                if(!play) return nullptr;
+            FSM<Entity>* play(Entity *instance, float dt){
+                if(stop) return nullptr;
                 if(timer.getTicks() >= this->animTick){
                     instance->chooseCurrentSprite(anim);
                     this->anim++;
@@ -37,7 +34,6 @@ class Animator: public FSM<Entity>{
                 }
                 return nullptr;
             }
-            void exit(Entity *instance){}
 
             void addAnimation(std::string name, int num){
                 auto anime = new AnimeProperty(last, last+num);
@@ -45,7 +41,7 @@ class Animator: public FSM<Entity>{
                 properties[name] = anime;
             }
 
-            void playAnimation(std::string name){
+            void setAnimation(std::string name){
                 auto tmp = properties.find(name);
                 if(tmp == properties.end()){
                     printf("Animation '%s' is not found\n",name);
@@ -53,10 +49,10 @@ class Animator: public FSM<Entity>{
                 }
                 currentAnimation = properties[name];
                 this->anim = currentAnimation->startIdx;
-                play = true;
+                stop = false;
             }
             void stopAnimation(){
-                play = false;
+                stop = true;
             }
 
             void setAnimTick(int tick){
@@ -75,7 +71,7 @@ class Animator: public FSM<Entity>{
             int animTick = Timer::TICK_12FRAMES;
             std::unordered_map<std::string, AnimeProperty*> properties;
             AnimeProperty* currentAnimation;
-            bool play = false;
+            bool stop = false;
             int anim;
             int last = 0;
     };

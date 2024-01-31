@@ -54,11 +54,11 @@ void Player::render(SDL_Renderer *renderer) {
 
 
 void Player::IdleState::enter(Player *instance){
-    instance->getAnimator()->playAnimation("idle");
+    instance->getAnimator()->setAnimation("idle");
 }
 
 FSM<Player>* Player::IdleState::update(Player *instance, float dt){
-    instance->getAnimator()->update(instance, dt);
+    instance->getAnimator()->play(instance, dt);
     if (InputManager::isKeyHold(InputManager::WASD)){
         return new Player::RunningState;
     }
@@ -66,7 +66,7 @@ FSM<Player>* Player::IdleState::update(Player *instance, float dt){
 }
 
 void Player::RunningState::enter(Player *instance){
-    instance->getAnimator()->playAnimation("running");
+    instance->getAnimator()->setAnimation("running");
 }
 
 void move(Player *instance,float dt){
@@ -88,7 +88,7 @@ void move(Player *instance,float dt){
 
 
 FSM<Player>* Player::RunningState::update(Player *instance, float dt){
-    instance->getAnimator()->update(instance, dt);
+    instance->getAnimator()->play(instance, dt);
 
     if (!InputManager::isKeyHold(InputManager::WASD)){
         return new Player::IdleState;
