@@ -1,71 +1,24 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+
 #include <stdio.h>
 #include <algorithm>
 
-#include "game/game.h"
-#include "utils/resource_manager.h"
-#include "utils/input_manager.h"
+#include <engine/game.h>
+#include <engine/resource_manager.h>
+#include <engine/input_manager.h>
+#include <engine/timer.h>
+
 #include "scene/main_scene.h"
-#include "utils/timer.h"
 
 int main(int argc, char **argv) {
 
-    // Init everything
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        //handle error
-        printf("Error: SDL failed to initialize\nSDL Error: '%s'\n",
-                SDL_GetError());
-        return 1;
-    }
-
-    // set hints
-    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");    
-
-    //get screen size
-    SDL_DisplayMode dm;
-    SDL_GetCurrentDisplayMode(0, &dm);
-    printf("screen_width: %d, screen_height: %d\n", dm.w, dm.h);
-    int width = dm.w;
-    //-60 for the taskbar
-    int height = dm.h-60;
-
-    SDL_Window *window = SDL_CreateWindow("SDL test",
-                                          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                          width, height,
-                                          SDL_WINDOW_RESIZABLE);
-
-    if (!window) {
-        printf("Error: Failed to open window\nSDL Error: '%s'\n",
-                SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
-    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
-    if (!(IMG_Init(imgFlags) & imgFlags)) {
-        printf("Error: SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-        return -1;
-    }
-    if(TTF_Init() == -1){
-        printf("Error: SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
-        return -1;
-    }
-
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        printf("Error: Failed to create renderer\nSDL Error: '%s'\n", SDL_GetError());
-        return 1;
-    }
-    
     // Game loop start
-    float target_fps = 60;
+    float target_fps = 144;
     float frame_limit = 1000.f/target_fps;
     float delta = frame_limit;
     
     ResourceManager::startWorkerThread();
-    Game::init(renderer, window, width, height, 1280, 768);
+    Game::init("SDL Test", 1280, 768);
     Game::setScene(new MainScene);
     Timer timer;
     while (Game::isRunning()) {
@@ -89,9 +42,6 @@ int main(int argc, char **argv) {
     }
 
     Game::destroy();
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
     return 0;
 }
 

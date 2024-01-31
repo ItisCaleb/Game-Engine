@@ -8,8 +8,8 @@
 #include <vector>
 #include <queue>
 
-#include "resource/sprite.h"
-#include "resource/resource.h"
+#include "engine/sprite.h"
+#include "engine/resource.h"
 
 class ResourceManager {
     public:

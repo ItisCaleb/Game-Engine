@@ -5,22 +5,20 @@
 #include <string>
 #include <unordered_map>
 
-#include "object/entity/player.h"
-#include "misc/camera.h"
-#include "scene/scene.h"
-#include "gui/gui.h"
+#include "engine/camera.h"
+#include "engine/scene.h"
+#include "engine/gui.h"
+#include "engine/collide_shape.h"
 
 
 class Game {
     public:
         // init game
-        static void init(SDL_Renderer *renderer, SDL_Window *window,
-            int windowWidth, int windowHeight, int width, int height);
+        static void init(std::string windowName, int width, int height);
         static void destroy();
         static void handleInput();
         static void update(float dt);
         static void render();
-        static void setPlayer(Player *player);
         static void setScene(Scene *scene);
         static void openGUI(GUI* gui);
         static void closeGUI(GUI* gui);
@@ -47,9 +45,6 @@ class Game {
         }
         inline static Camera *getCamera(){
             return camera;
-        }
-        inline static Player *getPlayer(){
-            return currentPlayer;
         }
         inline static Scene *getScene(){
             return scene;
@@ -99,11 +94,11 @@ class Game {
         inline static std::vector<CollideShape*> shapes;
         inline static std::unordered_map<CollideShape*, Object*> shapeToObject;
         inline static Camera *camera;
-        inline static Player *currentPlayer = nullptr;
         inline static Scene *scene;
         inline static std::vector<GUI*> guiStack;
         inline static int frameCount;
         inline static float fps;
+        static void initSDL(std::string windowName);
 };
 
 #endif

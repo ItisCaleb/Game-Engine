@@ -8,8 +8,8 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "gui/microui.h"
-#include "resource/font.h"
+#include "engine/microui.h"
+#include "engine/font.h"
 
 
 

@@ -1,5 +1,5 @@
-#include "resource/sprite.h"
-#include "game/game.h"
+#include "engine/sprite.h"
+#include "engine/game.h"
 
 void Sprite::render(SDL_Renderer *renderer, float x, float y,
  float scaleX, float scaleY, bool flip){

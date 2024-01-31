@@ -1,9 +1,9 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
-#include "entity.h"
-#include "misc/collide_shape.h"
-#include "misc/fsm.h"
-#include "misc/animator.h"
+#include <engine/entity.h>
+#include <engine/collide_shape.h>
+#include <engine/fsm.h>
+#include <engine/animator.h>
 
 
 class Player : public Entity{
@@ -15,7 +15,7 @@ class Player : public Entity{
         Animator *getAnimator(){
             return &this->animator;
         }
-        int getSpeed(){
+        float getSpeed(){
             return this->speed;
         }
         bool setFlip(bool flip){
@@ -25,7 +25,9 @@ class Player : public Entity{
         BoxCollideShape hitbox;
         FSM<Player> *state;
         Animator animator;
-        int speed;
+        float speed;
+        float velocity;
+        float maxSpeed;
         bool flip;
 
 

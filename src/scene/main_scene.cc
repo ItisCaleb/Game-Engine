@@ -1,11 +1,12 @@
 #include "scene/main_scene.h"
 
-#include "utils/resource_manager.h"
-#include "game/game.h"
-#include "object/wall.h"
-#include "utils/input_manager.h"
+#include <engine/resource_manager.h>
+#include <engine/game.h>
+#include <engine/wall.h>
+#include <engine/input_manager.h>
 #include "gui/main_gui.h"
 #include "object/entity/soldier_skeleton.h"
+
 
 MainScene::MainScene()
 :Scene(Game::getWidth(), Game::getHeight()){
@@ -24,8 +25,9 @@ MainScene::MainScene()
     this->objects.push_back(player);
     Skeleton* skeleton = new Skeleton();
     this->objects.push_back(skeleton);
-    Game::setPlayer(player);
+
     
+    this->player = player;
     auto menu = MainGUI::getInstance();
     Game::openGUI(menu);
 }
@@ -39,7 +41,6 @@ void MainScene::update(float dt){
         o->update(dt);
     }
     //get player
-    Player *player = Game::getPlayer();  
     if (player) {
         //update camera position
         float zoom = Game::getCamera()->getZoom();

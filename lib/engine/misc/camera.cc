@@ -1,5 +1,5 @@
-#include "misc/camera.h"
-#include "game/game.h"
+#include "engine/camera.h"
+#include "engine/game.h"
 
 //update camera position
 void Camera::update(float targetX, float targetY) {

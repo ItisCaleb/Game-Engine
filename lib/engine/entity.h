@@ -2,8 +2,8 @@
 #define ENTITY_H_
 #include <SDL2/SDL.h>
 #include <vector>
-#include "resource/sprite.h"
-#include "object/object.h"
+#include "engine/sprite.h"
+#include "engine/object.h"
 
 class Entity: public Object{
     public:

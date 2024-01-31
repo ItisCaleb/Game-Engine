@@ -4,6 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/src/**",
+                "${workspaceFolder}/lib/**",
+                "${workspaceFolder}/lib/engine/**",
                 "${workspaceFolder}/vcpkg/installed/x64-mingw-dynamic/include"
             ],
             "defines":[

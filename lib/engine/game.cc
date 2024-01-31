@@ -1,30 +1,86 @@
-#include "game.h"
+#include "engine/game.h"
 
-#include "utils/input_manager.h"
-#include "gui/gui_helper.h"
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
-void Game::init(SDL_Renderer *renderer, SDL_Window *window,
-     int windowWidth, int windowHeight, int width, int height){
+#include "engine/input_manager.h"
+#include "engine/gui_helper.h"
+
+void Game::initSDL(std::string windowName){
+    // Init everything
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        //handle error
+        printf("Error: SDL failed to initialize\nSDL Error: '%s'\n",
+                SDL_GetError());
+        exit(1);
+    }
+
+    // set hints
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+
+    //get screen size
+    // set window width and height
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+    printf("screen_width: %d, screen_height: %d\n", dm.w, dm.h);
+    Game::windowWidth  = dm.w;
+    //-60 for the taskbar
+    Game::windowHeight = dm.h-60;
+
+    SDL_Window *window = SDL_CreateWindow(windowName.c_str(),
+                                          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                          Game::windowWidth, Game::windowHeight,
+                                          SDL_WINDOW_RESIZABLE);
+
+    if (!window) {
+        printf("Error: Failed to open window\nSDL Error: '%s'\n",
+                SDL_GetError());
+        SDL_Quit();
+        exit(1);
+    }
+
+    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        printf("Error: SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        SDL_Quit();
+        exit(1);
+    }
+    if(TTF_Init() == -1){
+        printf("Error: SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+        IMG_Quit();
+        SDL_Quit();
+        exit(1);
+    }
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        printf("Error: Failed to create renderer\nSDL Error: '%s'\n", SDL_GetError());
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
+        exit(1);
+    }
+    Game::window = window;
+    Game::renderer = renderer;
+}
+
+void Game::init(std::string windowName, int width, int height){
     if (Game::already_init) return;
+    Game::initSDL(windowName);
     SDL_RenderSetLogicalSize(renderer, width, height);
     //SDL_RenderSetScale(renderer, (float)width/windowWidth, (float)height/windowHeight);
     Game::camera = new Camera(width, height);
     Game::already_init = true;
     Game::running = true;
-    Game::renderer = renderer;
-    Game::window = window;
-    Game::windowWidth = windowWidth;
-    Game::windowHeight = windowHeight;
+
     Game::logicWidth = width;
     Game::logicHeight = height;
+
+
     
     GUIHelper::init();
 }
 
-
-void Game::setPlayer(Player* player) {
-    currentPlayer = player;
-}
 
 void Game::setScene(Scene *scene) {
     if(Game::scene){
@@ -65,6 +121,9 @@ void Game::addCollideShape(CollideShape *shape, Object *object) {
 void Game::destroy() {
     SDL_DestroyRenderer(Game::renderer);
     SDL_DestroyWindow(Game::window);
+    IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
 }
 
 void Game::handleInput(){

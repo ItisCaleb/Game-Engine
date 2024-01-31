@@ -1,9 +1,9 @@
-#include "gui/gui_helper.h"
+#include "engine/gui_helper.h"
 
 #include <SDL2/SDL_ttf.h>
 #include <cmath>
 
-#include "game/game.h"
+#include "engine/game.h"
 
 static char buttonMap[256] = {};
 static char keyMap[256] = {};

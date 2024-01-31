@@ -1,9 +1,9 @@
 #ifndef WALL_H_
 #define WALL_H_
 #include <SDL2/SDL.h>
-#include "resource/sprite.h"
-#include "object/object.h"
-#include "misc/collide_shape.h"
+#include "engine/sprite.h"
+#include "engine/object.h"
+#include "engine/collide_shape.h"
 
 class Wall: public Object{
     public:

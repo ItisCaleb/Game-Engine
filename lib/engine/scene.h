@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 
-#include "resource/sprite.h"
+#include "engine/sprite.h"
 
 class Scene{
     public:

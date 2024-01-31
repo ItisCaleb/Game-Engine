@@ -1,7 +1,7 @@
-#include "scene/scene.h"
+#include "engine/scene.h"
 
-#include "game/game.h"
-#include "utils/resource_manager.h"
+#include "engine/game.h"
+#include "engine/resource_manager.h"
 
 void Scene::renderBackground(SDL_Renderer* renderer){
     if(!this->background) return;

@@ -1,12 +1,12 @@
-#include "utils/resource_manager.h"
+#include "engine/resource_manager.h"
 
 #include <SDL2/SDL_image.h>
 
 #include <filesystem>
 #include <fstream>
 
-#include "game/game.h"
-#include "resource/font.h"
+#include "engine/game.h"
+#include "engine/font.h"
 
 // resource load functions
 

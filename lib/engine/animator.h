@@ -2,10 +2,10 @@
 #define ANIMATOR_H_
 
 
-#include "misc/fsm.h"
+#include "fsm.h"
 
-#include "object/entity/entity.h"
-#include "utils/timer.h"
+#include "engine/entity.h"
+#include "engine/timer.h"
 
 class Animator: public FSM<Entity>{
         public:
