@@ -12,14 +12,19 @@ static int _idleHeight = 80;
 PlayerController pp;
 
 Player::Player()
-:Entity(640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
+:Entity("Player",640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
+    int r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
+    this->animator.addAnimation("idle", r);
+    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
+    this->animator.addAnimation("running", r);
+    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
+    this->animator.addAnimation("attack1", r);
+    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack2.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
+    this->animator.addAnimation("attack2", r);
+
+    Game::getScene()->addCollideShape(&this->hitbox, this);
     this->isMove = false;
     this->isAttack = false;
-    ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-    ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-    ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-
-    Game::addCollideShape(&this->hitbox, this);
     this->state = new Player::IdleState();
     this->state->enter(this);
     this->width = 60;
@@ -43,16 +48,16 @@ void Player::update(float dt) {
     //update hitbox
     this->hitbox.update(x,y,x+width,y+height);
     std::vector<CollideShape*> v;
-    Game::getCollided(&this->hitbox, v);
+    Game::getScene()->getCollided(&this->hitbox, v);
     /*for(auto s:*v){
         Object *o = Game::getObjectByShape(s);
         if(o) printf("object type is %d\n",o->type);
     }*/
     //printf("collided %d objects\n",v->size());
     if(!isAttack){
-        move(this,dt);
         attack(this,dt);
     }
+    move(this,dt);
 }
 
 void Player::render(SDL_Renderer *renderer) {
@@ -64,7 +69,7 @@ void Player::render(SDL_Renderer *renderer) {
 
 void attack(Player *instance,float dt){
     if(InputManager::isKeyDown(InputManager::Key::J)){
-        printf("j");
+        //printf("j");
         instance->isAttack = true;
     }
 }
@@ -111,9 +116,8 @@ void move(Player *instance,float dt){
     instance->setY(newY);
 }
 
-
 void Player::IdleState::enter(Player *instance){
-    instance->getAnimator()->setIdx(0,9);
+    instance->getAnimator()->playAnimation("idle");
 }
 
 FSM<Player>* Player::IdleState::update(Player *instance, float dt){
@@ -125,30 +129,32 @@ FSM<Player>* Player::IdleState::update(Player *instance, float dt){
 }
 
 void Player::RunningState::enter(Player *instance){
-    instance->getAnimator()->setIdx(10,19);
+    instance->getAnimator()->playAnimation("running");
 }
 
 FSM<Player>* Player::RunningState::update(Player *instance, float dt){
     instance->getAnimator()->update(instance, dt);
     if(instance->isAttack) return new Player::AttackingState;
     if(!instance->isMove)return new Player::IdleState;
-
     if (InputManager::isKeyHold(InputManager::Key::A)){
         instance->setFlip(true);
     }
     if (InputManager::isKeyHold(InputManager::Key::D)){
         instance->setFlip(false);
     }
-
     return nullptr;
 }
 
 void Player::AttackingState::enter(Player *instance){
-    instance->getAnimator()->setIdx(20,23);
+    instance->getAnimator()->playAnimation("attack1");
 }
 
 FSM<Player>* Player::AttackingState::update(Player *instance, float dt){
     instance->getAnimator()->update(instance, dt);
+    if(instance->getAnimator()->getCurrentAnim()==3){
+        instance->isAttack = false;
+        return new Player::IdleState;
+    }
     return nullptr;
 }
 
