@@ -1,25 +1,39 @@
-#include <SDL2/SDL.h>
-
-#include "game/game.h"
 #include "soldier_skeleton.h"
-#include "utils/input_manager.h"
-#include "utils/resource_manager.h"
+#include <SDL2/SDL.h>
+#include <engine/game.h>
+#include <engine/input_manager.h>
+#include <engine/resource_manager.h>
 
 static int _idleWidth = 24;
 static int _idleHeight = 32;
 
 Skeleton::Skeleton()
     : Entity(300, 360, 50, 50), hitbox(x, y, x + width, y + width), speed(400) {
-    ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Idle.png", _idleWidth, _idleHeight, 0, 0, this->sprites);
+    //0~11 idle
+    ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Idle.png", 24, 32, 0, 0, this->sprites);
+    //11~23 walk
     ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Walk.png", 22, 33, 0, 0, this->sprites);
+    //24~27 react
+    ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_React.png", 22, 32, 0, 0, this->sprites);
+    //28~45 attack
+    ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Attack.png", 33, 37, 0, 0, this->sprites);
+    //46~53 hit
+    ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Hit.png", 30, 32, 0, 0, this->sprites);
+    //54~68 dead
+    ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Dead.png", 33, 32, 0, 0, this->sprites);
+    
     if(this->sprites.size() == 0){
         printf("Error: Skeleton sprite not loaded\n");
     }   
     Game::addCollideShape(&this->hitbox, this);
     this->state = new Skeleton::IdleState();
+    this->currentState = SkeletonState::Idle;
     this->state->enter(this);
     this->width = 60;
     this->height = 120;
+
+    // init state
+    this->patrolDirection = Direction::Left;
 }
 Skeleton::~Skeleton() {}
 
@@ -51,13 +65,62 @@ void Skeleton::render(SDL_Renderer *renderer) {
 }
 
 void Skeleton::IdleState::enter(Skeleton *instance) {
-    instance->getAnimator()->setIdx(0, 10);
+    instance->getAnimator()->setIdx(0, 10);   
+    printf("current state is %d\n",instance->currentState); 
+    switch (instance->currentState){
+        case SkeletonState::Patrol:
+            instance->idleTimer = 3.0f;
+            break;
+        default:
+            printf("idle state\n");
+            instance->idleTimer = 5.0f;
+            break;
+    }
 }
 
 FSM<Skeleton> *Skeleton::IdleState::update(Skeleton *instance, float dt) {
     instance->getAnimator()->update(instance, dt);
-    if (InputManager::isKeyHold(InputManager::WASD)) {
-        return new Skeleton::RunningState;
+    printf("idle timer is %f\n",instance->idleTimer);
+    if(instance->idleTimer > 0){
+        instance->idleTimer -= dt;
+    }else{
+        return new Skeleton::PatrolState;
+    }
+    return nullptr;
+}
+
+void Skeleton::PatrolState::enter(Skeleton *instance) {
+    instance->getAnimator()->setIdx(11, 23);
+    instance->currentState = SkeletonState::Patrol;
+    
+    instance->patrolTimer = 5.0f;       // 設置巡邏計時器為5秒
+    instance->patrolSpeed = 20.0f;     // 設置巡邏速度為100像素/秒
+}
+FSM<Skeleton> *Skeleton::PatrolState::update(Skeleton *instance, float dt) {
+    instance->getAnimator()->update(instance, dt);
+    if (instance->patrolTimer > 0) {
+        // 執行巡邏
+        float speed = instance->patrolSpeed;
+        if (instance->patrolDirection == Direction::Left) {
+            instance->setX(instance->getX() - speed * dt);
+            instance->setFlip(true);  // 假設向左走時需要翻轉圖像
+        } else {
+            instance->setX(instance->getX() + speed * dt);
+            instance->setFlip(false);  // 假設向右走時不需要翻轉圖像
+        }
+        instance->patrolTimer -= dt;
+    } else {
+        // 切換方向並重置計時器
+        instance->patrolTimer = 5.0f;
+        if (instance->patrolDirection == Direction::Left) {
+            instance->patrolDirection = Direction::Right;
+            instance->currentState = SkeletonState::Idle;
+            return new Skeleton::IdleState;
+        } else {
+            instance->patrolDirection = Direction::Left;
+            instance->currentState = SkeletonState::Idle;   
+            return new Skeleton::IdleState;
+        }
     }
     return nullptr;
 }

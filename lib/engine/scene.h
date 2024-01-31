@@ -26,7 +26,7 @@ class Scene{
         Sprite *foreground;
         void renderBackground(SDL_Renderer *renderer);
         void loadScene(std::string path);
-
+        
 };
 
 
