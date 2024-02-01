@@ -8,7 +8,7 @@
 
 class CollideEngine{
     public:
-        void handleRigid();
+        void handleRigid(float dt);
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
 

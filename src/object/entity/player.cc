@@ -10,7 +10,10 @@ static int _idleWidth = 110;
 static int _idleHeight = 80;
 
 Player::Player()
-:Entity("Player",640, 360, 60, 120), hitbox(x, y, 60, 120, this), speed(400){
+:Entity("Player",640, 360, 60, 120), hitbox(60, 120, this), speed(400){
+    // set flags
+    this->setProps(ObjectProperty::RIGID);
+
     int r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
     this->animator.addAnimation("idle", r);
     r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
@@ -32,7 +35,6 @@ void Player::update(float dt) {
     }
     
     //update hitbox
-    this->hitbox.update(x,y);
     std::vector<CollideShape*> v;
     Game::getScene()->getCollided(&this->hitbox, v);
     /*for(auto s:*v){
@@ -56,6 +58,7 @@ void Player::IdleState::enter(Player *instance){
 }
 
 FSM<Player>* Player::IdleState::update(Player *instance, float dt){
+    instance->setVelocityXY(0, 0);
     instance->getAnimator()->play(instance, dt);
     if (InputManager::isKeyHold(InputManager::WASD)){
         return new Player::RunningState;
@@ -137,11 +140,8 @@ FSM<Player>* Player::RunningState::update(Player *instance, float dt){
     }
 
     float speed = instance->getSpeed();
-    float newX = instance->getX() + movementX * speed * dt;
-    float newY = instance->getY() + movementY * speed * dt;
 
-    instance->setX(newX);
-    instance->setY(newY);
+    instance->setVelocityXY(movementX * speed, movementY * speed);
 
     return nullptr;
 }

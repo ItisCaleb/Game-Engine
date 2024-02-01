@@ -8,8 +8,8 @@
 class Wall: public Object{
     public:
         Wall(float x, float y, int width, int height, Sprite *sprite)
-            :Object("Wall",x, y, 0), sprite(sprite),
-            hitbox(x, y, width, height, this){
+            :Object("Wall",x, y, ObjectProperty::RIGID | ObjectProperty::STATIC), sprite(sprite),
+            hitbox(width, height, this){
                 Game::getScene()->addCollideShape(&hitbox);
             }
         void update(float dt){};

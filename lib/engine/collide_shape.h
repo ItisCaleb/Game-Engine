@@ -19,38 +19,55 @@ class CollideShape {
         Object *getObject(){
             return this->object;
         }
-    private:
-        Object *object;
     protected:
+        Object *object;
         CollideShape(ShapeType type, Object *object)
             :type(type),object(object) {};
 };
 
 class BoxCollideShape: public CollideShape {
     public:
-        BoxCollideShape(float x, float y, float w, float h, Object *object)
-            : CollideShape(ShapeType::Box, object), x(x), y(y), w(w), h(h) {}
-        float x, y;
+        BoxCollideShape(float offx, float offy, float w, float h, Object *object)
+            : CollideShape(ShapeType::Box, object), offx(offx), offy(offy), w(w), h(h) {}
+        BoxCollideShape(float w, float h, Object *object)
+            : CollideShape(ShapeType::Box, object), offx(0), offy(0), w(w), h(h) {}
+        float offx, offy;
         float w, h;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);
-        void update(float x, float y){
-            this->x = x;
-            this->y = y;
+        float getRealX(){
+            if(this->object)
+                return this->object->getX() + offx;
+            else
+                return offx;
+        }
+        float getRealY(){
+            if(this->object)
+                return this->object->getY() + offy;
+            else return offy;
         }
 };
 
 class CircleCollideShape : public CollideShape {
     public:
         CircleCollideShape(float x, float y, float r, Object *object)
-            : CollideShape(ShapeType::Circle, object), x(x), y(y), r(r) {}
-        float x, y;
+            : CollideShape(ShapeType::Circle, object), offx(x), offy(y), r(r) {}
+        CircleCollideShape(float r, Object *object)
+            : CollideShape(ShapeType::Circle, object), offx(0), offy(0), r(r) {}
+        float offx, offy;
         float r;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);
-        void update(float x, float y){
-            this->x = x;
-            this->y = y;
+                float getRealX(){
+            if(this->object)
+                return this->object->getX() + offx;
+            else
+                return offx;
+        }
+        float getRealY(){
+            if(this->object)
+                return this->object->getY() + offy;
+            else return offy;
         }
 };
 
@@ -73,13 +90,22 @@ class LineCollideShape : public CollideShape {
 class PointCollideShape : public CollideShape {
     public:
         PointCollideShape(float x, float y, Object *object)
-            : CollideShape(ShapeType::Point, object), x(x), y(y) {}
-        float x, y;
+            : CollideShape(ShapeType::Point, object), offx(x), offy(y) {}
+        PointCollideShape(Object *object)
+            : CollideShape(ShapeType::Point, object), offx(0), offy(0) {}
+        float offx, offy;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);
-        void update(float x, float y){
-            this->x = x;
-            this->y = y;
+                float getRealX(){
+            if(this->object)
+                return this->object->getX() + offx;
+            else
+                return offx;
+        }
+        float getRealY(){
+            if(this->object)
+                return this->object->getY() + offy;
+            else return offy;
         }
 
 };

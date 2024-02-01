@@ -16,17 +16,26 @@ using ObjectProperty = _ObjectProperty::ObjectProperty;
 
 class Object{
     public:
+        friend class CollideEngine;
         virtual void update(float dt) = 0;
         virtual void render(SDL_Renderer *renderer) = 0;
         std::string getTag(){
             return tag;
         }
-        void setFlags(int prop){
+        void setProps(int prop){
             this->props |= prop;
         }
         int getProps(){
             return props;
         }
+        
+        bool isRigid(){
+            return props & ObjectProperty::RIGID;
+        }
+        bool isStatic(){
+            return props & ObjectProperty::STATIC;
+        }
+
         void setXY(float x, float y){
             this->x = x;
             this->y = y;

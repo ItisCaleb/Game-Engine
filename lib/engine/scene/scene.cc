@@ -30,7 +30,10 @@ void Scene::renderBackground(SDL_Renderer* renderer){
 void Scene::update(float dt){
     for (auto o : this->objects) {
         o->update(dt);
+        o->setX(o->getX() + o->getVelocityX()*dt);
+        o->setY(o->getY() + o->getVelocityY()*dt);
     }
+    this->collideEngine.handleRigid(dt);
 }
 
 void Scene::render(SDL_Renderer* renderer){
