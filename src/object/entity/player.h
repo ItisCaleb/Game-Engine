@@ -24,6 +24,10 @@ class Player : public Entity{
         bool isMove;
         bool isAttack;
         bool isFlip;
+        int comboCnt;
+        inline static int _lastTick;
+        
+
     private:
         BoxCollideShape hitbox;
         FSM<Player> *state;

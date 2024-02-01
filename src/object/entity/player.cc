@@ -17,18 +17,23 @@ Player::Player()
     this->animator.addAnimation("idle", r);
     r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
     this->animator.addAnimation("running", r);
+    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_TurnAround.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
+    this->animator.addAnimation("turnAround", r);
     r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
     this->animator.addAnimation("attack1", r);
     r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack2.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
     this->animator.addAnimation("attack2", r);
 
     Game::getScene()->addCollideShape(&this->hitbox, this);
-    this->isMove = false;
-    this->isAttack = false;
     this->state = new Player::IdleState();
     this->state->enter(this);
     this->width = 60;
     this->height = 120;
+
+    this->isMove = false;
+    this->isAttack = false;
+    this->_lastTick = SDL_GetTicks();
+    this->comboCnt = 0;
 }
 Player::~Player() {}
 
@@ -54,10 +59,13 @@ void Player::update(float dt) {
         if(o) printf("object type is %d\n",o->type);
     }*/
     //printf("collided %d objects\n",v->size());
-    if(!isAttack){
-        attack(this,dt);
+    if(SDL_GetTicks()-this->_lastTick>1000){
+        _lastTick = SDL_GetTicks();
+        printf("h");
     }
+
     move(this,dt);
+    attack(this,dt);
 }
 
 void Player::render(SDL_Renderer *renderer) {
@@ -75,6 +83,7 @@ void attack(Player *instance,float dt){
 }
 
 void move(Player *instance,float dt){
+    if(instance->isAttack)return;
     instance->isMove = true;
 
     //for controller 
