@@ -9,14 +9,15 @@
 #include "engine/sprite.h"
 #include "engine/object.h"
 #include "engine/collide_shape.h"
+#include "engine/collide_engine.h"
 
 class Scene{
     public:
         Scene(int width, int height)
             :width(width), height(height){};
         virtual void init() = 0;
-        virtual void update(float dt) = 0;
-        virtual void render(SDL_Renderer *renderer) = 0;
+        virtual void update(float dt);
+        virtual void render(SDL_Renderer *renderer);
         virtual void destroy() = 0;
     
         //get this scene width and height.
@@ -29,10 +30,8 @@ class Scene{
         void addObject(Object *object);
 
         // add shape to collision detection
-        void addCollideShape(CollideShape *shape, Object *object);
+        void addCollideShape(CollideShape *shape);
 
-        // return object attach by shape
-        Object* getObjectByShape(CollideShape *shape);
 
         // get all shape collided with this shape
         void getCollided(CollideShape *shape, std::vector<CollideShape*> &vec);
@@ -46,10 +45,8 @@ class Scene{
         Sprite *background;
         Sprite *foreground;
         std::vector<Object*> objects;
-        std::vector<CollideShape*> shapes;
-        std::unordered_map<CollideShape*, Object*> shapeToObject;
         std::unordered_multimap<std::string, Object*> tagToObject;
-
+        CollideEngine collideEngine;
         void renderBackground(SDL_Renderer *renderer);
         void loadScene(std::string path);
 

@@ -1,5 +1,6 @@
 #include "engine/scene.h"
 
+#include <algorithm>
 #include "engine/game.h"
 #include "engine/resource_manager.h"
 
@@ -26,6 +27,19 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     SDL_RenderCopyF(renderer, this->background->getTexture(), &srcRect, &destRect);
 }
 
+void Scene::update(float dt){
+    for (auto o : this->objects) {
+        o->update(dt);
+    }
+}
+
+void Scene::render(SDL_Renderer* renderer){
+    this->renderBackground(renderer);
+    for (auto o : this->objects) {
+        o->render(renderer);
+    }
+}
+
 
 void Scene::loadScene(std::string path){
     /*auto j = ResourceManager::load<nlohmann::json>(path);
@@ -48,40 +62,28 @@ void Scene::loadScene(std::string path){
 }
 
 void Scene::addObject(Object *object){
+    /*if(std::find(objects.begin(), objects.end(), object) == objects.end())
+        return;*/
     objects.push_back(object);
     tagToObject.insert(std::make_pair(object->getTag(), object));
 }
 
-void Scene::addCollideShape(CollideShape *shape, Object *object) {
-    auto result = shapeToObject.find(shape);
-    //non exist
-    if (result == shapeToObject.end()){
-        Scene::shapes.push_back(shape);
-        Scene::shapeToObject[shape] = object;
-    }
-    
-}
-
-Object* Scene::getObjectByShape(CollideShape *shape){
-    auto result = shapeToObject.find(shape);
-    if (result == shapeToObject.end())
-        return nullptr;
- 
-    return shapeToObject[shape];
- }
-
 void Scene::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
-    for(auto s: shapes){
-        if(shape == s) continue;
-        if(shape->isCollide(s)) vec.push_back(s);
-    }
+    this->collideEngine.getCollided(shape, vec);
 }
+
+
+void Scene::addCollideShape(CollideShape *shape) {
+    this->collideEngine.addCollideShape(shape);
+}
+
 
 Object* Scene::getObjectByTag(std::string tag){
     int nums = tagToObject.count(tag);
     if(!nums) return nullptr;
     return tagToObject.find(tag)->second;
 }
+
 void Scene::getObjectsByTag(std::string tag, std::vector<Object*> &vec){
     int nums = tagToObject.count(tag);
     if(!nums) return;
