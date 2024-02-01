@@ -21,23 +21,19 @@ class AnimeProperty{
         const int startIdx, endIdx;
 };
 
-class Animator: public FSM<Entity>{
+class Animator{
         public:
-            void enter(Entity *instance){
-                this->timer.start();
-            }
-            FSM<Entity>* update(Entity *instance, float dt){
-                if(!play) return nullptr;
+            void play(Entity *instance, float dt){
+                if(stop) return;
                 if(timer.getTicks() >= this->animTick){
+                    lastAnim = this->anim;
                     instance->chooseCurrentSprite(anim);
                     this->anim++;
                     if(this->anim >= currentAnimation->endIdx) 
                         this->anim = currentAnimation->startIdx;
                     this->timer.restart();
                 }
-                return nullptr;
             }
-            void exit(Entity *instance){}
 
             void addAnimation(std::string name, int num){
                 auto anime = new AnimeProperty(last, last+num);
@@ -45,7 +41,7 @@ class Animator: public FSM<Entity>{
                 properties[name] = anime;
             }
 
-            void playAnimation(std::string name){
+            void setAnimation(std::string name){
                 auto tmp = properties.find(name);
                 if(tmp == properties.end()){
                     printf("Animation '%s' is not found\n",name);
@@ -53,10 +49,11 @@ class Animator: public FSM<Entity>{
                 }
                 currentAnimation = properties[name];
                 this->anim = currentAnimation->startIdx;
-                play = true;
+                this->lastAnim = currentAnimation->startIdx;
+                stop = false;
             }
             void stopAnimation(){
-                play = false;
+                stop = true;
             }
 
             void setAnimTick(int tick){
@@ -70,13 +67,20 @@ class Animator: public FSM<Entity>{
                 return anim - currentAnimation->startIdx;
             }
 
+            bool isEnding(){
+                return anim < lastAnim;
+            }
+
         private:
             Timer timer;
+
+            // speed
             int animTick = Timer::TICK_12FRAMES;
             std::unordered_map<std::string, AnimeProperty*> properties;
             AnimeProperty* currentAnimation;
-            bool play = false;
+            bool stop = false;
             int anim;
+            int lastAnim;
             int last = 0;
     };
 
