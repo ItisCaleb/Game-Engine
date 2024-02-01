@@ -21,7 +21,7 @@ void MainScene::init(){
             this->addObject(w);
         }
     }
-    delete j;
+    ResourceManager::destroy(j);
     Player* player = new Player();
     this->addObject(player);
     auto menu = MainGUI::getInstance();
@@ -29,7 +29,7 @@ void MainScene::init(){
 }
 
 MainScene::~MainScene(){
-    delete this->background;
+    ResourceManager::destroy(this->background);
 }
 
 void MainScene::update(float dt){
