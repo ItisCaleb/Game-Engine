@@ -11,8 +11,11 @@ static int _idleHeight = 80;
 
 Player::Player()
 :Entity("Player",640, 360, 50, 50), hitbox(x, y, x+width, y+width), speed(400){
-    ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
-    ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
+    int r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
+    this->animator.addAnimation("idle", r);
+    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
+    this->animator.addAnimation("running", r);
+
     Game::getScene()->addCollideShape(&this->hitbox, this);
     this->state = new Player::IdleState();
     this->state->enter(this);
@@ -51,11 +54,11 @@ void Player::render(SDL_Renderer *renderer) {
 
 
 void Player::IdleState::enter(Player *instance){
-    instance->getAnimator()->setIdx(0,9);
+    instance->getAnimator()->setAnimation("idle");
 }
 
 FSM<Player>* Player::IdleState::update(Player *instance, float dt){
-    instance->getAnimator()->update(instance, dt);
+    instance->getAnimator()->play(instance, dt);
     if (InputManager::isKeyHold(InputManager::WASD)){
         return new Player::RunningState;
     }
@@ -63,7 +66,7 @@ FSM<Player>* Player::IdleState::update(Player *instance, float dt){
 }
 
 void Player::RunningState::enter(Player *instance){
-    instance->getAnimator()->setIdx(10,19);
+    instance->getAnimator()->setAnimation("running");
 }
 
 void move(Player *instance,float dt){
@@ -85,7 +88,7 @@ void move(Player *instance,float dt){
 
 
 FSM<Player>* Player::RunningState::update(Player *instance, float dt){
-    instance->getAnimator()->update(instance, dt);
+    instance->getAnimator()->play(instance, dt);
 
     if (!InputManager::isKeyHold(InputManager::WASD)){
         return new Player::IdleState;
