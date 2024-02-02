@@ -27,6 +27,9 @@ class Player : public Entity{
         bool setFlip(bool flip){
             this->flip = flip;
         }
+        BoxCollideShape* getHitbox(){
+            return &hitbox;
+        }
     private:
         BoxCollideShape hitbox;
         FSM<Player> *state;

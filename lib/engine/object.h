@@ -59,7 +59,7 @@ class Object{
             :tag(tag),x(x),y(y),props(props){}
         std::string tag;
         float x, y;
-        float vx, vy;
+        float vx=0, vy=0;
         int props;
 };
 

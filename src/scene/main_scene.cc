@@ -4,6 +4,7 @@
 #include <engine/game.h>
 #include <engine/wall.h>
 #include <engine/input_manager.h>
+#include <engine/geomatry.h>
 #include "gui/main_gui.h"
 
 
@@ -18,6 +19,7 @@ void MainScene::init(){
             float x1 = element["x1"], y1 = element["y1"];
             float x2 = element["x2"], y2 = element["y2"];
             Wall *w = new Wall(x1,y1, x2-x1,y2-y1,NULL);
+            this->addObject(w);
         }
     }
     delete j;
@@ -37,11 +39,12 @@ void MainScene::update(float dt){
     auto player = dynamic_cast<Player*>(this->getObjectByTag("Player"));
     if (player) {
         //update camera position
-        float zoom = Game::getCamera()->getZoom();
         float x = player->getX() + player->getWidth()/2;
         float y = player->getY() + player->getHeight()/2;
         Game::getCamera()->update(x, y);
     }
+
+
 }
 
 void MainScene::render(SDL_Renderer* renderer){

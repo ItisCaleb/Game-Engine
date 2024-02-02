@@ -15,7 +15,6 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     srcRect.x = (int)camera->getX();
     srcRect.y = (int)camera->getY();
 
-
     //check if source rect is out of bounds
     srcRect.x = std::max(0, std::min(srcRect.x, this->background->getWidth() - srcRect.w));
     srcRect.y = std::max(0, std::min(srcRect.y, this->background->getHeight() - srcRect.h));
@@ -34,6 +33,11 @@ void Scene::update(float dt){
         o->setY(o->getY() + o->getVelocityY()*dt);
     }
     this->collideEngine.handleRigid(dt);
+    /*for (auto o : this->objects) {
+        o->update(dt);
+        o->setX(o->getX() + o->getVelocityX()*dt);
+        o->setY(o->getY() + o->getVelocityY()*dt);
+    }*/
 }
 
 void Scene::render(SDL_Renderer* renderer){
