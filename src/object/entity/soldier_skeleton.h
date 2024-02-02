@@ -4,6 +4,7 @@
 #include <engine/collide_shape.h>
 #include <engine/entity.h>
 #include <engine/fsm.h>
+
 class Skeleton : public Entity {
    public:
     Skeleton();
@@ -40,6 +41,7 @@ class Skeleton : public Entity {
                                Dying };
     SkeletonState currentState;
     Direction patrolDirection;
+    float playerX, playerY;
     class IdleState : public FSM<Skeleton> {
        public:
         void enter(Skeleton *instance);
