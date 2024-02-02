@@ -15,11 +15,20 @@ class Player : public Entity{
         Animator *getAnimator(){
             return &this->animator;
         }
+        float getWidth(){
+            return this->hitbox.w;
+        }
+        float getHeight(){
+            return this->hitbox.h;
+        }
         float getSpeed(){
             return this->speed;
         }
         bool setFlip(bool flip){
             this->flip = flip;
+        }
+        BoxCollideShape* getHitbox(){
+            return &hitbox;
         }
     private:
         BoxCollideShape hitbox;
