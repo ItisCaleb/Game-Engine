@@ -1,5 +1,6 @@
 #include "engine/scene.h"
 
+#include <algorithm>
 #include "engine/game.h"
 #include "engine/resource_manager.h"
 
@@ -14,7 +15,6 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     srcRect.x = (int)camera->getX();
     srcRect.y = (int)camera->getY();
 
-
     //check if source rect is out of bounds
     srcRect.x = std::max(0, std::min(srcRect.x, this->background->getWidth() - srcRect.w));
     srcRect.y = std::max(0, std::min(srcRect.y, this->background->getHeight() - srcRect.h));
@@ -24,6 +24,27 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     destRect = camera->apply(destRect);
     // render
     SDL_RenderCopyF(renderer, this->background->getTexture(), &srcRect, &destRect);
+}
+
+void Scene::update(float dt){
+    for (auto o : this->objects) {
+        o->update(dt);
+        o->setX(o->getX() + o->getVelocityX()*dt);
+        o->setY(o->getY() + o->getVelocityY()*dt);
+    }
+    this->collideEngine.handleRigid(dt);
+    /*for (auto o : this->objects) {
+        o->update(dt);
+        o->setX(o->getX() + o->getVelocityX()*dt);
+        o->setY(o->getY() + o->getVelocityY()*dt);
+    }*/
+}
+
+void Scene::render(SDL_Renderer* renderer){
+    this->renderBackground(renderer);
+    for (auto o : this->objects) {
+        o->render(renderer);
+    }
 }
 
 
@@ -48,40 +69,28 @@ void Scene::loadScene(std::string path){
 }
 
 void Scene::addObject(Object *object){
+    /*if(std::find(objects.begin(), objects.end(), object) == objects.end())
+        return;*/
     objects.push_back(object);
     tagToObject.insert(std::make_pair(object->getTag(), object));
 }
 
-void Scene::addCollideShape(CollideShape *shape, Object *object) {
-    auto result = shapeToObject.find(shape);
-    //non exist
-    if (result == shapeToObject.end()){
-        Scene::shapes.push_back(shape);
-        Scene::shapeToObject[shape] = object;
-    }
-    
-}
-
-Object* Scene::getObjectByShape(CollideShape *shape){
-    auto result = shapeToObject.find(shape);
-    if (result == shapeToObject.end())
-        return nullptr;
- 
-    return shapeToObject[shape];
- }
-
 void Scene::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
-    for(auto s: shapes){
-        if(shape == s) continue;
-        if(shape->isCollide(s)) vec.push_back(s);
-    }
+    this->collideEngine.getCollided(shape, vec);
 }
+
+
+void Scene::addCollideShape(CollideShape *shape) {
+    this->collideEngine.addCollideShape(shape);
+}
+
 
 Object* Scene::getObjectByTag(std::string tag){
     int nums = tagToObject.count(tag);
     if(!nums) return nullptr;
     return tagToObject.find(tag)->second;
 }
+
 void Scene::getObjectsByTag(std::string tag, std::vector<Object*> &vec){
     int nums = tagToObject.count(tag);
     if(!nums) return;

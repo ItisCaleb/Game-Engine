@@ -4,6 +4,10 @@
 #include <engine/resource_manager.h>
 #include <engine/microui.h>
 #include <engine/game.h>
+#include <engine/wall.h>
+#include <engine/scene.h>
+
+#include "object/entity/player.h"
 
 using gh = typename::GUIHelper;
 
@@ -21,6 +25,7 @@ void Menu::onOpen(){
 
 char buff[256] = {};
 
+
 void Menu::draw(){
     gh::setCurrentFont(font);
     SDL_Rect wrect = {.x=10,.y=100,.w=300,.h=300};
@@ -34,7 +39,12 @@ void Menu::draw(){
         if(gh::slider(&this->zoom, 0.5f, 3.0f, 0.05f)){
             Game::getCamera()->updateZoom(this->zoom);
         }
-        gh::textbox(buff, 256);
+        if(gh::button("reset player",0)){
+            auto player = dynamic_cast<Player*>(Game::getScene()->getObjectByTag("Player"));
+            if (player) {
+                player->setXY(0,0);
+            }
+        }
         gh::endWindow();
     }
 }
