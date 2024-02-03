@@ -9,7 +9,8 @@ static int _idleWidth = 24;
 static int _idleHeight = 32;
 
 Skeleton::Skeleton()
-    : Entity("Skeleton",300, 360, 50, 50), hitbox(x, y, x + width, y + width), speed(400) {
+    : Entity("Skeleton",300, 360, 50, 50), hitbox(60,120,this), speed(400) {
+    this->setProps(ObjectProperty::RIGID);
     //0~11 idle
     int r = ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Idle.png", 24, 32, 0, 0, this->sprites);
     this->animator.addAnimation("idle",r);
@@ -32,16 +33,15 @@ Skeleton::Skeleton()
     if(this->sprites.size() == 0){
         printf("Error: Skeleton sprite not loaded\n");
     }   
-    Game::getScene()->addCollideShape(&this->hitbox, this);
+    Game::getScene()->addCollideShape(&this->hitbox);
     this->state = new Skeleton::IdleState();
     this->currentState = SkeletonState::Idle;
     this->state->enter(this);
-    this->width = 60;
-    this->height = 120;
+
     Player* player = dynamic_cast<Player*>(Game::getScene()->getObjectByTag("Player"));
     this->playerX = player->getX();
     this->playerY = player->getY();
-    
+    this->domainDistance = 90000;
     // init state
     this->patrolDirection = Direction::Left;
 }
@@ -55,9 +55,7 @@ void Skeleton::update(float dt) {
         this->state = _state;
         this->state->enter(this);
     }
-
-    // update hitbox
-    this->hitbox.update(x, y, x + width, y + height);
+   
     std::vector<CollideShape *> v;
     Game::getScene()->getCollided(&this->hitbox, v);
     /*for(auto s:*v){
@@ -69,8 +67,8 @@ void Skeleton::update(float dt) {
 
 void Skeleton::render(SDL_Renderer *renderer) {
     auto sp = sprites[currentSprite];
-    int x = this->x + this->width / 2 - sp->getWidth() * 3 / 2;
-    int y = this->y - (sp->getHeight() * 3 - this->height);
+    int x = this->x + this->hitbox.w / 2 - sp->getWidth() * 3 / 2;
+    int y = this->y - (sp->getHeight() * 3 - this->hitbox.h);
     sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
 }
 
@@ -88,10 +86,20 @@ void Skeleton::IdleState::enter(Skeleton *instance) {
 
 FSM<Skeleton> *Skeleton::IdleState::update(Skeleton *instance, float dt) {
     instance->getAnimator()->play(instance, dt);
-    
-    if(instance->idleTimer > 0){
+
+    Player *player = dynamic_cast<Player *>(Game::getScene()->getObjectByTag("Player"));
+    if (player) {
+        instance->playerX = player->getX();
+        instance->playerY = player->getY();
+    }
+    float dx = instance->playerX - instance->getX();
+    float dy = instance->playerY - instance->getY();
+    float distance = dx * dx + dy * dy;
+    if (distance > 10 && distance <= instance->domainDistance) {
+        return new Skeleton::ReachingState;
+    } else if (instance->idleTimer > 0) {
         instance->idleTimer -= dt;
-    }else if(instance->idleTimer <= 0){
+    } else if (instance->idleTimer <= 0) {
         return new Skeleton::PatrolState;
     }
     return nullptr;
@@ -104,9 +112,21 @@ void Skeleton::PatrolState::enter(Skeleton *instance) {
     instance->patrolTimer = 5.0f;       // 設置巡邏計時器為5秒
     instance->patrolSpeed = 20.0f;     // 設置巡邏速度為100像素/秒
 }
+
 FSM<Skeleton> *Skeleton::PatrolState::update(Skeleton *instance, float dt) {
     instance->getAnimator()->play(instance, dt);
-    if (instance->patrolTimer > 0) {
+
+    Player *player = dynamic_cast<Player *>(Game::getScene()->getObjectByTag("Player"));
+    if (player) {
+        instance->playerX = player->getX();
+        instance->playerY = player->getY();
+    }
+    float dx = instance->playerX - instance->getX();
+    float dy = instance->playerY - instance->getY();
+    float distance = dx * dx + dy * dy;
+    if (distance > 10 && distance <= instance->domainDistance) {
+        return new Skeleton::ReachingState;
+    } else if (instance->patrolTimer > 0) {
         // 執行巡邏
         float speed = instance->patrolSpeed;
         if (instance->patrolDirection == Direction::Left) {
@@ -130,5 +150,54 @@ FSM<Skeleton> *Skeleton::PatrolState::update(Skeleton *instance, float dt) {
             return new Skeleton::IdleState;
         }
     }
+    return nullptr;
+}
+
+void Skeleton::ReachingState::enter(Skeleton *instance) {
+    instance->getAnimator()->setAnimation("reaching");
+    instance->currentState = SkeletonState::Reaching;
+    instance->reachingTimer = 0.08f;
+}
+FSM<Skeleton> *Skeleton::ReachingState::update(Skeleton *instance, float dt) {
+    instance->getAnimator()->play(instance, dt);
+    
+    if (instance->reachingTimer > 0) {
+        printf("timer: %f\n", instance->reachingTimer);  // 這裡做一些攻擊動作
+        printf("dt: %f\n", dt);  // 這裡做一些攻擊動作
+        instance->reachingTimer -= dt;
+    } else if (instance->reachingTimer <= 0) {
+        return new Skeleton::PursuingState;
+    }
+    return nullptr;
+}
+
+void Skeleton::PursuingState::enter(Skeleton *instance) {
+    instance->getAnimator()->setAnimation("patrol");
+    instance->currentState = SkeletonState::Pursuing;
+    instance->patrolSpeed = 60.0f;
+}
+FSM<Skeleton> *Skeleton::PursuingState::update(Skeleton *instance, float dt) {
+    instance->getAnimator()->play(instance, dt);
+    instance->currentState = SkeletonState::Idle;
+    Player *player = dynamic_cast<Player *>(Game::getScene()->getObjectByTag("Player"));
+    if (player) {
+        instance->playerX = player->getX();
+        instance->playerY = player->getY();
+    }
+    float dx = instance->playerX - instance->getX();
+    float dy = instance->playerY - instance->getY();
+    float distance = dx * dx + dy * dy;
+    if ( distance > 10 && distance <= instance->domainDistance ) {
+        float speed = instance->getSpeed();
+        float angle = atan2(dy, dx);
+        instance->setX(instance->getX() + cos(angle) * instance->patrolSpeed * dt);
+        instance->setY(instance->getY() + sin(angle) * instance->patrolSpeed * dt);
+        // 根據玩家位置設置圖像翻轉
+        instance->setFlip(dx < 0);
+    } else if (distance <= 10 || distance > instance->domainDistance) {
+        // 如果玩家超出範圍，可以切換回其他狀態
+        return new Skeleton::IdleState();  // 這裡假設返回到Idle狀態，根據需要調整
+    }
+    // return new Skeleton::IdleState;
     return nullptr;
 }

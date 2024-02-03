@@ -30,6 +30,8 @@ class Skeleton : public Entity {
     float idleTimer;
     float patrolTimer;
     float patrolSpeed;
+    float domainDistance;
+    float reachingTimer;
     enum class Direction { Left,
                                  Right };
     enum class SkeletonState { Idle,
