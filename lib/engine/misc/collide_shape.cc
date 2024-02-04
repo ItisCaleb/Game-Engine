@@ -31,7 +31,7 @@ bool BoxCollideShape::isCollide(CollideShape *shape) {
 
 void BoxCollideShape::render(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-    SDL_FRect rect = {.x = this->x1, .y = this->y1, .w = this->x2 - this->x1, .h = this->y2 - this->y1};
+    SDL_FRect rect = {.x = this->getRealX(), .y = this->getRealY(), .w = this->w, .h = this->h};
     rect = Game::getCamera()->apply(rect);
     SDL_RenderDrawRectF(renderer, &rect);
 }
@@ -58,8 +58,8 @@ void CircleCollideShape::render(SDL_Renderer *renderer) {
     float tx = 1;
     float ty = 1;
     float error = (tx - diameter);
-    float ax = Game::getCamera()->applyX(this->x);
-    float ay = Game::getCamera()->applyY(this->y);
+    float ax = Game::getCamera()->applyX(this->getRealX());
+    float ay = Game::getCamera()->applyY(this->getRealY());
     while (x >= y) {
         //  Each of the following renders an octant of the circle
         SDL_RenderDrawPointF(renderer, ax + x, ay - y);
@@ -122,46 +122,50 @@ bool PointCollideShape::isCollide(CollideShape *shape) {
 
 void PointCollideShape::render(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-    float ax = Game::getCamera()->applyX(this->x);
-    float ay = Game::getCamera()->applyY(this->y);
+    float ax = Game::getCamera()->applyX(this->getRealX());
+    float ay = Game::getCamera()->applyY(this->getRealY());
     SDL_RenderDrawPointF(renderer, ax, ay);
 }
 
 bool checkCollisionBB(BoxCollideShape *a, BoxCollideShape *b) {
     // two boxes
-    if (a->y2 < b->y1) return false;
-    if (a->y1 > b->y2) return false;
-    if (a->x2 < b->x1) return false;
-    if (a->x1 > b->x2) return false;
+    if (a->getRealY() + a->h < b->getRealY()) return false;
+    if (a->getRealY() > b->getRealY() + b->h) return false;
+    if (a->getRealX() + a->w < b->getRealX()) return false;
+    if (a->getRealX() > b->getRealX() + b->w) return false;
     return true;
 }
 bool checkCollisionBC(BoxCollideShape *a, CircleCollideShape *b) {
     // get point in rectangle which is close to circle
     // init test = circle center (if circle center is in box)
-    float tx = b->x;
-    float ty = b->y;
+    float tx = b->getRealX();
+    float ty = b->getRealY();
+    float ax2 = a->getRealX() + a->w;
+    float ay2 = a->getRealY() + a->h;
     // if circle center is to the right of box take right side
-    if (b->x < a->x1)
-        tx = a->x1;
-    else if (b->x > a->x2)
-        tx = a->x2;
-    if (b->y < a->y1)
-        ty = a->y1;
-    else if (b->y > a->y2)
-        ty = a->y2;
-    return dis(b->x, b->y, tx, ty) <= b->r;
+    if (b->getRealX() < a->getRealX())
+        tx = a->getRealX();
+    else if (b->getRealX() > ax2)
+        tx = ax2;
+    if (b->getRealY() < a->getRealY())
+        ty = a->getRealY();
+    else if (b->getRealY() > ay2)
+        ty = ay2;
+    return dis(b->getRealX(), b->getRealY(), tx, ty) <= b->r;
 }
 bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b) {
-    PointCollideShape p1(b->x1, b->y1);
-    PointCollideShape p2(b->x2, b->y2);
+    PointCollideShape p1(b->x1, b->y1, nullptr);
+    PointCollideShape p2(b->x2, b->y2, nullptr);
     if (checkCollisionBP(a, &p1) ||
         checkCollisionBP(a, &p2)) {
         return true;
     }
-    LineCollideShape l1(a->x1, a->y1, a->x1, a->y2);
-    LineCollideShape l2(a->x2, a->y1, a->x2, a->y2);
-    LineCollideShape l3(a->x1, a->y1, a->x2, a->y1);
-    LineCollideShape l4(a->x1, a->y2, a->x2, a->y2);
+    float ax2 = a->getRealX() + a->w;
+    float ay2 = a->getRealY() + a->h;
+    LineCollideShape l1(a->getRealX(), a->getRealY(), a->getRealX(), ay2, nullptr);
+    LineCollideShape l2(ax2, a->getRealY(), ax2, ay2, nullptr);
+    LineCollideShape l3(a->getRealX(), a->getRealY(), ax2, a->getRealY(), nullptr);
+    LineCollideShape l4(a->getRealX(), ay2, ax2, ay2, nullptr);
     bool left = checkCollisionLL(&l1, b);
     bool right = checkCollisionLL(&l2, b);
     bool top = checkCollisionLL(&l3, b);
@@ -170,34 +174,34 @@ bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b) {
 }
 
 bool checkCollisionBP(BoxCollideShape *a, PointCollideShape *b) {
-    if (a->x2 < b->x) return false;
-    if (a->x1 > b->x) return false;
-    if (a->y2 < b->y) return false;
-    if (a->y1 > b->y) return false;
+    if (a->getRealX() + a->w < b->getRealX()) return false;
+    if (a->getRealX() > b->getRealX()) return false;
+    if (a->getRealY() + a->h < b->getRealY()) return false;
+    if (a->getRealY() > b->getRealY()) return false;
     return true;
 }
 bool checkCollisionCC(CircleCollideShape *a, CircleCollideShape *b) {
     // distance between two points <=  (ra + rb)
-    return dis(a->x, a->y, b->x, b->y) <= (a->r + b->r);
+    return dis(a->getRealX(), a->getRealY(), b->getRealX(), b->getRealY()) <= (a->r + b->r);
 }
 
 bool checkCollisionCP(CircleCollideShape *a, float x, float y) {
     // distance between circle and points <=  r
-    return dis(a->x, a->y, x, y) <= a->r;
+    return dis(a->getRealX(), a->getRealY(), x, y) <= a->r;
 }
 bool checkCollisionCP(CircleCollideShape *a, PointCollideShape *b) {
     // distance between circle and points <=  r
-    return dis(a->x, a->y, b->x, b->y) <= a->r;
+    return dis(a->getRealX(), a->getRealY(), b->getRealX(), b->getRealY()) <= a->r;
 }
 bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b) {
     // line points in circle
-    if (dis(a->x, a->y, b->x1, b->y1) <= a->r || dis(a->x, a->y, b->x2, b->y2) <= a->r) return true;
+    if (dis(a->getRealX(), a->getRealY(), b->x1, b->y1) <= a->r || dis(a->getRealX(), a->getRealY(), b->x2, b->y2) <= a->r) return true;
     // p  is the closest point on the line to the circle center
-    float u = ((a->x - b->x1) * (b->x2 - b->x1) + (a->y - b->y1) * (b->y2 - b->y1)) / ((b->x1 - b->x2) * (b->x1 - b->x2) + (b->y1 - b->y2) * (b->y1 - b->y2));
+    float u = ((a->getRealX() - b->x1) * (b->x2 - b->x1) + (a->getRealY() - b->y1) * (b->y2 - b->y1)) / ((b->x1 - b->x2) * (b->x1 - b->x2) + (b->y1 - b->y2) * (b->y1 - b->y2));
     float x = b->x1 + u * (b->x2 - b->x1);
     float y = b->y1 + u * (b->y2 - b->y1);
     // point p is on line
-    PointCollideShape p(x, y);
+    PointCollideShape p(x, y, nullptr);
     if (!checkCollisionLP(b, &p)) {
         return false;
     } else {
@@ -226,14 +230,14 @@ bool checkCollisionLP(LineCollideShape *a, PointCollideShape *b) {
     // length of line a
     float length = dis(a->x1, a->y1, a->x2, a->y2);
     // dis between line a point1 and point b
-    float dis_a1_b = dis(a->x1, a->y1, b->x, b->y);
+    float dis_a1_b = dis(a->x1, a->y1, b->getRealX(), b->getRealY());
     // dis between line a point2 and point b
-    float dis_a2_b = dis(a->x2, a->y2, b->x, b->y);
+    float dis_a2_b = dis(a->x2, a->y2, b->getRealX(), b->getRealY());
     // triangle law
     return std::abs(dis_a1_b + dis_a2_b - length) <= epsilon;
 }
 bool checkCollisionPP(PointCollideShape *a, PointCollideShape *b) {
     float epsilon = 0.0001;
     // two points
-    return std::abs(a->x - b->x) <= epsilon && std::abs(a->y - b->y) <= epsilon;
+    return std::abs(a->getRealX() - b->getRealX()) <= epsilon && std::abs(a->getRealY() - b->getRealY()) <= epsilon;
 }

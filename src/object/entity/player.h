@@ -15,6 +15,12 @@ class Player : public Entity{
         Animator *getAnimator(){
             return &this->animator;
         }
+        float getWidth(){
+            return this->hitbox.w;
+        }
+        float getHeight(){
+            return this->hitbox.h;
+        }
         float getSpeed(){
             return this->speed;
         }
@@ -28,6 +34,9 @@ class Player : public Entity{
         inline static int _lastTick;
         
 
+        BoxCollideShape* getHitbox(){
+            return &hitbox;
+        }
     private:
         BoxCollideShape hitbox;
         FSM<Player> *state;

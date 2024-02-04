@@ -3,22 +3,64 @@
 
 #include <string>
 
+namespace _ObjectProperty{
+    enum ObjectProperty{
+        // will do physical collide
+        RIGID = 1,
+        // unmovable by collision
+        STATIC = 2,
+    };
+}
+
+using ObjectProperty = _ObjectProperty::ObjectProperty;
 
 class Object{
     public:
+        friend class CollideEngine;
         virtual void update(float dt) = 0;
         virtual void render(SDL_Renderer *renderer) = 0;
         std::string getTag(){
             return tag;
         }
-        int getFlags(){
-            return flags;
+        void setProps(int prop){
+            this->props |= prop;
         }
+        int getProps(){
+            return props;
+        }
+        
+        bool isRigid(){
+            return props & ObjectProperty::RIGID;
+        }
+        bool isStatic(){
+            return props & ObjectProperty::STATIC;
+        }
+
+        void setXY(float x, float y){
+            this->x = x;
+            this->y = y;
+        }
+        void setX(float x){ this->x = x; }
+        void setY(float y){ this->y = y; }
+        float getX(){ return x; }
+        float getY(){ return y; }
+        
+        void setVelocityXY(float vx, float vy){
+            this->vx = vx;
+            this->vy = vy;
+        }
+        void setVelocityX(float vx){ this->vx = vx;}
+        void setVelocityY(float vy){ this->vy = vy;}
+
+        float getVelocityX(){ return vx; }
+        float getVelocityY(){ return vy; }
     protected:
-        Object(std::string tag, int flags)
-            :tag(tag),flags(flags){}
+        Object(std::string tag, float x, float y, int props)
+            :tag(tag),x(x),y(y),props(props){}
         std::string tag;
-        int flags;
+        float x, y;
+        float vx=0, vy=0;
+        int props;
 };
 
 

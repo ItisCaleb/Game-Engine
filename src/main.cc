@@ -13,7 +13,7 @@
 int main(int argc, char **argv) {
 
     // Game loop start
-    float target_fps = 144;
+    float target_fps = 60;
     float frame_limit = 1000.f/target_fps;
     float delta = frame_limit;
     

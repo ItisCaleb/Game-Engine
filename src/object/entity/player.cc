@@ -24,7 +24,7 @@ Player::Player()
     r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack2.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
     this->animator.addAnimation("attack2", r);
 
-    Game::getScene()->addCollideShape(&this->hitbox, this);
+    Game::getScene()->addCollideShape(&this->hitbox);
     this->state = new Player::IdleState();
     this->state->enter(this);
     this->width = 60;
@@ -51,7 +51,6 @@ void Player::update(float dt) {
     }
     
     //update hitbox
-    this->hitbox.update(x,y,x+width,y+height);
     std::vector<CollideShape*> v;
     Game::getScene()->getCollided(&this->hitbox, v);
     /*for(auto s:*v){
@@ -70,8 +69,8 @@ void Player::update(float dt) {
 
 void Player::render(SDL_Renderer *renderer) {
     auto sp = sprites[currentSprite];
-    int x = this->x + this->width/2 - sp->getWidth()*3/2;
-    int y = this->y - (sp->getHeight()*3 - this->height);
+    int x = this->x + this->hitbox.w/2 - sp->getWidth()*3/2;
+    int y = this->y - (sp->getHeight()*3 - this->hitbox.h);
     sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
 }
 
@@ -118,8 +117,6 @@ void move(Player *instance,float dt){
     }
 
     float speed = instance->getSpeed();
-    float newX = instance->getX() + movementX * speed * dt;
-    float newY = instance->getY() + movementY * speed * dt;
 
     instance->setX(newX);
     instance->setY(newY);
