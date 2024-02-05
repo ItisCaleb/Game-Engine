@@ -3,15 +3,18 @@
 #include "engine/geomatry.h"
 #include "engine/game.h"
 
-#include <cmath>
 #include <set>
 
 void CollideEngine::addCollideShape(CollideShape *shape){
     auto obj = shape->getObject();
     if(!obj) return;
     this->shapes.push_back(shape);
-    if(obj->isRigid()){
+    int props = obj->getProps();
+    if(props & ObjectProperty::RIGID){
         this->rigidShapes.push_back(shape);
+    }
+    if(props & ObjectProperty::TRIGGER){
+        this->triggerShapes.push_back(shape);
     }
 
 }
@@ -39,20 +42,34 @@ void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
     o->setY(o->getY()+penV.y);
 }
 
-void CollideEngine::handleRigid(float dt){
+void CollideEngine::handle(float dt){
         
+
+    for (auto r1 : this->triggerShapes) {
+        for (auto r2 : this->shapes) {
+            if(r1 == r2) continue;
+            if(!r1->isCollide(r2)) continue;
+            auto obj = r1->getObject();
+            obj->onTrigger(r2);
+        }
+    }
 
     for (auto r1 : this->rigidShapes) {
         if(r1->type != ShapeType::Box) continue;
         for (auto r2 : this->rigidShapes) {
             if(r1 == r2) continue;
             if(r2->type != ShapeType::Box) continue;
-            if(!r1->getObject()->isStatic() && r2->getObject()->isStatic()){
+            auto obj1 = r1->getObject();
+            auto obj2 = r2->getObject();
+            int isStatic1 = obj1->getProps() & ObjectProperty::STATIC;
+            int isStatic2 = obj2->getProps() & ObjectProperty::STATIC;
+            obj1->onCollide(r2);
+            obj2->onCollide(r1);
+            if(!isStatic1 && isStatic2){
                 bbSolver((BoxCollideShape*)r1,(BoxCollideShape*)r2);
-            }else if(r1->getObject()->isStatic() && !r2->getObject()->isStatic()){
+            }else if(isStatic1 && !isStatic2){
                 bbSolver((BoxCollideShape*)r2,(BoxCollideShape*)r1);
             }
-
         }
     }
 }

@@ -1,7 +1,10 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
+#include <SDL2/SDL.h>
+
 #include <string>
+#include <vector>
 
 namespace _ObjectProperty{
     enum ObjectProperty{
@@ -9,11 +12,14 @@ namespace _ObjectProperty{
         RIGID = 1,
         // unmovable by collision
         STATIC = 2,
+        // is trigger
+        TRIGGER = 4,
     };
 }
 
 using ObjectProperty = _ObjectProperty::ObjectProperty;
 
+class CollideShape;
 class Object{
     public:
         friend class CollideEngine;
@@ -27,13 +33,6 @@ class Object{
         }
         int getProps(){
             return props;
-        }
-        
-        bool isRigid(){
-            return props & ObjectProperty::RIGID;
-        }
-        bool isStatic(){
-            return props & ObjectProperty::STATIC;
         }
 
         void setXY(float x, float y){
@@ -54,10 +53,16 @@ class Object{
 
         float getVelocityX(){ return vx; }
         float getVelocityY(){ return vy; }
+
+    private:
+        virtual void onCollide(CollideShape *shape){}
+        virtual void onTrigger(CollideShape *shape){}
     protected:
         Object(std::string tag, float x, float y, int props)
             :tag(tag),x(x),y(y),props(props){}
+        void attachHitbox(CollideShape *shape);
         std::string tag;
+        std::vector<CollideShape*> hitboxs;
         float x, y;
         float vx=0, vy=0;
         int props;

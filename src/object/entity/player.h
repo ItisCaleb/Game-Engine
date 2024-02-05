@@ -16,10 +16,10 @@ class Player : public Entity{
             return &this->animator;
         }
         float getWidth(){
-            return this->hitbox.w;
+            return this->w;
         }
         float getHeight(){
-            return this->hitbox.h;
+            return this->h;
         }
         float getSpeed(){
             return this->speed;
@@ -27,17 +27,15 @@ class Player : public Entity{
         bool setFlip(bool flip){
             this->flip = flip;
         }
-        BoxCollideShape* getHitbox(){
-            return &hitbox;
-        }
+        void onTrigger(CollideShape *shape);
     private:
-        BoxCollideShape hitbox;
         FSM<Player> *state;
         Animator animator;
         float speed;
         float velocity;
         float maxSpeed;
         bool flip;
+        int w, h;
 
 
     class IdleState: public FSM<Player>{
