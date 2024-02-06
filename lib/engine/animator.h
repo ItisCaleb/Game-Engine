@@ -26,6 +26,7 @@ class Animator{
             void play(Entity *instance, float dt){
                 if(stop) return;
                 if(timer.getTicks() >= this->animTick){
+                    lastAnim = this->anim;
                     instance->chooseCurrentSprite(anim);
                     this->anim++;
                     if(this->anim >= currentAnimation->endIdx) 
@@ -48,6 +49,7 @@ class Animator{
                 }
                 currentAnimation = properties[name];
                 this->anim = currentAnimation->startIdx;
+                this->lastAnim = currentAnimation->startIdx;
                 stop = false;
             }
             void stopAnimation(){
@@ -65,13 +67,20 @@ class Animator{
                 return anim - currentAnimation->startIdx;
             }
 
+            bool isEnding(){
+                return anim < lastAnim;
+            }
+
         private:
             Timer timer;
+
+            // speed
             int animTick = Timer::TICK_12FRAMES;
             std::unordered_map<std::string, AnimeProperty*> properties;
             AnimeProperty* currentAnimation;
             bool stop = false;
             int anim;
+            int lastAnim;
             int last = 0;
     };
 

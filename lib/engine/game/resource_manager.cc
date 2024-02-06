@@ -8,129 +8,51 @@
 #include "engine/game.h"
 #include "engine/font.h"
 
-// resource load functions
 
-template <>
-Sprite* ResourceManager::load(std::string resource) {
-    std::filesystem::path resPath = resource;
-    if (resPath.extension() == ".png" ||
-        resPath.extension() == ".jpg" ||
-        resPath.extension() == ".bmp") {
-        SDL_Surface* surface = IMG_Load(resource.c_str());
-        if (!surface) {
-            printf("Error: Unable to load surface from path: %s. SDL_image Error: %s\n", resource.c_str(), IMG_GetError());
-            return nullptr;
-        }
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::getRenderer(), surface);
-        if (!texture) {
-            printf("Error: Unable to create texture from: %s. SDL Error %s\n", resource.c_str(), SDL_GetError());
-            return nullptr;
-        }
-        SDL_FreeSurface(surface);
-        int w, h;
-        SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-        return new Sprite(texture, 0, 0, w, h);
-    } else {
-        printf("Error: Unsupported format: \"%s\". Can't load sprite from %s",
-               resPath.extension().c_str(),
-               resource.c_str());
-        return nullptr;
-    }
+void* ResourceManager::searchPool(std::string path){
+    SDL_LockMutex(pool_mutex);
+    // use reference counter
+    auto iter = resourcePool.find(path);
+    if(iter == resourcePool.end()) return nullptr;
+    iter->second.second++;
+    SDL_UnlockMutex(pool_mutex);
+    return iter->second.first;
 }
 
-template <>
-nlohmann::json* ResourceManager::load(std::string resource) {
-    std::ifstream f(resource);
-    return new nlohmann::json(nlohmann::json::parse(f));
+void ResourceManager::addToPool(std::string path, void *resource){
+    SDL_LockMutex(pool_mutex);
+    auto pair = std::pair<void*, int>(resource, 1);
+    resourcePool[path] = pair;
+    SDL_UnlockMutex(pool_mutex);
 }
 
-template <>
-Font* ResourceManager::load(std::string resource) {
-    std::filesystem::path resPath = resource;
-    if (resPath.extension() == ".ttf") {
-        int fontPt = 28;
-        TTF_Font* font = TTF_OpenFont(resource.c_str(), fontPt);
-        if (!font) {
-            printf("Error: Unable to load surface from path: %s. SDL_ttf Error: %s\n", resource.c_str(), TTF_GetError());
-            return nullptr;
+int ResourceManager::removeFromPool(void *resource){
+    SDL_LockMutex(pool_mutex);
+    for(auto iter = resourcePool.begin(); iter != resourcePool.end(); iter++)
+        if(iter->second.first == resource){
+            // ref count - 1
+            iter->second.second--;
+            int ref = iter->second.second;
+            if(ref == 0){
+                resourcePool.erase(iter);
+            }
+            SDL_UnlockMutex(pool_mutex);
+            return ref;
         }
-        return new Font(font, fontPt);
-    } else {
-        printf("Error: Unsupported format: \"%s\". Can't load font from %s",
-               resPath.extension().c_str(),
-               resource.c_str());
-        return nullptr;
-    }
-}
-
-int ResourceManager::loadSprites(std::string resource, int clipW, int clipH, int paddingX, int paddingY, std::vector<Sprite*> &vec) {
-    auto* sprite = ResourceManager::load<Sprite>(resource);
-    if(!sprite) return 0;
-    int cnt = 0;
-    for (int i = 0; i < sprite->getWidth() / (clipW+paddingX); i++) {
-        for (int j = 0; j < sprite->getHeight() / (clipH+paddingY); j++) {
-            int x = clipW * i;
-            int y = clipH * j;
-            if(i!=0) x += paddingX*i;
-            if(j!=0) y += paddingY*j;
-            vec.push_back(new Sprite(sprite->getTexture(), x, y, clipW, clipH));
-            cnt++;
-        }
-    }
-    delete sprite;
-    return cnt;
-}
-
-int ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec){
-    auto* sprite = ResourceManager::load<Sprite>(resource);
-    if(!sprite) return 0;
-
-    std::filesystem::path resPath = resource;
-    auto* config = ResourceManager::load<nlohmann::json>(resPath.replace_extension(".json").string());
-    if(!config) return 0;
-    int cnt;
-    for (auto& element : *config) {
-        if(element["type"] == "box"){
-            float x1 = element["x1"], y1 = element["y1"];
-            float x2 = element["x2"], y2 = element["y2"];
-            vec.push_back(new Sprite(sprite->getTexture(), x1, y1, x2-x1, y2-y1));
-        }
-    }
-    delete sprite;
-    delete config;
-    return cnt;
+    SDL_UnlockMutex(pool_mutex);
+    return -1;
 }
 
 
-inline void ResourceManager::pushToWorker(void* res){
+
+void ResourceManager::pushToWorker(void* res){
     SDL_LockMutex(ResourceManager::qmutex);
     workQueue.push(res);
     SDL_UnlockMutex(ResourceManager::qmutex);
     SDL_CondSignal(ResourceManager::wakeup);
 }
 
-// async resource load functions
 
-template <>
-AsyncResource<Sprite>* ResourceManager::loadAsync(std::string resource) {
-    auto res = new AsyncResource<Sprite>(resource, ResourceType::Sprite);
-    pushToWorker(res);
-    return res;
-}
-
-template <>
-AsyncResource<nlohmann::json>* ResourceManager::loadAsync(std::string resource) {
-    auto res = new AsyncResource<nlohmann::json>(resource, ResourceType::JSON);
-    pushToWorker(res);
-    return res;
-}
-
-template <>
-AsyncResource<TTF_Font>* ResourceManager::loadAsync(std::string resource) {
-    auto res = new AsyncResource<TTF_Font>(resource, ResourceType::Font);
-    pushToWorker(res);
-    return res;
-}
 
 // worker function to load resource
 int asyncIOWorker(void* data) {
@@ -171,6 +93,7 @@ int asyncIOWorker(void* data) {
 
 void ResourceManager::startWorkerThread() {
     if (qmutex) return;
+    pool_mutex = SDL_CreateMutex();
     qmutex = SDL_CreateMutex();
     wmutex = SDL_CreateMutex();
     wakeup = SDL_CreateCond();
