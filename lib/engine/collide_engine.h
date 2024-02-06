@@ -9,7 +9,7 @@
 
 class CollideEngine{
     public:
-        void handleRigid(float dt);
+        void handle(float dt);
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
 
@@ -22,6 +22,7 @@ class CollideEngine{
         
         std::vector<std::pair<CollideShape*, CollideShape*>> collides; 
         std::vector<CollideShape*> shapes;
+        std::vector<CollideShape*> triggerShapes;
         std::vector<CollideShape*> rigidShapes;
 };
 

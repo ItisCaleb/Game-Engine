@@ -10,22 +10,24 @@ static int _idleWidth = 110;
 static int _idleHeight = 80;
 
 Player::Player()
-:Entity("Player",640, 360, 60, 120), hitbox(60, 120, this), speed(400){
+:Entity("Player",640, 360),hitbox(60,120), speed(400){
     // set flags
     this->setProps(ObjectProperty::RIGID);
+    this->setProps(ObjectProperty::TRIGGER);
 
     int r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
     this->animator.addAnimation("idle", r);
     r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
     this->animator.addAnimation("running", r);
 
-    Game::getScene()->addCollideShape(&this->hitbox);
+    this->attachHitbox(&this->hitbox);
     this->state = new Player::IdleState();
     this->state->enter(this);
 }
 Player::~Player() {}
 
 void Player::update(float dt) {
+    this->setVelocityXY(0, 0);
     auto _state = this->state->update(this, dt);
     if(_state){
         this->state->exit(this);
@@ -33,16 +35,10 @@ void Player::update(float dt) {
         this->state = _state;
         this->state->enter(this);
     }
-    
-    //update hitbox
-    std::vector<CollideShape*> v;
-    Game::getScene()->getCollided(&this->hitbox, v);
-    /*for(auto s:*v){
-        Object *o = Game::getObjectByShape(s);
-        if(o) printf("object type is %d\n",o->type);
-    }*/
-    //printf("collided %d objects\n",v->size());
+}
 
+void Player::onTrigger(CollideShape *shape){
+    // do something
 }
 
 void Player::render(SDL_Renderer *renderer) {
@@ -58,7 +54,6 @@ void Player::IdleState::enter(Player *instance){
 }
 
 FSM<Player>* Player::IdleState::update(Player *instance, float dt){
-    instance->setVelocityXY(0, 0);
     instance->getAnimator()->play(instance, dt);
     if (InputManager::isKeyHold(InputManager::WASD)){
         return new Player::RunningState;

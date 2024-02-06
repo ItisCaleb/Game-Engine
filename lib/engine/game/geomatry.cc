@@ -9,7 +9,7 @@ BoxCollideShape minowskiDifference(BoxCollideShape *a, BoxCollideShape *b){
         a->getRealX() - b->getRealX() - b->w,
         b->getRealY() - a->getRealY() - a->h,
         a->w+b->w,
-        a->h+b->h,nullptr);
+        a->h+b->h);
     return m;
 }
 

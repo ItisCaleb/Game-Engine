@@ -27,13 +27,11 @@ class Player : public Entity{
         bool setFlip(bool flip){
             this->flip = flip;
         }
-        BoxCollideShape* getHitbox(){
-            return &hitbox;
-        }
+        void onTrigger(CollideShape *shape);
     private:
-        BoxCollideShape hitbox;
         FSM<Player> *state;
         Animator animator;
+        BoxCollideShape hitbox;
         float speed;
         float velocity;
         float maxSpeed;

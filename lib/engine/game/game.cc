@@ -3,6 +3,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
+#include <utility>
+
 #include "engine/input_manager.h"
 #include "engine/gui_helper.h"
 
@@ -68,7 +70,8 @@ void Game::init(std::string windowName, int width, int height){
     if (Game::already_init) return;
     Game::initSDL(windowName);
     SDL_RenderSetLogicalSize(renderer, width, height);
-    //SDL_RenderSetScale(renderer, (float)width/windowWidth, (float)height/windowHeight);
+    //float scale = std::min((float)windowWidth/width, (float)windowHeight/height);
+    //SDL_RenderSetScale(renderer, scale, scale);
     Game::camera = new Camera(width, height);
     Game::already_init = true;
     Game::running = true;

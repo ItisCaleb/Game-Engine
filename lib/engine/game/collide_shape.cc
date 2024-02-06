@@ -154,18 +154,18 @@ bool checkCollisionBC(BoxCollideShape *a, CircleCollideShape *b) {
     return dis(b->getRealX(), b->getRealY(), tx, ty) <= b->r;
 }
 bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b) {
-    PointCollideShape p1(b->x1, b->y1, nullptr);
-    PointCollideShape p2(b->x2, b->y2, nullptr);
+    PointCollideShape p1(b->x1, b->y1);
+    PointCollideShape p2(b->x2, b->y2);
     if (checkCollisionBP(a, &p1) ||
         checkCollisionBP(a, &p2)) {
         return true;
     }
     float ax2 = a->getRealX() + a->w;
     float ay2 = a->getRealY() + a->h;
-    LineCollideShape l1(a->getRealX(), a->getRealY(), a->getRealX(), ay2, nullptr);
-    LineCollideShape l2(ax2, a->getRealY(), ax2, ay2, nullptr);
-    LineCollideShape l3(a->getRealX(), a->getRealY(), ax2, a->getRealY(), nullptr);
-    LineCollideShape l4(a->getRealX(), ay2, ax2, ay2, nullptr);
+    LineCollideShape l1(a->getRealX(), a->getRealY(), a->getRealX(), ay2);
+    LineCollideShape l2(ax2, a->getRealY(), ax2, ay2);
+    LineCollideShape l3(a->getRealX(), a->getRealY(), ax2, a->getRealY());
+    LineCollideShape l4(a->getRealX(), ay2, ax2, ay2);
     bool left = checkCollisionLL(&l1, b);
     bool right = checkCollisionLL(&l2, b);
     bool top = checkCollisionLL(&l3, b);
@@ -201,7 +201,7 @@ bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b) {
     float x = b->x1 + u * (b->x2 - b->x1);
     float y = b->y1 + u * (b->y2 - b->y1);
     // point p is on line
-    PointCollideShape p(x, y, nullptr);
+    PointCollideShape p(x, y);
     if (!checkCollisionLP(b, &p)) {
         return false;
     } else {
