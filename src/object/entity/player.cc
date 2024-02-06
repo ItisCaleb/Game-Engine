@@ -10,7 +10,7 @@ static int _idleWidth = 110;
 static int _idleHeight = 80;
 
 Player::Player()
-:Entity("Player",640, 360), speed(400){
+:Entity("Player",640, 360),hitbox(60,120), speed(400){
     // set flags
     this->setProps(ObjectProperty::RIGID);
     this->setProps(ObjectProperty::TRIGGER);
@@ -20,9 +20,7 @@ Player::Player()
     r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
     this->animator.addAnimation("running", r);
 
-    this->w = 60;
-    this->h = 120;
-    this->attachHitbox(new BoxCollideShape(this->w, this->h));
+    this->attachHitbox(&this->hitbox);
     this->state = new Player::IdleState();
     this->state->enter(this);
 }
@@ -40,13 +38,13 @@ void Player::update(float dt) {
 }
 
 void Player::onTrigger(CollideShape *shape){
-    printf("hit by truck\n");
+    // do something
 }
 
 void Player::render(SDL_Renderer *renderer) {
     auto sp = sprites[currentSprite];
-    int x = this->x + this->w/2 - sp->getWidth()*3/2;
-    int y = this->y - (sp->getHeight()*3 - this->h);
+    int x = this->x + this->hitbox.w/2 - sp->getWidth()*3/2;
+    int y = this->y - (sp->getHeight()*3 - this->hitbox.h);
     sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
 }
 

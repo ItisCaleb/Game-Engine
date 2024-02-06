@@ -16,10 +16,10 @@ class Player : public Entity{
             return &this->animator;
         }
         float getWidth(){
-            return this->w;
+            return this->hitbox.w;
         }
         float getHeight(){
-            return this->h;
+            return this->hitbox.h;
         }
         float getSpeed(){
             return this->speed;
@@ -31,11 +31,11 @@ class Player : public Entity{
     private:
         FSM<Player> *state;
         Animator animator;
+        BoxCollideShape hitbox;
         float speed;
         float velocity;
         float maxSpeed;
         bool flip;
-        int w, h;
 
 
     class IdleState: public FSM<Player>{

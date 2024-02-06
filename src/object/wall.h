@@ -8,8 +8,9 @@
 class Wall: public Object{
     public:
         Wall(float x, float y, int width, int height, Sprite *sprite)
-            :Object("Wall",x, y, ObjectProperty::RIGID | ObjectProperty::STATIC), sprite(sprite){
-                this->attachHitbox(new BoxCollideShape(width,height));
+            :Object("Wall",x, y, ObjectProperty::RIGID | ObjectProperty::STATIC), 
+                sprite(sprite),hitbox(width, height){
+                this->attachHitbox(&hitbox);
             }
         void update(float dt){};
         void render(SDL_Renderer *renderer){
@@ -17,6 +18,7 @@ class Wall: public Object{
         }
     private:
         Sprite* sprite;
+        BoxCollideShape hitbox;
 };
 
 #endif

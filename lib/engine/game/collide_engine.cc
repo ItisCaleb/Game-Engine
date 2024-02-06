@@ -44,13 +44,18 @@ void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
 
 void CollideEngine::handle(float dt){
         
-
+    std::set<Object*> triggered;
     for (auto r1 : this->triggerShapes) {
         for (auto r2 : this->shapes) {
             if(r1 == r2) continue;
             if(!r1->isCollide(r2)) continue;
             auto obj = r1->getObject();
-            obj->onTrigger(r2);
+
+            // if not triggered
+            if(!triggered.count(obj)){
+                obj->onTrigger(r2);
+            }
+            triggered.insert(obj);
         }
     }
 
