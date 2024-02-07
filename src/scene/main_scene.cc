@@ -2,17 +2,19 @@
 
 #include <engine/resource_manager.h>
 #include <engine/game.h>
-#include <engine/wall.h>
 #include <engine/input_manager.h>
 #include <engine/geomatry.h>
 #include "gui/main_gui.h"
 #include "object/entity/soldier_skeleton.h"
 
+#include "gui/main_gui.h"
+#include "object/wall.h"
 
 MainScene::MainScene()
 :Scene(Game::getWidth(), Game::getHeight()){}
 
 void MainScene::init(){
+    srand( time(NULL) );
     this->background = ResourceManager::load<Sprite>("assets/test_background.png");
     auto j = ResourceManager::load<nlohmann::json>("assets/test.json");
     for (auto& element : *j) {

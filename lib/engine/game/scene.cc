@@ -32,7 +32,7 @@ void Scene::update(float dt){
         o->setX(o->getX() + o->getVelocityX()*dt);
         o->setY(o->getY() + o->getVelocityY()*dt);
     }
-    this->collideEngine.handleRigid(dt);
+    this->collideEngine.handle(dt);
     /*for (auto o : this->objects) {
         o->update(dt);
         o->setX(o->getX() + o->getVelocityX()*dt);

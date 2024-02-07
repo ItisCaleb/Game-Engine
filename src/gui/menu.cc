@@ -4,10 +4,10 @@
 #include <engine/resource_manager.h>
 #include <engine/microui.h>
 #include <engine/game.h>
-#include <engine/wall.h>
 #include <engine/scene.h>
 
 #include "object/entity/player.h"
+#include "object/wall.h"
 
 using gh = typename::GUIHelper;
 
@@ -25,6 +25,16 @@ void Menu::onOpen(){
 
 char buff[256] = {};
 
+void addBox(){
+
+    float x = 1280  * rand() / (RAND_MAX + 1.0);
+    float y = 768  * rand() / (RAND_MAX + 1.0);
+
+    float w = 40 * rand() / (RAND_MAX + 1.0) + 20;
+    float h = 40 * rand() / (RAND_MAX + 1.0) + 20;
+
+    Game::getScene()->addObject(new Wall(x,y,w,h,nullptr));
+}
 
 void Menu::draw(){
     gh::setCurrentFont(font);
@@ -43,6 +53,11 @@ void Menu::draw(){
             auto player = dynamic_cast<Player*>(Game::getScene()->getObjectByTag("Player"));
             if (player) {
                 player->setXY(0,0);
+            }
+        }
+        if(gh::button("add box * 100",0)){
+            for(int i=0;i<100;i++){
+                addBox();
             }
         }
         gh::endWindow();

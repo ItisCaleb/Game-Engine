@@ -8,16 +8,13 @@
 class Wall: public Object{
     public:
         Wall(float x, float y, int width, int height, Sprite *sprite)
-            :Object("Wall",x, y, ObjectProperty::RIGID | ObjectProperty::STATIC), sprite(sprite),
-            hitbox(width, height, this){
-                Game::getScene()->addCollideShape(&hitbox);
+            :Object("Wall",x, y, ObjectProperty::RIGID | ObjectProperty::STATIC), 
+                sprite(sprite),hitbox(width, height){
+                this->attachHitbox(&hitbox);
             }
         void update(float dt){};
         void render(SDL_Renderer *renderer){
             if(sprite != NULL) sprite->render(renderer,this->x,this->y);
-        }
-        BoxCollideShape* getHitbox(){
-            return &hitbox;
         }
     private:
         Sprite* sprite;
