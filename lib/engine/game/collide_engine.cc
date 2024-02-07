@@ -8,30 +8,10 @@
 void CollideEngine::addCollideShape(CollideShape *shape){
     auto obj = shape->getObject();
     if(!obj) return;
+    this->tree.insert(shape);
     this->shapes.push_back(shape);
-    int props = obj->getProps();
-    if(props & ObjectProperty::RIGID){
-        this->rigidShapes.push_back(shape);
-    }
-    if(props & ObjectProperty::TRIGGER){
-        this->triggerShapes.push_back(shape);
-    }
-
 }
 
-void CollideEngine::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
-    for(auto s: shapes){
-        if(shape == s) continue;
-        if(shape->isCollide(s)) vec.push_back(s);
-    }
-}
-
-void CollideEngine::searchCollides(){
-    for (int i=0;i<this->rigidShapes.size();i++) {
-        for(int j=i+1;j<this->rigidShapes.size();j++){
-        }
-    }
-}
 
 void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
     if(!a->isCollide(b)) return;
@@ -44,43 +24,59 @@ void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
 
 void CollideEngine::handle(float dt){
         
-    std::set<Object*> triggered;
-    for (auto r1 : this->triggerShapes) {
-        for (auto r2 : this->shapes) {
-            if(r1 == r2) continue;
-            if(!r1->isCollide(r2)) continue;
-            auto obj = r1->getObject();
+    std::set<Object*> collided;
+    int total = 0;
+    std::vector<CollideShape*> collides;
+    for (auto r1 : this->shapes) {
+        auto obj1 = r1->getObject();
+        auto props1 = obj1->getProps();
+        //if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
+        //    continue;
+        collides.clear();
+        tree.query(r1, collides);
 
-            // if not triggered
-            if(!triggered.count(obj)){
-                obj->onTrigger(r2);
-            }
-            triggered.insert(obj);
-        }
-    }
-
-    for (auto r1 : this->rigidShapes) {
-        if(r1->type != ShapeType::Box) continue;
-        for (auto r2 : this->rigidShapes) {
+        for (auto r2 : collides) {
             if(r1 == r2) continue;
-            if(r2->type != ShapeType::Box) continue;
-            auto obj1 = r1->getObject();
+            total++;
             auto obj2 = r2->getObject();
-            int isStatic1 = obj1->getProps() & ObjectProperty::STATIC;
-            int isStatic2 = obj2->getProps() & ObjectProperty::STATIC;
-            obj1->onCollide(r2);
-            obj2->onCollide(r1);
-            if(!isStatic1 && isStatic2){
-                bbSolver((BoxCollideShape*)r1,(BoxCollideShape*)r2);
-            }else if(isStatic1 && !isStatic2){
-                bbSolver((BoxCollideShape*)r2,(BoxCollideShape*)r1);
+            if(collided.count(obj1)) continue;
+
+            if(!r1->isCollide(r2)) continue;
+
+            // trigger
+            if(props1 & ObjectProperty::TRIGGER){
+                obj1->onTrigger(r2);
             }
+            
+
+            // rigid body
+            if((props1 & ObjectProperty::RIGID) &&
+                (obj2->getProps() & ObjectProperty::RIGID)){
+                int isStatic1 = props1 & ObjectProperty::STATIC;
+                int isStatic2 = obj2->getProps() & ObjectProperty::STATIC;
+                obj1->onCollide(r2);
+                if(r1->type == ShapeType::Box && r2->type == ShapeType::Box){
+                    if(!isStatic1 && isStatic2){
+                        bbSolver((BoxCollideShape*)r1,(BoxCollideShape*)r2);
+                    }else if(isStatic1 && !isStatic2){
+                        bbSolver((BoxCollideShape*)r2,(BoxCollideShape*)r1);
+                    }
+                }
+            }
+
+            collided.insert(obj1);
         }
     }
+    //printf("total shape:%d, compare count:%d\n",shapes.size(),total);
+}
+
+void CollideEngine::adjustObject(Object *object){
+    
 }
 
 void CollideEngine::drawShapes(SDL_Renderer *renderer){
-    for (auto s : this->shapes) {
-        s->render(renderer);
+    //tree.drawGrid(renderer);
+    for(auto shape: shapes){
+        shape->render(renderer);
     }
 }

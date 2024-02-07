@@ -14,7 +14,7 @@
 class Scene{
     public:
         Scene(int width, int height)
-            :width(width), height(height){};
+            :width(width), height(height), collideEngine(width, height){}
         virtual void init() = 0;
         virtual void update(float dt);
         virtual void render(SDL_Renderer *renderer);
@@ -31,10 +31,6 @@ class Scene{
 
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
-
-
-        // get all shape collided with this shape
-        void getCollided(CollideShape *shape, std::vector<CollideShape*> &vec);
 
         // return object attach by tag
         Object* getObjectByTag(std::string tag);

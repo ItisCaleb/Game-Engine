@@ -9,11 +9,13 @@
 namespace _ObjectProperty{
     enum ObjectProperty{
         // will do physical collide
-        RIGID = 1,
+        RIGID = 1<<0,
         // unmovable by collision
-        STATIC = 2,
+        STATIC = 1<<1,
         // is trigger
-        TRIGGER = 4,
+        TRIGGER = 1<<2,
+        // no onCollide
+        NO_ONCOLLIDE = 1<<3
     };
 }
 

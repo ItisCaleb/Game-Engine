@@ -19,7 +19,7 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     srcRect.x = std::max(0, std::min(srcRect.x, this->background->getWidth() - srcRect.w));
     srcRect.y = std::max(0, std::min(srcRect.y, this->background->getHeight() - srcRect.h));
     // set destination rect to cover the whole screen
-    SDL_FRect destRect = {0, 0, srcRect.w, srcRect.h};
+    SDL_FRect destRect = {0, 0, static_cast<float>(srcRect.w), static_cast<float>(srcRect.h)};
     // apply camera
     destRect = camera->apply(destRect);
     // render
@@ -29,6 +29,9 @@ void Scene::renderBackground(SDL_Renderer* renderer){
 void Scene::update(float dt){
     for (auto o : this->objects) {
         o->update(dt);
+        //if(o->getVelocityX() != 0 || o->getVelocityY() != 0){
+         //   
+        //}
         o->setX(o->getX() + o->getVelocityX()*dt);
         o->setY(o->getY() + o->getVelocityY()*dt);
     }
@@ -75,9 +78,6 @@ void Scene::addObject(Object *object){
     tagToObject.insert(std::make_pair(object->getTag(), object));
 }
 
-void Scene::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
-    this->collideEngine.getCollided(shape, vec);
-}
 
 
 void Scene::addCollideShape(CollideShape *shape) {

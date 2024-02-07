@@ -44,7 +44,7 @@ class Animator{
             void setAnimation(std::string name){
                 auto tmp = properties.find(name);
                 if(tmp == properties.end()){
-                    printf("Animation '%s' is not found\n",name);
+                    printf("Animation '%s' is not found\n",name.c_str());
                     return;
                 }
                 currentAnimation = properties[name];

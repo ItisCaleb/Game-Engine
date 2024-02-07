@@ -39,6 +39,7 @@ void Player::update(float dt) {
 
 void Player::onTrigger(CollideShape *shape){
     // do something
+    //printf("yes\n");
 }
 
 void Player::render(SDL_Renderer *renderer) {
@@ -89,11 +90,6 @@ FSM<Player>* Player::RunningState::update(Player *instance, float dt){
     if (!InputManager::isKeyHold(InputManager::WASD)){
         return new Player::IdleState;
     }
-
-    int maxWidth = Game::getScene()->getWidth();
-    int maxHeight = Game::getScene()->getHeight();
-    //calculate velocity
-
 
     //for controller 
     float axisH = 0; // ( -1 ~ 1 ) Horizontal input

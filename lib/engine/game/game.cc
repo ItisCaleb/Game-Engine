@@ -8,6 +8,7 @@
 #include "engine/input_manager.h"
 #include "engine/gui_helper.h"
 
+
 void Game::initSDL(std::string windowName){
     // Init everything
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {

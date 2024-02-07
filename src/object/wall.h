@@ -8,7 +8,7 @@
 class Wall: public Object{
     public:
         Wall(float x, float y, int width, int height, Sprite *sprite)
-            :Object("Wall",x, y, ObjectProperty::RIGID | ObjectProperty::STATIC), 
+            :Object("Wall",x, y, ObjectProperty::RIGID | ObjectProperty::STATIC | ObjectProperty::NO_ONCOLLIDE), 
                 sprite(sprite),hitbox(width, height){
                 this->attachHitbox(&hitbox);
             }

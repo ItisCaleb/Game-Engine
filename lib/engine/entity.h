@@ -9,7 +9,7 @@ class Entity: public Object{
     public:
         Entity(std::string tag, float x, float y)
             :Object(tag, x, y, 0){};
-        void chooseCurrentSprite(int i){
+        void chooseCurrentSprite(size_t i){
             if(i >= sprites.size()) return;
             this->currentSprite = i;
         }
@@ -19,7 +19,7 @@ class Entity: public Object{
 
 
     protected:
-        int currentSprite;
+        size_t currentSprite;
         std::vector<Sprite*> sprites;
 };
 
