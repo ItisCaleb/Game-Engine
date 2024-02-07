@@ -26,6 +26,8 @@ bool BoxCollideShape::isCollide(CollideShape *shape) {
             return checkCollisionBL(this, dynamic_cast<LineCollideShape *>(shape));
         case ShapeType::Point:
             return checkCollisionBP(this, dynamic_cast<PointCollideShape *>(shape));
+        default:
+            return false;
     }
 }
 
@@ -46,6 +48,8 @@ bool CircleCollideShape::isCollide(CollideShape *shape) {
             return checkCollisionCL(this, dynamic_cast<LineCollideShape *>(shape));
         case ShapeType::Point:
             return checkCollisionCP(this, dynamic_cast<PointCollideShape *>(shape));
+        default:
+            return false;
     }
 }
 
@@ -95,6 +99,8 @@ bool LineCollideShape::isCollide(CollideShape *shape) {
             return checkCollisionLL(this, dynamic_cast<LineCollideShape *>(shape));
         case ShapeType::Point:
             return checkCollisionLP(this, dynamic_cast<PointCollideShape *>(shape));
+        default:
+            return false;
     }
 }
 
@@ -117,6 +123,8 @@ bool PointCollideShape::isCollide(CollideShape *shape) {
             return checkCollisionLP(dynamic_cast<LineCollideShape *>(shape), this);
         case ShapeType::Point:
             return checkCollisionPP(dynamic_cast<PointCollideShape *>(shape), this);
+        default:
+            return false;
     }
 }
 

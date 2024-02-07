@@ -9,7 +9,7 @@
 #include "object/wall.h"
 
 MainScene::MainScene()
-:Scene(Game::getWidth(), Game::getHeight()){}
+:Scene(5000, 5000){}
 
 void MainScene::init(){
     srand( time(NULL) );

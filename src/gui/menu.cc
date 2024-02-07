@@ -27,8 +27,8 @@ char buff[256] = {};
 
 void addBox(){
 
-    float x = 1280  * rand() / (RAND_MAX + 1.0);
-    float y = 768  * rand() / (RAND_MAX + 1.0);
+    float x = 5000  * rand() / (RAND_MAX + 1.0);
+    float y = 5000  * rand() / (RAND_MAX + 1.0);
 
     float w = 40 * rand() / (RAND_MAX + 1.0) + 20;
     float h = 40 * rand() / (RAND_MAX + 1.0) + 20;
@@ -54,6 +54,9 @@ void Menu::draw(){
             if (player) {
                 player->setXY(0,0);
             }
+        }
+        if(gh::button("add box",0)){
+            addBox();
         }
         if(gh::button("add box * 100",0)){
             for(int i=0;i<100;i++){

@@ -24,7 +24,7 @@ class Player : public Entity{
         float getSpeed(){
             return this->speed;
         }
-        bool setFlip(bool flip){
+        void setFlip(bool flip){
             this->flip = flip;
         }
         void onTrigger(CollideShape *shape);

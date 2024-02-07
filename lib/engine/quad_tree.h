@@ -1,25 +1,41 @@
 #ifndef QUAD_TREE_H_
 #define QUAD_TREE_H_
 
+#include <SDL2/SDL.h>
+
 #include <vector>
 
 #include "engine/collide_shape.h"
+#include "engine/freelist.h"
+
 
 struct QuadElement{
-    // points to next element
-    // if this is the end, then set to -1
-    int nextIdx;
+    // points to next element if this is a branch
+    // else -1
+    int next;
+
+    // set to -1 if this is a branch
+    // else it will represent element count
     CollideShape *shape;
 };
 
 struct QuadNode{
     // points to first child if this is a branch
-    // else it will point to first element
-    int first_child;
+    // else first element
+    // if no element then -1
+    int next;
 
     // set to -1 if this is a branch
     // else it will represent element count
     int count;
+};
+
+
+// use in node find
+struct QuadNodeData{
+    BoxCollideShape boundary;
+    int nodeIdx;
+    int depth;
 };
 
 class QuadTree{
@@ -27,12 +43,16 @@ class QuadTree{
         QuadTree(int w, int h, int max_depth);
         void insert(CollideShape *shape);
         void erase(CollideShape *shape);
-        void query(SDL_FRect &region, std::vector<CollideShape*> collides);
+        void query(CollideShape *shape, std::vector<CollideShape*> &collides);
+        void drawGrid(SDL_Renderer *renderer);
 
     private:
-        std::vector<QuadElement> shapes;
+        void findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes);
+        void subDivide(QuadNodeData &data);
+        void appendToElements(QuadNodeData &data, CollideShape *shape);
+        FreeList<QuadElement> elements;
         std::vector<QuadNode> nodes;
-        SDL_FRect boundary;
+        BoxCollideShape boundary;
         int max_depth;
 
 };

@@ -20,8 +20,8 @@ class Font{
         }
 
     private:
-        int pt;
         TTF_Font *font;
+        int pt;
 };
 
 

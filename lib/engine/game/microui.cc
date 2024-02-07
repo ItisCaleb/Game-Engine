@@ -415,7 +415,7 @@ void mu_input_keyup(mu_Context *ctx, int key) {
 
 void mu_input_text(mu_Context *ctx, const char *text) {
   int len = strlen(ctx->input_text);
-  int size = mu_min(strlen(text) + 1, (int) sizeof(ctx->input_text) - len);
+  int size = mu_min(strlen(text) + 1, sizeof(ctx->input_text) - len);
   expect(len + size <= (int) sizeof(ctx->input_text));
   memcpy(ctx->input_text + len, text, size);
 }

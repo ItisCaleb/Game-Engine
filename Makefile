@@ -26,7 +26,7 @@ OUT_PATH=$(BUILD_DIR)/$(OUT_FILE)
 
 CC=g++
 
-CPP_FLAG=-w -std=c++17
+CPP_FLAG=-Wall -g -std=c++17
 debug: CPP_FLAG+= -g
 
 ifeq ($(OS),Windows_NT)

@@ -4,26 +4,23 @@
 #include <SDL2/SDL.h>
 
 #include "engine/collide_shape.h"
+#include "engine/quad_tree.h"
 #include <vector>
 #include <utility>
 
 class CollideEngine{
     public:
+        CollideEngine(int w, int h)
+            :tree(w,h,16){}
         void handle(float dt);
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
+        void adjustObject(Object *object);
 
-
-        // get all shape collided with this shape
-        void getCollided(CollideShape *shape, std::vector<CollideShape*> &vec);
         void drawShapes(SDL_Renderer *renderer);
-    private:
-        void searchCollides();
         
-        std::vector<std::pair<CollideShape*, CollideShape*>> collides; 
+        QuadTree tree;
         std::vector<CollideShape*> shapes;
-        std::vector<CollideShape*> triggerShapes;
-        std::vector<CollideShape*> rigidShapes;
 };
 
 #endif

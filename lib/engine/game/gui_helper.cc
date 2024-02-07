@@ -112,7 +112,11 @@ void drawText(SDL_Renderer *renderer, mu_Font font, char *str, mu_Vec2 pos, mu_C
     SDL_QueryTexture(texture, NULL, NULL, &w, &h);
     float scale = (float)f->pt / f->basept;
 
-    SDL_FRect renderRect = {pos.x, pos.y - 4, w * scale, h * scale};
+    SDL_FRect renderRect = {
+        static_cast<float>(pos.x), 
+        static_cast<float>(pos.y - 4), 
+        w * scale, 
+        h * scale};
 
     // free font if not in use
     if(last_font != f){
@@ -136,7 +140,11 @@ void setClipRect(SDL_Renderer *renderer, mu_Rect &rect){
 }
 
 void drawImage(SDL_Renderer *renderer, void* texture, mu_Rect *rect){
-    SDL_FRect renderRect = {rect->x, rect->y, rect->w, rect->h};
+    SDL_FRect renderRect = {
+        static_cast<float>(rect->x), 
+        static_cast<float>(rect->y), 
+        static_cast<float>(rect->w), 
+        static_cast<float>(rect->h)};
     SDL_RenderCopyF(renderer, (SDL_Texture *)texture, NULL, &renderRect);
 }
 
@@ -186,7 +194,7 @@ void GUIHelper::bringToFront(){
 }
 
 bool GUIHelper::button(std::string name, int opt){
-    return mu_button_ex(ctx, name.c_str(), NULL, opt);
+    return mu_button_ex(ctx, name.c_str(), 0, opt);
 }
 
 void GUIHelper::image(SDL_Texture *texture, int w, int h){

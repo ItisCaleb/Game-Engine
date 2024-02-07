@@ -44,7 +44,7 @@ Sprite* ResourceManager::load(std::string resource) {
         SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
         return new Sprite(texture, 0, 0, w, h);
     } else {
-        printf("Error: Unsupported format: \"%s\". Can't load sprite from %s",
+        printf("Error: Unsupported format: \"%ls\". Can't load sprite from %s",
                resPath.extension().c_str(),
                resource.c_str());
         return nullptr;
@@ -95,7 +95,7 @@ Font* ResourceManager::load(std::string resource) {
         addToPool(resource, res);
         return res;
     } else {
-        printf("Error: Unsupported format: \"%s\". Can't load font from %s",
+        printf("Error: Unsupported format: \"%ls\". Can't load font from %s",
                resPath.extension().c_str(),
                resource.c_str());
         return nullptr;
