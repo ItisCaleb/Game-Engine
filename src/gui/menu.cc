@@ -58,8 +58,8 @@ void Menu::draw(){
         if(gh::button("add box",0)){
             addBox();
         }
-        if(gh::button("add box * 100",0)){
-            for(int i=0;i<100;i++){
+        if(gh::button("add box * 10000",0)){
+            for(int i=0;i<10000;i++){
                 addBox();
             }
         }

@@ -151,12 +151,13 @@ int ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec
     std::filesystem::path resPath = resource;
     auto* config = ResourceManager::load<nlohmann::json>(resPath.replace_extension(".json").string());
     if(!config) return 0;
-    int cnt;
+    int cnt = 0;
     for (auto& element : *config) {
         if(element["type"] == "box"){
             float x1 = element["x1"], y1 = element["y1"];
             float x2 = element["x2"], y2 = element["y2"];
             vec.push_back(new Sprite(texture, x1, y1, x2-x1, y2-y1));
+            cnt++;
         }
     }
     delete config;

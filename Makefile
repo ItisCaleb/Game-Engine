@@ -9,6 +9,7 @@ rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 SRC_FILES=$(call rwildcard,$(SRC_DIR)/,*.cc)
 ENGINE_FILES=$(call rwildcard,$(ENGINE_DIR)/,*.cc)
 
+
 OBJ_FILES=$(addprefix $(PRECOMPILE_DIR)/,$(notdir $(SRC_FILES:.cc=.o)))
 ENGINE_OBJ_FILE=$(addprefix $(PRECOMPILE_DIR)/,$(notdir $(ENGINE_FILES:.cc=.o)))
 
@@ -26,8 +27,9 @@ OUT_PATH=$(BUILD_DIR)/$(OUT_FILE)
 
 CC=g++
 
-CPP_FLAG=-Wall -g -std=c++17
+CPP_FLAG=-Wall -g -std=c++17 -O3
 debug: CPP_FLAG+= -g
+profiler: CPP_FLAG+= -D PROFILER
 
 ifeq ($(OS),Windows_NT)
 VCPKG_INSTALL=./vcpkg/installed/x64-mingw-dynamic
@@ -51,11 +53,6 @@ INCLUDES=-I$(VCPKG_INSTALL)/include -Isrc -Ilib
 
 VPATH = $(SRC_DIR) $(SRC_DIRS) $(ENGINE_DIR) $(ENGINE_DIRS)
 
-$(PRECOMPILE_DIR)/%.o: %.cc | $(PRECOMPILE_DIR)
-	$(CC) -c $< -o $@ $(CPP_FLAG) $(INCLUDES)
-
-$(PRECOMPILE_DIR)/$(ENGINE_LIB): $(ENGINE_OBJ_FILE)
-	ar rvs $(PRECOMPILE_DIR)/$(ENGINE_LIB) $(ENGINE_OBJ_FILE)
 
 $(OUT_PATH): $(OBJ_FILES) $(PRECOMPILE_DIR)/$(ENGINE_LIB)
 ifeq ($(OS),Windows_NT)
@@ -70,12 +67,20 @@ endif
 	$(CC) $(OBJ_FILES) -o $(OUT_PATH) $(CPP_FLAG) $(LIBRARY) $(LINKER) $(INCLUDES)
 
 
+$(PRECOMPILE_DIR)/%.o: %.cc | $(PRECOMPILE_DIR)
+	$(CC) -c $< -o $@ $(CPP_FLAG) $(INCLUDES)
+
+$(PRECOMPILE_DIR)/$(ENGINE_LIB): $(ENGINE_OBJ_FILE)
+	ar rvs $(PRECOMPILE_DIR)/$(ENGINE_LIB) $(ENGINE_OBJ_FILE)
+
 run: $(OUT_PATH)
 ifeq ($(OS),Windows_NT)
 	cd $(BUILD_DIR) && $(OUT_FILE)
 else
 	cd $(BUILD_DIR) && ./$(OUT_FILE)
 endif
+
+profiler: $(OUT_PATH)
 
 
 clean:

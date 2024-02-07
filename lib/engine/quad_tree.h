@@ -16,7 +16,7 @@ struct QuadElement{
 
     // set to -1 if this is a branch
     // else it will represent element count
-    CollideShape *shape;
+    int shapeIdx;
 };
 
 struct QuadNode{
@@ -49,11 +49,15 @@ class QuadTree{
     private:
         void findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes);
         void subDivide(QuadNodeData &data);
-        void appendToElements(QuadNodeData &data, CollideShape *shape);
+        void appendToElements(QuadNodeData &data, int shapdIdx);
+        FreeList<CollideShape*> shapes;
         FreeList<QuadElement> elements;
         std::vector<QuadNode> nodes;
         BoxCollideShape boundary;
         int max_depth;
+
+        // for search
+        std::vector<QuadNodeData> nodeData;
 
 };
 

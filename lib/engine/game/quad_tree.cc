@@ -47,8 +47,8 @@ void QuadTree::findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes){
     
 }
 
-void QuadTree::appendToElements(QuadNodeData &data, CollideShape *shape){
-    int idx = this->elements.insert({-1, shape});
+void QuadTree::appendToElements(QuadNodeData &data, int shapdIdx){
+    int idx = this->elements.insert({-1, shapdIdx});
     auto& node = this->nodes[data.nodeIdx];
     if(node.count == 0){
         node.next = idx;
@@ -89,22 +89,23 @@ void QuadTree::subDivide(QuadNodeData &data){
     node.next = new_fc;
     std::vector<int> toErase;
     for(;i!=-1; i = this->elements[i].next){
-        auto shape = this->elements[i].shape;
+        int shapeIdx = this->elements[i].shapeIdx;
+        auto shape = this->shapes[shapeIdx];
         if(shape->isCollide(&TL)) {
             QuadNodeData d = {TL, new_fc, data.depth+1};
-            appendToElements(d,shape);
+            appendToElements(d,shapeIdx);
         }
         if(shape->isCollide(&TR)) {
             QuadNodeData d = {TR, new_fc+1, data.depth+1};
-            appendToElements(d,shape);
+            appendToElements(d,shapeIdx);
         }
         if(shape->isCollide(&BL)) {
             QuadNodeData d = {BL, new_fc+2, data.depth+1};
-            appendToElements(d,shape);
+            appendToElements(d,shapeIdx);
         }
         if(shape->isCollide(&BR)) {
             QuadNodeData d = {BR, new_fc+3, data.depth+1};
-            appendToElements(d,shape);
+            appendToElements(d,shapeIdx);
         }
         toErase.push_back(i);
     }
@@ -117,24 +118,25 @@ void QuadTree::subDivide(QuadNodeData &data){
 void QuadTree::insert(CollideShape *shape){
     
     // find nodes fit the shape
-    std::vector<QuadNodeData> nodes;
-    this->findNodes(shape, nodes);
-    for(QuadNodeData &data: nodes){
+    this->nodeData.clear();
+    this->findNodes(shape, this->nodeData);
+    int shapeIdx =  this->shapes.insert(shape);
+    for(QuadNodeData &data: this->nodeData){
         // if no element
-        this->appendToElements(data, shape);
+        this->appendToElements(data, shapeIdx);
     }
     
 }
 void QuadTree::erase(CollideShape *shape){
     // find nodes fit the shape
-    std::vector<QuadNodeData> nodes;
-    this->findNodes(shape, nodes);
-    for(QuadNodeData &data: nodes){
+    this->nodeData.clear();
+    this->findNodes(shape, this->nodeData);
+    for(QuadNodeData &data: this->nodeData){
         // if no element
         auto& node = this->nodes[data.nodeIdx];
         
         for(int i = node.next; i!=-1; i = this->elements[i].next){
-            if(shape == this->elements[i].shape) {
+            if(shape == this->shapes[this->elements[i].shapeIdx]) {
                 this->elements.erase(i);
                 break;
             }
@@ -143,17 +145,20 @@ void QuadTree::erase(CollideShape *shape){
 
 }
 void QuadTree::query(CollideShape *shape, std::vector<CollideShape*> &collides){
-    std::vector<QuadNodeData> nodes;
-    this->findNodes(shape, nodes);
-    std::set<CollideShape*> pushed;
-    for(QuadNodeData &data: nodes){
+    this->nodeData.clear();
+    this->findNodes(shape, this->nodeData);
+    std::set<int> pushed;
+    for(QuadNodeData &data: this->nodeData){
         // if no element
-        auto& node = this->nodes[data.nodeIdx];
-        for(int i = node.next; i!=-1; i = this->elements[i].next){
-            auto shape = this->elements[i].shape;
-            if(!pushed.count(shape)){
-                collides.push_back(shape);
-                pushed.insert(shape);
+        auto &node = this->nodes[data.nodeIdx];
+        for(int i = node.next; i!=-1;){
+
+            auto ele = this->elements[i];
+            int shapeIdx = ele.shapeIdx;
+            i = ele.next;
+            if(!pushed.count(shapeIdx)){
+                collides.push_back(this->shapes[shapeIdx]);
+                pushed.insert(shapeIdx);
             }
         }
     }
@@ -161,10 +166,10 @@ void QuadTree::query(CollideShape *shape, std::vector<CollideShape*> &collides){
 
 
 void QuadTree::drawGrid(SDL_Renderer *renderer){
-    std::vector<QuadNodeData> nodes;
-    this->findNodes(&this->boundary, nodes);
-    std::set<CollideShape*> pushed;
-    for(auto data: nodes){
+    this->nodeData.clear();
+    this->findNodes(&this->boundary, this->nodeData);
+    std::set<int> pushed;
+    for(auto data: this->nodeData){
                 // draw grid
         SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 
@@ -179,10 +184,10 @@ void QuadTree::drawGrid(SDL_Renderer *renderer){
         // draw shapes
         auto& node = this->nodes[data.nodeIdx];
         for(int i = node.next; i!=-1; i = this->elements[i].next){
-            auto shape = this->elements[i].shape;
-            if(!pushed.count(shape)){
-                shape->render(renderer);
-                pushed.insert(shape);
+            int shapeIdx = this->elements[i].shapeIdx;
+            if(!pushed.count(shapeIdx)){
+                pushed.insert(shapeIdx);
+                this->shapes[shapeIdx]->render(renderer);
             }
         }
 

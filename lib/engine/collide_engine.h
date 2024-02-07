@@ -11,7 +11,7 @@
 class CollideEngine{
     public:
         CollideEngine(int w, int h)
-            :tree(w,h,16){}
+            :tree(w,h,8){}
         void handle(float dt);
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
