@@ -25,6 +25,8 @@ class CollideShape;
 class Object{
     public:
         friend class CollideEngine;
+        friend class Scene;
+        virtual ~Object(){}
         virtual void update(float dt) = 0;
         virtual void render(SDL_Renderer *renderer) = 0;
         std::string getTag(){

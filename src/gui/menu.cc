@@ -63,6 +63,14 @@ void Menu::draw(){
                 addBox();
             }
         }
+        if(gh::button("remove all box",0)){
+            auto w = Game::getScene()->getObjectByTag("Wall");
+            while (w != nullptr){
+                Game::getScene()->removeObject(w);
+                w = Game::getScene()->getObjectByTag("Wall");
+            }
+
+        }
         gh::endWindow();
     }
 }

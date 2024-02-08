@@ -6,10 +6,13 @@
 #include <set>
 
 void CollideEngine::addCollideShape(CollideShape *shape){
-    auto obj = shape->getObject();
-    if(!obj) return;
     this->tree.insert(shape);
-    this->shapes.push_back(shape);
+    this->shapes.insert(shape);
+}
+
+void CollideEngine::removeCollideShape(CollideShape *shape){
+    this->tree.erase(shape);
+    this->shapes.erase(shape);
 }
 
 
@@ -18,20 +21,27 @@ void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
     auto m = minowskiDifference(a,b);
     auto penV = penetrationVector(&m);
     Object *o = a->getObject();
-    o->setX(o->getX()+penV.x);
-    o->setY(o->getY()+penV.y);
+    if(penV.x != 0){
+        o->setX(o->getX()+penV.x);
+        o->setVelocityX(0);
+    }
+    if(penV.y != 0){
+        o->setY(o->getY()+penV.y);
+        o->setVelocityY(0);
+    }
 }
 
 void CollideEngine::handle(float dt){
         
     std::set<Object*> collided;
     int total = 0;
-    std::vector<CollideShape*> collides;
-    for (auto r1 : this->shapes) {
+    //shapes.clear();
+    //tree.getShapes(shapes);
+    for (auto r1 : shapes) {
         auto obj1 = r1->getObject();
         auto props1 = obj1->getProps();
-        //if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
-        //    continue;
+        if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
+            continue;
         collides.clear();
         tree.query(r1, collides);
 
@@ -67,11 +77,8 @@ void CollideEngine::handle(float dt){
             collided.insert(obj1);
         }
     }
+    tree.cleanup();
     //printf("total shape:%d, compare count:%d\n",shapes.size(),total);
-}
-
-void CollideEngine::adjustObject(Object *object){
-    
 }
 
 void CollideEngine::drawShapes(SDL_Renderer *renderer){

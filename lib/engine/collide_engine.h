@@ -7,20 +7,22 @@
 #include "engine/quad_tree.h"
 #include <vector>
 #include <utility>
+#include <set>
 
 class CollideEngine{
     public:
         CollideEngine(int w, int h)
-            :tree(w,h,8){}
+            :tree(w,h,8, 4){}
         void handle(float dt);
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
-        void adjustObject(Object *object);
+        void removeCollideShape(CollideShape *shape);
 
         void drawShapes(SDL_Renderer *renderer);
         
         QuadTree tree;
-        std::vector<CollideShape*> shapes;
+        std::vector<CollideShape*> collides;
+        std::set<CollideShape*> shapes;
 };
 
 #endif

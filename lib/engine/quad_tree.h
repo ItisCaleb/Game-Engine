@@ -9,6 +9,7 @@
 #include "engine/freelist.h"
 
 
+
 struct QuadElement{
     // points to next element if this is a branch
     // else -1
@@ -18,6 +19,7 @@ struct QuadElement{
     // else it will represent element count
     int shapeIdx;
 };
+
 
 struct QuadNode{
     // points to first child if this is a branch
@@ -40,10 +42,11 @@ struct QuadNodeData{
 
 class QuadTree{
     public:
-        QuadTree(int w, int h, int max_depth);
+        QuadTree(int w, int h, int max_depth, int split_threshold);
         void insert(CollideShape *shape);
         void erase(CollideShape *shape);
         void query(CollideShape *shape, std::vector<CollideShape*> &collides);
+        void cleanup();
         void drawGrid(SDL_Renderer *renderer);
 
     private:
@@ -54,7 +57,9 @@ class QuadTree{
         FreeList<QuadElement> elements;
         std::vector<QuadNode> nodes;
         BoxCollideShape boundary;
+        int free_node = -1;
         int max_depth;
+        int split_threshold;
 
         // for search
         std::vector<QuadNodeData> nodeData;

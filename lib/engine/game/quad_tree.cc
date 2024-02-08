@@ -5,8 +5,8 @@
 #include <stack>
 #include <set>
 
-QuadTree::QuadTree(int w, int h, int max_depth)
-:boundary(w,h),max_depth(max_depth){
+QuadTree::QuadTree(int w, int h, int max_depth, int split_threshold)
+:boundary(w,h),max_depth(max_depth),split_threshold(split_threshold){
     QuadNode root;
     root.count = 0;
     root.next = -1;
@@ -58,12 +58,9 @@ void QuadTree::appendToElements(QuadNodeData &data, int shapdIdx){
         for(;this->elements[i].next != -1; i = this->elements[i].next){}
         this->elements[i].next = idx;
         node.count++;
-        if (node.count == 4){
+        if (node.count == this->split_threshold)
             this->subDivide(data);
-        }
     }
-
-
 }
 
 void QuadTree::subDivide(QuadNodeData &data){
@@ -80,13 +77,20 @@ void QuadTree::subDivide(QuadNodeData &data){
     BoxCollideShape BR(data.boundary.offx + half_w, data.boundary.offy + half_h, half_w,half_h);
 
     int new_fc = this->nodes.size();
-    for(int j=0;j<4;j++){
-        this->nodes.push_back({-1, 0});
+    if(this->free_node == -1){
+        for(int j=0;j<4;j++){
+            this->nodes.push_back({-1, 0});
+        }
+    }else{
+        new_fc = this->free_node;
+        this->free_node = this->nodes[free_node].next;
     }
+
     auto& node = this->nodes[data.nodeIdx];
     int i = node.next;
     node.count = -1;
     node.next = new_fc;
+    
     std::vector<int> toErase;
     for(;i!=-1; i = this->elements[i].next){
         int shapeIdx = this->elements[i].shapeIdx;
@@ -112,7 +116,6 @@ void QuadTree::subDivide(QuadNodeData &data){
     for(int i:toErase){
         this->elements.erase(i);
     }
-
 }
 
 void QuadTree::insert(CollideShape *shape){
@@ -125,24 +128,29 @@ void QuadTree::insert(CollideShape *shape){
         // if no element
         this->appendToElements(data, shapeIdx);
     }
-    
 }
+
 void QuadTree::erase(CollideShape *shape){
     // find nodes fit the shape
     this->nodeData.clear();
     this->findNodes(shape, this->nodeData);
+    int shapeIdx = -1;
     for(QuadNodeData &data: this->nodeData){
         // if no element
-        auto& node = this->nodes[data.nodeIdx];
-        
+        auto &node = this->nodes[data.nodeIdx];
+        auto *last = &node.next;
         for(int i = node.next; i!=-1; i = this->elements[i].next){
             if(shape == this->shapes[this->elements[i].shapeIdx]) {
+                if(shapeIdx != -1) shapeIdx = this->elements[i].shapeIdx;
+                *last = this->elements[i].next;
                 this->elements.erase(i);
+                node.count--;
                 break;
             }
+            last = &this->elements[i].next;
         }
     }
-
+    if(shapeIdx != -1) this->shapes.erase(shapeIdx);
 }
 void QuadTree::query(CollideShape *shape, std::vector<CollideShape*> &collides){
     this->nodeData.clear();
@@ -152,7 +160,6 @@ void QuadTree::query(CollideShape *shape, std::vector<CollideShape*> &collides){
         // if no element
         auto &node = this->nodes[data.nodeIdx];
         for(int i = node.next; i!=-1;){
-
             auto ele = this->elements[i];
             int shapeIdx = ele.shapeIdx;
             i = ele.next;
@@ -164,6 +171,45 @@ void QuadTree::query(CollideShape *shape, std::vector<CollideShape*> &collides){
     }
 }
 
+void QuadTree::cleanup(){
+    // Only process the root if it's not a leaf.
+    std::stack<int> st;
+    if (nodes[0].count == -1)
+        st.push(0);
+    while (!st.empty())
+    {
+        const int node_index = st.top(); st.pop();
+        QuadNode& node = nodes[node_index];
+
+        // Loop through the children.
+        int num_empty_leaves = 0;
+        for (int j=0; j < 4; ++j)
+        {
+            const int child_index = node.next + j;
+            const QuadNode& child = nodes[child_index];
+
+            // Increment empty leaf count if the child is an empty 
+            // leaf. Otherwise if the child is a branch, add it to
+            // the stack to be processed in the next iteration.
+            if (child.count == 0)
+                ++num_empty_leaves;
+            else if (child.count == -1)
+                st.push(child_index);
+        }
+        // If all the children were empty leaves, remove them and 
+        // make this node the new empty leaf.
+        if (num_empty_leaves == this->split_threshold)
+        {
+            // Push all 4 children to the free list.
+            nodes[node.next].next = this->free_node;
+            this->free_node = node.next;
+
+            // Make this node the new empty leaf.
+            node.next = -1;
+            node.count = 0;
+        }
+    }
+}
 
 void QuadTree::drawGrid(SDL_Renderer *renderer){
     this->nodeData.clear();
@@ -181,15 +227,5 @@ void QuadTree::drawGrid(SDL_Renderer *renderer){
         };
         auto r = Game::getCamera()->apply(rect);
         SDL_RenderDrawRectF(renderer, &r);
-        // draw shapes
-        auto& node = this->nodes[data.nodeIdx];
-        for(int i = node.next; i!=-1; i = this->elements[i].next){
-            int shapeIdx = this->elements[i].shapeIdx;
-            if(!pushed.count(shapeIdx)){
-                pushed.insert(shapeIdx);
-                this->shapes[shapeIdx]->render(renderer);
-            }
-        }
-
     }
 }

@@ -6,5 +6,4 @@
 void Object::attachHitbox(CollideShape *shape){
     shape->object = this;
     this->hitboxs.push_back(shape);
-    Game::getScene()->addCollideShape(shape);
 }
