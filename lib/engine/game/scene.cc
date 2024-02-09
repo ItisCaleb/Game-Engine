@@ -121,9 +121,7 @@ Object* Scene::getObjectByTag(std::string tag){
 void Scene::getObjectsByTag(std::string tag, std::vector<Object*> &vec){
     int nums = tagToObject.count(tag);
     if(!nums) return;
-    auto iter = tagToObject.find(tag);
-    while (nums--){
+    for (auto[iter, end] = tagToObject.equal_range(tag); iter != end; ++iter){
         vec.push_back(iter->second);
     }
-  
 }

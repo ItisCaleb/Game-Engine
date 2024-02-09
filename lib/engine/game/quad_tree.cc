@@ -141,7 +141,7 @@ void QuadTree::erase(CollideShape *shape){
         auto *last = &node.next;
         for(int i = node.next; i!=-1; i = this->elements[i].next){
             if(shape == this->shapes[this->elements[i].shapeIdx]) {
-                if(shapeIdx != -1) shapeIdx = this->elements[i].shapeIdx;
+                if(shapeIdx == -1) shapeIdx = this->elements[i].shapeIdx;
                 *last = this->elements[i].next;
                 this->elements.erase(i);
                 node.count--;
@@ -159,23 +159,20 @@ void QuadTree::query(CollideShape *shape, std::vector<CollideShape*> &collides){
     for(QuadNodeData &data: this->nodeData){
         // if no element
         auto &node = this->nodes[data.nodeIdx];
-        for(int i = node.next; i!=-1;){
-            auto ele = this->elements[i];
-            int shapeIdx = ele.shapeIdx;
-            i = ele.next;
-            if(!pushed.count(shapeIdx)){
-                collides.push_back(this->shapes[shapeIdx]);
-                pushed.insert(shapeIdx);
-            }
-        }
+        getNodeShapes(node.next, collides, pushed);
     }
 }
 
 void QuadTree::cleanup(){
     // Only process the root if it's not a leaf.
+    this->leaves.clear();
     std::stack<int> st;
+    std::set<int> pushed;
     if (nodes[0].count == -1)
         st.push(0);
+    else{
+        getNodeShapes(nodes[0].next, this->leaves, pushed);
+    }
     while (!st.empty())
     {
         const int node_index = st.top(); st.pop();
@@ -195,6 +192,9 @@ void QuadTree::cleanup(){
                 ++num_empty_leaves;
             else if (child.count == -1)
                 st.push(child_index);
+            else{
+                getNodeShapes(child.next, this->leaves, pushed);
+            }
         }
         // If all the children were empty leaves, remove them and 
         // make this node the new empty leaf.
@@ -209,6 +209,12 @@ void QuadTree::cleanup(){
             node.count = 0;
         }
     }
+}
+
+
+
+std::vector<CollideShape*>& QuadTree::getAllShape(){
+    return this->leaves;
 }
 
 void QuadTree::drawGrid(SDL_Renderer *renderer){

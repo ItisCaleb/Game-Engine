@@ -7,12 +7,10 @@
 
 void CollideEngine::addCollideShape(CollideShape *shape){
     this->tree.insert(shape);
-    this->shapes.insert(shape);
 }
 
 void CollideEngine::removeCollideShape(CollideShape *shape){
     this->tree.erase(shape);
-    this->shapes.erase(shape);
 }
 
 
@@ -32,19 +30,16 @@ void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
 }
 
 void CollideEngine::handle(float dt){
-        
     std::set<Object*> collided;
     int total = 0;
-    //shapes.clear();
-    //tree.getShapes(shapes);
+    auto shapes = this->tree.getAllShape();
     for (auto r1 : shapes) {
         auto obj1 = r1->getObject();
         auto props1 = obj1->getProps();
         if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
-            continue;
+           continue;
         collides.clear();
         tree.query(r1, collides);
-
         for (auto r2 : collides) {
             if(r1 == r2) continue;
             total++;
@@ -77,12 +72,13 @@ void CollideEngine::handle(float dt){
             collided.insert(obj1);
         }
     }
-    tree.cleanup();
-    //printf("total shape:%d, compare count:%d\n",shapes.size(),total);
+    //tree.cleanup();
 }
 
 void CollideEngine::drawShapes(SDL_Renderer *renderer){
+    tree.cleanup();
     //tree.drawGrid(renderer);
+    auto shapes = this->tree.getAllShape();
     for(auto shape: shapes){
         shape->render(renderer);
     }

@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include <vector>
+#include <set>
 
 #include "engine/collide_shape.h"
 #include "engine/freelist.h"
@@ -47,12 +48,24 @@ class QuadTree{
         void erase(CollideShape *shape);
         void query(CollideShape *shape, std::vector<CollideShape*> &collides);
         void cleanup();
+        std::vector<CollideShape*>& getAllShape();
         void drawGrid(SDL_Renderer *renderer);
 
     private:
         void findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes);
         void subDivide(QuadNodeData &data);
         void appendToElements(QuadNodeData &data, int shapdIdx);
+        inline void getNodeShapes(int eleIdx, std::vector<CollideShape*> &shape, std::set<int> &pushed){
+            for(int i = eleIdx; i!=-1;){
+                auto ele = this->elements[i];
+                int shapeIdx = ele.shapeIdx;
+                i = ele.next;
+                if(!pushed.count(shapeIdx)){
+                    shape.push_back(this->shapes[shapeIdx]);
+                    pushed.insert(shapeIdx);
+                }
+            }
+        }
         FreeList<CollideShape*> shapes;
         FreeList<QuadElement> elements;
         std::vector<QuadNode> nodes;
@@ -63,6 +76,8 @@ class QuadTree{
 
         // for search
         std::vector<QuadNodeData> nodeData;
+
+        std::vector<CollideShape*> leaves;
 
 };
 

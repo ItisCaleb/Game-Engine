@@ -22,7 +22,6 @@ class CollideEngine{
         
         QuadTree tree;
         std::vector<CollideShape*> collides;
-        std::set<CollideShape*> shapes;
 };
 
 #endif

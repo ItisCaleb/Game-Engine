@@ -64,12 +64,11 @@ void Menu::draw(){
             }
         }
         if(gh::button("remove all box",0)){
-            auto w = Game::getScene()->getObjectByTag("Wall");
-            while (w != nullptr){
+            std::vector<Object*> vec;
+            Game::getScene()->getObjectsByTag("Wall",vec);
+            for(auto w: vec){
                 Game::getScene()->removeObject(w);
-                w = Game::getScene()->getObjectByTag("Wall");
             }
-
         }
         gh::endWindow();
     }
