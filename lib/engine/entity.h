@@ -9,10 +9,16 @@ class Entity: public Object{
     public:
         Entity(std::string tag, float x, float y)
             :Object(tag, x, y, 0){};
+            
         void chooseCurrentSprite(size_t i){
             if(i >= sprites.size()) return;
             this->currentSprite = i;
         }
+
+        std::vector<Sprite*>& getSprites(){
+            return sprites;
+        }
+        
         int getSpritesLength(){
             return sprites.size();
         }

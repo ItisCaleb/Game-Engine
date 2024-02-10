@@ -8,6 +8,7 @@
 
 #include "engine/entity.h"
 #include "engine/timer.h"
+#include "engine/resource_manager.h"
 
 class AnimeProperty{
     public:
@@ -69,6 +70,19 @@ class Animator{
 
             bool isEnding(){
                 return anim < lastAnim;
+            }
+            void loadAnimations(std::string path, Entity *instance){
+                auto json = ResourceManager::load<nlohmann::json>(path);
+                if(!json){
+                    printf("Resource '%s' does not exist\n",path.c_str());
+                    return;
+                }
+                for (auto& ani : (*json)["animations"]){
+                    int r = ResourceManager::loadSprites(ani["path"],
+                        ani["clipW"], ani["clipH"], ani["paddingX"], ani["paddingY"], instance->getSprites());
+                    this->addAnimation(ani["name"], r);
+                }
+                ResourceManager::destroy(json);
             }
 
         private:
