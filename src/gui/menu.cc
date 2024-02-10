@@ -63,6 +63,13 @@ void Menu::draw(){
                 addBox();
             }
         }
+        if(gh::button("remove all box",0)){
+            std::vector<Object*> vec;
+            Game::getScene()->getObjectsByTag("Wall",vec);
+            for(auto w: vec){
+                Game::getScene()->removeObject(w);
+            }
+        }
         gh::endWindow();
     }
 }

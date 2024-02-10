@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 #include "engine/sprite.h"
 #include "engine/object.h"
@@ -15,6 +16,7 @@ class Scene{
     public:
         Scene(int width, int height)
             :width(width), height(height), collideEngine(width, height){}
+        virtual ~Scene();
         virtual void init() = 0;
         virtual void update(float dt);
         virtual void render(SDL_Renderer *renderer);
@@ -28,9 +30,7 @@ class Scene{
             return height;
         }
         void addObject(Object *object);
-
-        // add shape to collision detection
-        void addCollideShape(CollideShape *shape);
+        void removeObject(Object *object);
 
         // return object attach by tag
         Object* getObjectByTag(std::string tag);
@@ -40,13 +40,12 @@ class Scene{
         int width, height;
         Sprite *background;
         Sprite *foreground;
-        std::vector<Object*> objects;
+        std::set<Object*> objects;
         std::unordered_multimap<std::string, Object*> tagToObject;
         CollideEngine collideEngine;
         void renderBackground(SDL_Renderer *renderer);
         void loadScene(std::string path);
-
-
+        void updatePosition(float dt);
 
 };
 

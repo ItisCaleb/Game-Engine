@@ -19,13 +19,13 @@ bool checkCollisionPP(PointCollideShape *a, PointCollideShape *b);
 bool BoxCollideShape::isCollide(CollideShape *shape) {
     switch (shape->type) {
         case ShapeType::Box:
-            return checkCollisionBB(this, dynamic_cast<BoxCollideShape *>(shape));
+            return checkCollisionBB(this, reinterpret_cast<BoxCollideShape *>(shape));
         case ShapeType::Circle:
-            return checkCollisionBC(this, dynamic_cast<CircleCollideShape *>(shape));
+            return checkCollisionBC(this, reinterpret_cast<CircleCollideShape *>(shape));
         case ShapeType::Line:
-            return checkCollisionBL(this, dynamic_cast<LineCollideShape *>(shape));
+            return checkCollisionBL(this, reinterpret_cast<LineCollideShape *>(shape));
         case ShapeType::Point:
-            return checkCollisionBP(this, dynamic_cast<PointCollideShape *>(shape));
+            return checkCollisionBP(this, reinterpret_cast<PointCollideShape *>(shape));
         default:
             return false;
     }
@@ -41,13 +41,13 @@ void BoxCollideShape::render(SDL_Renderer *renderer) {
 bool CircleCollideShape::isCollide(CollideShape *shape) {
     switch (shape->type) {
         case ShapeType::Box:
-            return checkCollisionBC(dynamic_cast<BoxCollideShape *>(shape), this);
+            return checkCollisionBC(reinterpret_cast<BoxCollideShape *>(shape), this);
         case ShapeType::Circle:
-            return checkCollisionCC(this, dynamic_cast<CircleCollideShape *>(shape));
+            return checkCollisionCC(this, reinterpret_cast<CircleCollideShape *>(shape));
         case ShapeType::Line:
-            return checkCollisionCL(this, dynamic_cast<LineCollideShape *>(shape));
+            return checkCollisionCL(this, reinterpret_cast<LineCollideShape *>(shape));
         case ShapeType::Point:
-            return checkCollisionCP(this, dynamic_cast<PointCollideShape *>(shape));
+            return checkCollisionCP(this, reinterpret_cast<PointCollideShape *>(shape));
         default:
             return false;
     }
@@ -92,13 +92,13 @@ void CircleCollideShape::render(SDL_Renderer *renderer) {
 bool LineCollideShape::isCollide(CollideShape *shape) {
     switch (shape->type) {
         case ShapeType::Box:
-            return checkCollisionBL(dynamic_cast<BoxCollideShape *>(shape), this);
+            return checkCollisionBL(reinterpret_cast<BoxCollideShape *>(shape), this);
         case ShapeType::Circle:
-            return checkCollisionCL(dynamic_cast<CircleCollideShape *>(shape), this);
+            return checkCollisionCL(reinterpret_cast<CircleCollideShape *>(shape), this);
         case ShapeType::Line:
-            return checkCollisionLL(this, dynamic_cast<LineCollideShape *>(shape));
+            return checkCollisionLL(this, reinterpret_cast<LineCollideShape *>(shape));
         case ShapeType::Point:
-            return checkCollisionLP(this, dynamic_cast<PointCollideShape *>(shape));
+            return checkCollisionLP(this, reinterpret_cast<PointCollideShape *>(shape));
         default:
             return false;
     }
@@ -116,13 +116,13 @@ void LineCollideShape::render(SDL_Renderer *renderer) {
 bool PointCollideShape::isCollide(CollideShape *shape) {
     switch (shape->type) {
         case ShapeType::Box:
-            return checkCollisionBP(dynamic_cast<BoxCollideShape *>(shape), this);
+            return checkCollisionBP(reinterpret_cast<BoxCollideShape *>(shape), this);
         case ShapeType::Circle:
-            return checkCollisionCP(dynamic_cast<CircleCollideShape *>(shape), this);
+            return checkCollisionCP(reinterpret_cast<CircleCollideShape *>(shape), this);
         case ShapeType::Line:
-            return checkCollisionLP(dynamic_cast<LineCollideShape *>(shape), this);
+            return checkCollisionLP(reinterpret_cast<LineCollideShape *>(shape), this);
         case ShapeType::Point:
-            return checkCollisionPP(dynamic_cast<PointCollideShape *>(shape), this);
+            return checkCollisionPP(reinterpret_cast<PointCollideShape *>(shape), this);
         default:
             return false;
     }
