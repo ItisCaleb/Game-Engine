@@ -60,7 +60,9 @@ class Object{
 
     private:
         virtual void onCollide(CollideShape *shape){}
-        virtual void onTrigger(CollideShape *shape){}
+        virtual void onTriggerEnter(Object *obj){}
+        virtual void onTriggerStay(Object *obj){}
+        virtual void onTriggerExit(Object *obj){}
     protected:
         Object(std::string tag, float x, float y, int props)
             :tag(tag),x(x),y(y),props(props){}

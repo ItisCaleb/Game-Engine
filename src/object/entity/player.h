@@ -27,7 +27,11 @@ class Player : public Entity{
         void setFlip(bool flip){
             this->flip = flip;
         }
-        void onTrigger(CollideShape *shape);
+        void onTriggerEnter(Object *obj);
+        void onTriggerStay(Object *obj);
+
+        void onTriggerExit(Object *obj);
+
     private:
         FSM<Player> *state;
         Animator animator;

@@ -3,7 +3,6 @@
 #include "engine/geomatry.h"
 #include "engine/game.h"
 
-#include <set>
 
 void CollideEngine::addCollideShape(CollideShape *shape){
     this->tree.insert(shape);
@@ -12,6 +11,8 @@ void CollideEngine::addCollideShape(CollideShape *shape){
 void CollideEngine::removeCollideShape(CollideShape *shape){
     this->tree.erase(shape);
 }
+
+
 
 
 void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
@@ -29,28 +30,42 @@ void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
     }
 }
 
+
+
 void CollideEngine::handle(float dt){
     std::set<Object*> collided;
     int total = 0;
     auto shapes = this->tree.getAllShape();
+
     for (auto r1 : shapes) {
         auto obj1 = r1->getObject();
         auto props1 = obj1->getProps();
         if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
            continue;
-        collides.clear();
+        triggered.clear();
+
+        // query all collides
         tree.query(r1, collides);
         for (auto r2 : collides) {
             if(r1 == r2) continue;
-            total++;
             auto obj2 = r2->getObject();
+            if(obj1 == obj2) continue;
             if(collided.count(obj1)) continue;
 
             if(!r1->isCollide(r2)) continue;
-
             // trigger
             if(props1 & ObjectProperty::TRIGGER){
-                obj1->onTrigger(r2);
+                if(!triggered.count(obj2)){
+                    triggered.insert(obj2);
+                    TriggerKey key = {obj1, obj2};
+                    if(!triggers.count(key)){
+                        obj1->onTriggerEnter(obj2);
+                        triggers.insert(std::make_pair(key, true));
+                    }else{
+                        obj1->onTriggerStay(obj2);
+                        triggers[key] = true;
+                    }
+                }
             }
             
 
@@ -69,8 +84,16 @@ void CollideEngine::handle(float dt){
                 }
             }
 
-            collided.insert(obj1);
         }
+    }
+    for(auto &it: triggers){
+        if(it.second == false){
+            auto key = it.first;
+            key.a->onTriggerExit(key.b);
+            triggers.erase(key);
+            continue;
+        }
+        it.second = false;
     }
     //tree.cleanup();
 }

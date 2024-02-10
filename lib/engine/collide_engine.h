@@ -8,6 +8,17 @@
 #include <vector>
 #include <utility>
 #include <set>
+#include <unordered_map>
+
+struct TriggerKey{
+    Object *a, *b;
+    std::size_t operator () (const TriggerKey &p) const {
+        return ((long long)p.a ^ (((long long)p.b) << 1));
+    }
+    inline bool operator==(const TriggerKey &p) const {
+		return a == p.a && b == p.b;
+    }
+};
 
 class CollideEngine{
     public:
@@ -17,11 +28,15 @@ class CollideEngine{
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
         void removeCollideShape(CollideShape *shape);
-
         void drawShapes(SDL_Renderer *renderer);
+    private:
         
         QuadTree tree;
         std::vector<CollideShape*> collides;
+
+        // trigger
+        std::unordered_map<TriggerKey, bool, TriggerKey> triggers;
+        std::set<Object*> triggered;
 };
 
 #endif

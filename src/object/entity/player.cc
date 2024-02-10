@@ -12,7 +12,7 @@ static int _idleHeight = 80;
 Player::Player()
 :Entity("Player",640, 360),hitbox(60,120), speed(400){
     // set flags
-    this->setProps(ObjectProperty::RIGID);
+    //this->setProps(ObjectProperty::RIGID);
     this->setProps(ObjectProperty::TRIGGER);
 
     int r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
@@ -37,9 +37,19 @@ void Player::update(float dt) {
     }
 }
 
-void Player::onTrigger(CollideShape *shape){
+void Player::onTriggerEnter(Object *obj){
     // do something
-    //printf("yes\n");
+    printf("enter\n");
+}
+
+void Player::onTriggerStay(Object *obj){
+    // do something
+    printf("stay\n");
+}
+
+void Player::onTriggerExit(Object *obj){
+    // do something
+    printf("exit\n");
 }
 
 void Player::render(SDL_Renderer *renderer) {
