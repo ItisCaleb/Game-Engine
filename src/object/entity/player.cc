@@ -6,57 +6,38 @@
 #include <engine/input_manager.h>
 #include <engine/game.h>
 
-static int _idleWidth = 110;
-static int _idleHeight = 80;
-
 Player::Player()
 :Entity("Player",640, 360),hitbox(60,120), speed(400){
     // set flags
-    //this->setProps(ObjectProperty::RIGID);
+    this->setProps(ObjectProperty::RIGID);
     this->setProps(ObjectProperty::TRIGGER);
-
-    int r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
-    this->animator.addAnimation("idle", r);
-    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 10, 0,this->sprites);
-    this->animator.addAnimation("running", r);
+    this->animator.loadAnimations("assets/animations/player.json", this);
 
     this->attachHitbox(&this->hitbox);
-    this->state = new Player::IdleState();
-    this->state->enter(this);
+    this->stateController.init(new Player::IdleState(), this);
 }
 Player::~Player() {}
 
 void Player::update(float dt) {
     this->setVelocityXY(0, 0);
-    auto _state = this->state->update(this, dt);
-    if(_state){
-        this->state->exit(this);
-        delete this->state;
-        this->state = _state;
-        this->state->enter(this);
-    }
+    this->stateController.update(this, dt);
 }
 
 void Player::onTriggerEnter(Object *obj){
     // do something
-    printf("enter\n");
 }
 
 void Player::onTriggerStay(Object *obj){
     // do something
-    printf("stay\n");
 }
 
 void Player::onTriggerExit(Object *obj){
     // do something
-    printf("exit\n");
 }
 
 void Player::render(SDL_Renderer *renderer) {
-    auto sp = sprites[currentSprite];
-    int x = this->x + this->hitbox.w/2 - sp->getWidth()*3/2;
-    int y = this->y - (sp->getHeight()*3 - this->hitbox.h);
-    sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
+    this->renderCurrentSprite(renderer, this->hitbox.w,
+        this->hitbox.h, 3, 3, this->flip);
 }
 
 

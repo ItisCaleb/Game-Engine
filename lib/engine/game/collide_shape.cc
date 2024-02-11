@@ -1,20 +1,20 @@
 #include "engine/collide_shape.h"
 
 #include "engine/game.h"
+#include "engine/geomatry.h"
 
-float dis(float ax, float ay, float bx, float by) {
-    return std::sqrt(std::pow(ax - bx, 2) + std::pow(ay - by, 2));
-}
-bool checkCollisionBB(BoxCollideShape *a, BoxCollideShape *b);
-bool checkCollisionBC(BoxCollideShape *a, CircleCollideShape *b);
-bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b);
-bool checkCollisionBP(BoxCollideShape *a, PointCollideShape *b);
-bool checkCollisionCC(CircleCollideShape *a, CircleCollideShape *b);
-bool checkCollisionCP(CircleCollideShape *a, PointCollideShape *b);
-bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b);
-bool checkCollisionLL(LineCollideShape *a, LineCollideShape *b);
-bool checkCollisionLP(LineCollideShape *a, PointCollideShape *b);
-bool checkCollisionPP(PointCollideShape *a, PointCollideShape *b);
+static bool checkCollisionBB(BoxCollideShape *a, BoxCollideShape *b);
+static bool checkCollisionBC(BoxCollideShape *a, CircleCollideShape *b);
+static bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b);
+static bool checkCollisionBP(BoxCollideShape *a, PointCollideShape *b);
+static bool checkCollisionCC(CircleCollideShape *a, CircleCollideShape *b);
+static bool checkCollisionCP(CircleCollideShape *a, PointCollideShape *b);
+static bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b);
+static bool checkCollisionLL(LineCollideShape *a, LineCollideShape *b);
+static bool checkCollisionLP(LineCollideShape *a, PointCollideShape *b);
+static bool checkCollisionPP(PointCollideShape *a, PointCollideShape *b);
+
+
 
 bool BoxCollideShape::isCollide(CollideShape *shape) {
     switch (shape->type) {

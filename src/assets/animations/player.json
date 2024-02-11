@@ -1,0 +1,20 @@
+{
+    "animations":[
+        {
+            "name": "idle",
+            "path": "assets/temp/120x80_PNGSheets/_Idle.png",
+            "clipW": 110,
+            "clipH": 80,
+            "paddingX": 10,
+            "paddingY": 0
+        },
+        {
+            "name": "running",
+            "path": "assets/temp/120x80_PNGSheets/_Run.png",
+            "clipW": 110,
+            "clipH": 80,
+            "paddingX": 10,
+            "paddingY": 0
+        }
+    ]
+}

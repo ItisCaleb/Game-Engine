@@ -7,6 +7,7 @@
 #include <set>
 
 #include "engine/collide_shape.h"
+#include "engine/bounding_box.h"
 #include "engine/freelist.h"
 
 
@@ -36,7 +37,7 @@ struct QuadNode{
 
 // use in node find
 struct QuadNodeData{
-    BoxCollideShape boundary;
+    BoundingBox boundary;
     int nodeIdx;
     int depth;
 };
@@ -69,7 +70,7 @@ class QuadTree{
         FreeList<CollideShape*> shapes;
         FreeList<QuadElement> elements;
         std::vector<QuadNode> nodes;
-        BoxCollideShape boundary;
+        BoundingBox boundary;
         int free_node = -1;
         int max_depth;
         int split_threshold;
