@@ -30,7 +30,7 @@ class CollideEngine{
         void removeCollideShape(CollideShape *shape);
         void drawShapes(SDL_Renderer *renderer);
     private:
-        
+        void insertTrigger(Object *a, Object *b);
         QuadTree tree;
         std::vector<CollideShape*> collides;
 

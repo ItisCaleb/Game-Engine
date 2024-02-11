@@ -43,10 +43,8 @@ void Player::onTriggerExit(Object *obj){
 }
 
 void Player::render(SDL_Renderer *renderer) {
-    auto sp = sprites[currentSprite];
-    int x = this->x + this->hitbox.w/2 - sp->getWidth()*3/2;
-    int y = this->y - (sp->getHeight()*3 - this->hitbox.h);
-    sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
+    this->renderCurrentSprite(renderer, this->hitbox.w,
+        this->hitbox.h, 3, 3, this->flip);
 }
 
 

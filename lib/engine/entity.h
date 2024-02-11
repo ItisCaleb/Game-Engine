@@ -25,6 +25,13 @@ class Entity: public Object{
 
 
     protected:
+        void renderCurrentSprite(SDL_Renderer *renderer, float w, float h,
+             float scaleX=1.0f, float scaleY=1.0f, bool flip=false){
+                auto sp = sprites[currentSprite];
+                int x = this->x - (sp->getWidth()*scaleX/2 - w/2);
+                int y = this->y - (sp->getHeight()*scaleY - h);
+                sp->render(renderer, x, y, scaleX, scaleY, flip);
+        }
         size_t currentSprite;
         std::vector<Sprite*> sprites;
 };

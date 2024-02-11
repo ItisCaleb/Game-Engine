@@ -25,18 +25,18 @@ void QuadTree::findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes){
             // if leaf
             nodes.push_back(node_data);
         }else{
-            BoxCollideShape &bd = node_data.boundary;
+            BoundingBox &bd = node_data.boundary;
             // else if branch
             float half_w = bd.w/2;
             float half_h = bd.h/2;
             // top left
-            BoxCollideShape TL(bd.offx, bd.offy, half_w, half_h);
+            BoundingBox TL(bd.x, bd.y, half_w, half_h);
             // top right
-            BoxCollideShape TR(bd.offx + half_w, bd.offy, half_w, half_h);
+            BoundingBox TR(bd.x + half_w, bd.y, half_w, half_h);
             // bottom left
-            BoxCollideShape BL(bd.offx, bd.offy + half_h, half_w, half_h);
+            BoundingBox BL(bd.x, bd.y + half_h, half_w, half_h);
             // bottom right
-            BoxCollideShape BR(bd.offx + half_w, bd.offy + half_h, half_w, half_h);
+            BoundingBox BR(bd.x + half_w, bd.y + half_h, half_w, half_h);
             int nx = node.next;
             if(TL.isCollide(shape)) st.push({TL, nx, node_data.depth+1});
             if(TR.isCollide(shape)) st.push({TR, nx+1, node_data.depth+1});
@@ -68,13 +68,13 @@ void QuadTree::subDivide(QuadNodeData &data){
     float half_w = data.boundary.w/2;
     float half_h = data.boundary.h/2;
     // top left
-    BoxCollideShape TL(data.boundary.offx, data.boundary.offy, half_w,half_h);
+    BoundingBox TL(data.boundary.x, data.boundary.y, half_w,half_h);
     // top right
-    BoxCollideShape TR(data.boundary.offx + half_w, data.boundary.offy, half_w,half_h);
+    BoundingBox TR(data.boundary.x + half_w, data.boundary.y, half_w,half_h);
     // bottom left
-    BoxCollideShape BL(data.boundary.offx, data.boundary.offy + half_h, half_w,half_h);
+    BoundingBox BL(data.boundary.x, data.boundary.y + half_h, half_w,half_h);
     // bottom right
-    BoxCollideShape BR(data.boundary.offx + half_w, data.boundary.offy + half_h, half_w,half_h);
+    BoundingBox BR(data.boundary.x + half_w, data.boundary.y + half_h, half_w,half_h);
 
     int new_fc = this->nodes.size();
     if(this->free_node == -1){
@@ -95,19 +95,19 @@ void QuadTree::subDivide(QuadNodeData &data){
     for(;i!=-1; i = this->elements[i].next){
         int shapeIdx = this->elements[i].shapeIdx;
         auto shape = this->shapes[shapeIdx];
-        if(shape->isCollide(&TL)) {
+        if(TL.isCollide(shape)) {
             QuadNodeData d = {TL, new_fc, data.depth+1};
             appendToElements(d,shapeIdx);
         }
-        if(shape->isCollide(&TR)) {
+        if(TR.isCollide(shape)) {
             QuadNodeData d = {TR, new_fc+1, data.depth+1};
             appendToElements(d,shapeIdx);
         }
-        if(shape->isCollide(&BL)) {
+        if(BL.isCollide(shape)) {
             QuadNodeData d = {BL, new_fc+2, data.depth+1};
             appendToElements(d,shapeIdx);
         }
-        if(shape->isCollide(&BR)) {
+        if(BR.isCollide(shape)) {
             QuadNodeData d = {BR, new_fc+3, data.depth+1};
             appendToElements(d,shapeIdx);
         }
@@ -219,15 +219,16 @@ std::vector<CollideShape*>& QuadTree::getAllShape(){
 
 void QuadTree::drawGrid(SDL_Renderer *renderer){
     this->nodeData.clear();
-    this->findNodes(&this->boundary, this->nodeData);
+    BoxCollideShape bs(this->boundary.w, this->boundary.h);
+    this->findNodes(&bs, this->nodeData);
     std::set<int> pushed;
     for(auto data: this->nodeData){
                 // draw grid
         SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 
         SDL_FRect rect = {
-            data.boundary.getRealX(),
-            data.boundary.getRealY(),
+            data.boundary.x,
+            data.boundary.y,
             data.boundary.w,
             data.boundary.h
         };

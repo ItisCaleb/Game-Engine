@@ -29,46 +29,55 @@ void bbSolver(BoxCollideShape *a, BoxCollideShape *b){
         o->setVelocityY(0);
     }
 }
-
+void CollideEngine::insertTrigger(Object *a, Object *b){
+    if(!triggered.count(b)){
+        triggered.insert(b);
+        TriggerKey key = {a, b};
+        if(!triggers.count(key)){
+            a->onTriggerEnter(b);
+            triggers.insert(std::make_pair(key, true));
+        }else{
+            a->onTriggerStay(b);
+            triggers[key] = true;
+        }
+    }
+}
 
 
 void CollideEngine::handle(float dt){
     std::set<Object*> collided;
-    int total = 0;
     auto shapes = this->tree.getAllShape();
 
     for (auto r1 : shapes) {
         auto obj1 = r1->getObject();
         auto props1 = obj1->getProps();
-        if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
-           continue;
+        //if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
+        //   continue;
         triggered.clear();
-
-        // query all collides
+        collides.clear();
+        // broad phase collide
         tree.query(r1, collides);
         for (auto r2 : collides) {
+
+            // if same shape
             if(r1 == r2) continue;
             auto obj2 = r2->getObject();
-            if(obj1 == obj2) continue;
-            if(collided.count(obj1)) continue;
+            auto props2 = obj2->getProps();
 
+            // if same object
+            if(obj1 == obj2) continue;
+
+            // narrow phase collide
             if(!r1->isCollide(r2)) continue;
+
             // trigger
             if(props1 & ObjectProperty::TRIGGER){
-                if(!triggered.count(obj2)){
-                    triggered.insert(obj2);
-                    TriggerKey key = {obj1, obj2};
-                    if(!triggers.count(key)){
-                        obj1->onTriggerEnter(obj2);
-                        triggers.insert(std::make_pair(key, true));
-                    }else{
-                        obj1->onTriggerStay(obj2);
-                        triggers[key] = true;
-                    }
-                }
+                insertTrigger(obj1, obj2);
+            }
+            if(props2 & ObjectProperty::TRIGGER){
+                insertTrigger(obj2, obj1);
             }
             
-
             // rigid body
             if((props1 & ObjectProperty::RIGID) &&
                 (obj2->getProps() & ObjectProperty::RIGID)){
@@ -83,7 +92,6 @@ void CollideEngine::handle(float dt){
                     }
                 }
             }
-
         }
     }
     for(auto &it: triggers){

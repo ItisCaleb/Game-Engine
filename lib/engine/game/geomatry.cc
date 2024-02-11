@@ -43,3 +43,7 @@ Vector2d penetrationVector(BoxCollideShape *a){
 	}
     return r;
 }
+
+float dis(float ax, float ay, float bx, float by){
+    return std::sqrt(std::pow(ax - bx, 2) + std::pow(ay - by, 2));
+}
