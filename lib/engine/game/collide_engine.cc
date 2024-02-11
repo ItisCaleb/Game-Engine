@@ -51,8 +51,8 @@ void CollideEngine::handle(float dt){
     for (auto r1 : shapes) {
         auto obj1 = r1->getObject();
         auto props1 = obj1->getProps();
-        //if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
-        //   continue;
+        if(!(props1 & ObjectProperty::TRIGGER) && (props1 & ObjectProperty::NO_ONCOLLIDE))
+           continue;
         triggered.clear();
         collides.clear();
         // broad phase collide

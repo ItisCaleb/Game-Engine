@@ -33,13 +33,13 @@ class Player : public Entity{
         void onTriggerExit(Object *obj);
 
     private:
-        FSM<Player> *state;
+        FSMController<Player> stateController;
         Animator animator;
         BoxCollideShape hitbox;
         float speed;
         float velocity;
         float maxSpeed;
-        bool flip;
+        bool flip = false;
 
 
     class IdleState: public FSM<Player>{

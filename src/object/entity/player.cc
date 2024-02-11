@@ -14,20 +14,13 @@ Player::Player()
     this->animator.loadAnimations("assets/animations/player.json", this);
 
     this->attachHitbox(&this->hitbox);
-    this->state = new Player::IdleState();
-    this->state->enter(this);
+    this->stateController.init(new Player::IdleState(), this);
 }
 Player::~Player() {}
 
 void Player::update(float dt) {
     this->setVelocityXY(0, 0);
-    auto _state = this->state->update(this, dt);
-    if(_state){
-        this->state->exit(this);
-        delete this->state;
-        this->state = _state;
-        this->state->enter(this);
-    }
+    this->stateController.update(this, dt);
 }
 
 void Player::onTriggerEnter(Object *obj){
