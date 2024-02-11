@@ -3,17 +3,33 @@
         {
             "name": "idle",
             "path": "assets/temp/120x80_PNGSheets/_Idle.png",
-            "clipW": 110,
+            "clipW": 120,
             "clipH": 80,
-            "paddingX": 10,
+            "paddingX": 0,
             "paddingY": 0
         },
         {
             "name": "running",
             "path": "assets/temp/120x80_PNGSheets/_Run.png",
-            "clipW": 110,
+            "clipW": 120,
             "clipH": 80,
-            "paddingX": 10,
+            "paddingX": 0,
+            "paddingY": 0
+        },
+        {
+            "name": "attack1",
+            "path": "assets/temp/120x80_PNGSheets/_AttackNoMovement.png",
+            "clipW": 120,
+            "clipH": 80,
+            "paddingX": 0,
+            "paddingY": 0
+        },
+        {
+            "name": "attack2",
+            "path": "assets/temp/120x80_PNGSheets/_Attack2NoMovement.png",
+            "clipW": 120,
+            "clipH": 80,
+            "paddingX": 0,
             "paddingY": 0
         }
     ]
