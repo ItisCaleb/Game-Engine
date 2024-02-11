@@ -24,7 +24,7 @@ class Player : public Entity{
         float getSpeed(){
             return this->speed;
         }
-        bool setFlip(bool flip){
+        void setFlip(bool flip){
             this->flip = flip;
         }
         bool isMove;
@@ -37,14 +37,19 @@ class Player : public Entity{
         BoxCollideShape* getHitbox(){
             return &hitbox;
         }
+        void onTriggerEnter(Object *obj);
+        void onTriggerStay(Object *obj);
+
+        void onTriggerExit(Object *obj);
+
     private:
-        BoxCollideShape hitbox;
-        FSM<Player> *state;
+        FSMController<Player> stateController;
         Animator animator;
+        BoxCollideShape hitbox;
         float speed;
         float velocity;
         float maxSpeed;
-        bool flip;
+        bool flip = false;
 
     class IdleState: public FSM<Player>{
         public:

@@ -9,7 +9,7 @@ BoxCollideShape minowskiDifference(BoxCollideShape *a, BoxCollideShape *b){
         a->getRealX() - b->getRealX() - b->w,
         b->getRealY() - a->getRealY() - a->h,
         a->w+b->w,
-        a->h+b->h,nullptr);
+        a->h+b->h);
     return m;
 }
 
@@ -42,4 +42,8 @@ Vector2d penetrationVector(BoxCollideShape *a){
 		r.y = bottom + episilon;
 	}
     return r;
+}
+
+float dis(float ax, float ay, float bx, float by){
+    return std::sqrt(std::pow(ax - bx, 2) + std::pow(ay - by, 2));
 }

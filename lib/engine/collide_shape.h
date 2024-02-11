@@ -2,6 +2,7 @@
 #define COLLIDE_SHAPE_H_
 
 #include <SDL2/SDL.h>
+
 #include "engine/object.h"
 
 enum class ShapeType {
@@ -13,6 +14,7 @@ enum class ShapeType {
 
 class CollideShape {
     public:
+        friend class Object;
         const ShapeType type;
         virtual bool isCollide(CollideShape *shape) = 0;
         virtual void render(SDL_Renderer *renderer) = 0;
@@ -20,17 +22,17 @@ class CollideShape {
             return this->object;
         }
     protected:
-        Object *object;
-        CollideShape(ShapeType type, Object *object)
-            :type(type),object(object) {};
+        Object *object = nullptr;
+        CollideShape(ShapeType type)
+            :type(type) {};
 };
 
 class BoxCollideShape: public CollideShape {
     public:
-        BoxCollideShape(float offx, float offy, float w, float h, Object *object)
-            : CollideShape(ShapeType::Box, object), offx(offx), offy(offy), w(w), h(h) {}
-        BoxCollideShape(float w, float h, Object *object)
-            : CollideShape(ShapeType::Box, object), offx(0), offy(0), w(w), h(h) {}
+        BoxCollideShape(float offx, float offy, float w, float h)
+            : CollideShape(ShapeType::Box), offx(offx), offy(offy), w(w), h(h) {}
+        BoxCollideShape(float w, float h)
+            : CollideShape(ShapeType::Box), offx(0), offy(0), w(w), h(h) {}
         float offx, offy;
         float w, h;
         bool isCollide(CollideShape *shape);
@@ -50,10 +52,10 @@ class BoxCollideShape: public CollideShape {
 
 class CircleCollideShape : public CollideShape {
     public:
-        CircleCollideShape(float x, float y, float r, Object *object)
-            : CollideShape(ShapeType::Circle, object), offx(x), offy(y), r(r) {}
-        CircleCollideShape(float r, Object *object)
-            : CollideShape(ShapeType::Circle, object), offx(0), offy(0), r(r) {}
+        CircleCollideShape(float x, float y, float r)
+            : CollideShape(ShapeType::Circle), offx(x), offy(y), r(r) {}
+        CircleCollideShape(float r)
+            : CollideShape(ShapeType::Circle), offx(0), offy(0), r(r) {}
         float offx, offy;
         float r;
         bool isCollide(CollideShape *shape);
@@ -73,8 +75,8 @@ class CircleCollideShape : public CollideShape {
 
 class LineCollideShape : public CollideShape {
     public:
-        LineCollideShape(float x1, float y1, float x2, float y2, Object *object)
-            : CollideShape(ShapeType::Line, object), x1(x1), y1(y1), x2(x2), y2(y2) {}
+        LineCollideShape(float x1, float y1, float x2, float y2)
+            : CollideShape(ShapeType::Line), x1(x1), y1(y1), x2(x2), y2(y2) {}
         float x1, y1;
         float x2, y2;
         bool isCollide(CollideShape *shape);
@@ -89,10 +91,10 @@ class LineCollideShape : public CollideShape {
 
 class PointCollideShape : public CollideShape {
     public:
-        PointCollideShape(float x, float y, Object *object)
-            : CollideShape(ShapeType::Point, object), offx(x), offy(y) {}
+        PointCollideShape(float x, float y)
+            : CollideShape(ShapeType::Point), offx(x), offy(y) {}
         PointCollideShape(Object *object)
-            : CollideShape(ShapeType::Point, object), offx(0), offy(0) {}
+            : CollideShape(ShapeType::Point), offx(0), offy(0) {}
         float offx, offy;
         bool isCollide(CollideShape *shape);
         void render(SDL_Renderer *renderer);

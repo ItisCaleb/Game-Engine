@@ -44,7 +44,7 @@ Sprite* ResourceManager::load(std::string resource) {
         SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
         return new Sprite(texture, 0, 0, w, h);
     } else {
-        printf("Error: Unsupported format: \"%s\". Can't load sprite from %s",
+        printf("Error: Unsupported format: \"%ls\". Can't load sprite from %s",
                resPath.extension().c_str(),
                resource.c_str());
         return nullptr;
@@ -95,7 +95,7 @@ Font* ResourceManager::load(std::string resource) {
         addToPool(resource, res);
         return res;
     } else {
-        printf("Error: Unsupported format: \"%s\". Can't load font from %s",
+        printf("Error: Unsupported format: \"%ls\". Can't load font from %s",
                resPath.extension().c_str(),
                resource.c_str());
         return nullptr;
@@ -151,12 +151,13 @@ int ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec
     std::filesystem::path resPath = resource;
     auto* config = ResourceManager::load<nlohmann::json>(resPath.replace_extension(".json").string());
     if(!config) return 0;
-    int cnt;
+    int cnt = 0;
     for (auto& element : *config) {
         if(element["type"] == "box"){
             float x1 = element["x1"], y1 = element["y1"];
             float x2 = element["x2"], y2 = element["y2"];
             vec.push_back(new Sprite(texture, x1, y1, x2-x1, y2-y1));
+            cnt++;
         }
     }
     delete config;

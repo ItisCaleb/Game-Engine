@@ -1,22 +1,32 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
+#include <SDL2/SDL.h>
+
 #include <string>
+#include <vector>
 
 namespace _ObjectProperty{
     enum ObjectProperty{
         // will do physical collide
-        RIGID = 1,
+        RIGID = 1<<0,
         // unmovable by collision
-        STATIC = 2,
+        STATIC = 1<<1,
+        // is trigger
+        TRIGGER = 1<<2,
+        // no onCollide
+        NO_ONCOLLIDE = 1<<3
     };
 }
 
 using ObjectProperty = _ObjectProperty::ObjectProperty;
 
+class CollideShape;
 class Object{
     public:
         friend class CollideEngine;
+        friend class Scene;
+        virtual ~Object(){}
         virtual void update(float dt) = 0;
         virtual void render(SDL_Renderer *renderer) = 0;
         std::string getTag(){
@@ -27,13 +37,6 @@ class Object{
         }
         int getProps(){
             return props;
-        }
-        
-        bool isRigid(){
-            return props & ObjectProperty::RIGID;
-        }
-        bool isStatic(){
-            return props & ObjectProperty::STATIC;
         }
 
         void setXY(float x, float y){
@@ -54,10 +57,18 @@ class Object{
 
         float getVelocityX(){ return vx; }
         float getVelocityY(){ return vy; }
+
+    private:
+        virtual void onCollide(CollideShape *shape){}
+        virtual void onTriggerEnter(Object *obj){}
+        virtual void onTriggerStay(Object *obj){}
+        virtual void onTriggerExit(Object *obj){}
     protected:
         Object(std::string tag, float x, float y, int props)
             :tag(tag),x(x),y(y),props(props){}
+        void attachHitbox(CollideShape *shape);
         std::string tag;
+        std::vector<CollideShape*> hitboxs;
         float x, y;
         float vx=0, vy=0;
         int props;

@@ -6,32 +6,16 @@
 #include <engine/input_manager.h>
 #include <engine/game.h>
 
-static int _idleWidth = 120;
-static int _idleHeight = 80;
-
-PlayerController pp;
-
 Player::Player()
-:Entity("Player",640, 360, 50, 50), hitbox(80,120 ,this), speed(400){
-
+:Entity("Player",640, 360),hitbox(60,120), speed(400){
+    // set flags
     this->setProps(ObjectProperty::RIGID);
-    
-    int r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Idle.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-    this->animator.addAnimation("idle", r);
-    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Run.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-    this->animator.addAnimation("running", r);
-    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_TurnAround.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-    this->animator.addAnimation("turnAround", r);
-    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-    this->animator.addAnimation("attack1", r);
-    r = ResourceManager::loadSprites("assets/temp/120x80_PNGSheets/_Attack2.png",_idleWidth,_idleHeight, 0, 0,this->sprites);
-    this->animator.addAnimation("attack2", r);
+    this->setProps(ObjectProperty::TRIGGER);
+    this->animator.loadAnimations("assets/animations/player.json", this);
 
-    Game::getScene()->addCollideShape(&this->hitbox);
-    this->state = new Player::IdleState();
-    this->state->enter(this);
+    this->attachHitbox(&this->hitbox);
+    this->stateController.init(new Player::IdleState(), this);
     
-
     this->isMove = false;
     this->isAttack = false;
     this->_lastTick = SDL_GetTicks();
@@ -43,38 +27,29 @@ void move(Player *instance,float dt);
 void attack(Player *instance,float dt);
 
 void Player::update(float dt) {
-    this->setVelocityXY(0,0);
-    auto _state = this->state->update(this, dt);
-    if(_state){
-        this->state->exit(this);
-        delete this->state;
-        this->state = _state;
-        this->state->enter(this);
-    }
-    
-    //update hitbox
-    std::vector<CollideShape*> v;
-    Game::getScene()->getCollided(&this->hitbox, v);
-    /*for(auto s:*v){
-        Object *o = Game::getObjectByShape(s);
-        if(o) printf("object type is %d\n",o->type);
-    }*/
-    //printf("collided %d objects\n",v->size());
-    if(SDL_GetTicks()-this->_lastTick>1000){
-        _lastTick = SDL_GetTicks();
-        //printf("h");
-    }
     if(!isAttack){
         move(this,dt);
         attack(this,dt);
     }
+    this->setVelocityXY(0, 0);
+    this->stateController.update(this, dt);
+}
+
+void Player::onTriggerEnter(Object *obj){
+    // do something
+}
+
+void Player::onTriggerStay(Object *obj){
+    // do something
+}
+
+void Player::onTriggerExit(Object *obj){
+    // do something
 }
 
 void Player::render(SDL_Renderer *renderer) {
-    auto sp = sprites[currentSprite];
-    int x = this->x + this->hitbox.w/2 - sp->getWidth()*3/2;
-    int y = this->y - (sp->getHeight()*3 - this->hitbox.h);
-    sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
+    this->renderCurrentSprite(renderer, this->hitbox.w,
+        this->hitbox.h, 3, 3, this->flip);
 }
 
 void attack(Player *instance,float dt){

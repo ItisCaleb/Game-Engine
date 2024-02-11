@@ -19,31 +19,49 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     srcRect.x = std::max(0, std::min(srcRect.x, this->background->getWidth() - srcRect.w));
     srcRect.y = std::max(0, std::min(srcRect.y, this->background->getHeight() - srcRect.h));
     // set destination rect to cover the whole screen
-    SDL_FRect destRect = {0, 0, srcRect.w, srcRect.h};
+    SDL_FRect destRect = {0, 0, static_cast<float>(srcRect.w), static_cast<float>(srcRect.h)};
     // apply camera
     destRect = camera->apply(destRect);
     // render
     SDL_RenderCopyF(renderer, this->background->getTexture(), &srcRect, &destRect);
 }
 
+void Scene::updatePosition(float dt){
+    for(auto o: this->objects){
+        float vx = o->getVelocityX();
+        float vy = o->getVelocityY();
+        if(vx != 0 || vy != 0){
+            for(auto s : o->hitboxs){
+                this->collideEngine.removeCollideShape(s);
+            }
+            o->setX(o->getX() + vx*dt);
+            o->setY(o->getY() + vy*dt);
+            for(auto s : o->hitboxs){
+                this->collideEngine.addCollideShape(s);
+            }
+        }
+    }
+}
+
 void Scene::update(float dt){
     for (auto o : this->objects) {
         o->update(dt);
-        o->setX(o->getX() + o->getVelocityX()*dt);
-        o->setY(o->getY() + o->getVelocityY()*dt);
     }
-    this->collideEngine.handleRigid(dt);
-    /*for (auto o : this->objects) {
-        o->update(dt);
-        o->setX(o->getX() + o->getVelocityX()*dt);
-        o->setY(o->getY() + o->getVelocityY()*dt);
-    }*/
+    this->updatePosition(dt);
+    this->collideEngine.handle(dt);
+
 }
 
 void Scene::render(SDL_Renderer* renderer){
     this->renderBackground(renderer);
     for (auto o : this->objects) {
         o->render(renderer);
+    }
+}
+
+Scene::~Scene(){
+    for (auto o : this->objects) {
+        delete o;
     }
 }
 
@@ -69,20 +87,29 @@ void Scene::loadScene(std::string path){
 }
 
 void Scene::addObject(Object *object){
-    /*if(std::find(objects.begin(), objects.end(), object) == objects.end())
-        return;*/
-    objects.push_back(object);
+    if(objects.count(object)) return;
+    objects.insert(object);
     tagToObject.insert(std::make_pair(object->getTag(), object));
+    for(auto s: object->hitboxs){
+        this->collideEngine.addCollideShape(s);
+    }
 }
 
-void Scene::getCollided(CollideShape *shape, std::vector<CollideShape*> &vec){
-    this->collideEngine.getCollided(shape, vec);
+void Scene::removeObject(Object *object){
+    objects.erase(object);
+    auto iter = tagToObject.equal_range(object->getTag());
+    for (auto it = iter.first; it != iter.second; ++it) {
+        if (it->second == object) { 
+            tagToObject.erase(it);
+            break;
+        }
+    }
+    for(auto s: object->hitboxs){
+        this->collideEngine.removeCollideShape(s);
+    }
+    delete object;
 }
 
-
-void Scene::addCollideShape(CollideShape *shape) {
-    this->collideEngine.addCollideShape(shape);
-}
 
 
 Object* Scene::getObjectByTag(std::string tag){
@@ -94,9 +121,7 @@ Object* Scene::getObjectByTag(std::string tag){
 void Scene::getObjectsByTag(std::string tag, std::vector<Object*> &vec){
     int nums = tagToObject.count(tag);
     if(!nums) return;
-    auto iter = tagToObject.find(tag);
-    while (nums--){
+    for (auto[iter, end] = tagToObject.equal_range(tag); iter != end; ++iter){
         vec.push_back(iter->second);
     }
-  
 }
