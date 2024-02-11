@@ -1,10 +1,11 @@
 #include "player.h"
+#include "player_controller.h"
 
 #include <SDL2/SDL.h>
-
 #include <engine/resource_manager.h>
 #include <engine/input_manager.h>
 #include <engine/game.h>
+#include <engine/timer.h>
 
 Player::Player()
 :Entity("Player",640, 360),hitbox(60,120), speed(400){
@@ -15,11 +16,24 @@ Player::Player()
 
     this->attachHitbox(&this->hitbox);
     this->stateController.init(new Player::IdleState(), this);
+    
+    this->isMove = false;
+    this->isAttack = false;
+    this->enAttack = true;
+    this->comboCnt = 0;
+    this->comboTimer.start();
+    this->comboResetTime = 400; // 不要問
+    
 }
 Player::~Player() {}
 
+void move(Player *instance,float dt);
+void attack(Player *instance,float dt);
+
 void Player::update(float dt) {
     this->setVelocityXY(0, 0);
+    move(this,dt);
+    attack(this,dt);
     this->stateController.update(this, dt);
 }
 
@@ -40,74 +54,53 @@ void Player::render(SDL_Renderer *renderer) {
         this->hitbox.h, 3, 3, this->flip);
 }
 
-
-void Player::IdleState::enter(Player *instance){
-    instance->getAnimator()->setAnimation("idle");
-}
-
-FSM<Player>* Player::IdleState::update(Player *instance, float dt){
-    instance->getAnimator()->play(instance, dt);
-    if (InputManager::isKeyHold(InputManager::WASD)){
-        return new Player::RunningState;
+void attack(Player *instance,float dt){
+    if(InputManager::isKeyDown(InputManager::Key::J) && instance->enAttack){
+        instance->enAttack = false;
+        instance->isAttack = true;
+        instance->comboCnt++;
+        if(instance->comboCnt>2)instance->comboCnt=0;
+        instance->comboTimer.restart();
     }
-    return nullptr;
+    if(instance->comboTimer.getTicks() >= instance->comboResetTime){
+        //printf("0\n");
+        instance->comboCnt = 0;
+    }
 }
 
-void Player::RunningState::enter(Player *instance){
-    instance->getAnimator()->setAnimation("running");
+void attackOver(Player *instance){
+    instance->isAttack = false;
 }
 
 void move(Player *instance,float dt){
-  
-    //boundary check
-    // if (newX < -1280) {
-    //     newX = x;
-    // } else if (newX + w> 3000) {
-    //     newX = 3000 - w;
-    // }
+    if(instance->isAttack)return;
+    instance->isMove = true;
 
-    // if (newY < -720) {
-    //     newY = y;
-    // } else if (newY + h> 2000) {
-    //     newY = 2000 - h;
-    // }
-
-}
-
-
-FSM<Player>* Player::RunningState::update(Player *instance, float dt){
-    instance->getAnimator()->play(instance, dt);
-
-    if (!InputManager::isKeyHold(InputManager::WASD)){
-        return new Player::IdleState;
+    //turn
+    if (InputManager::isKeyHold(InputManager::Key::A)){
+        instance->setFlip(true);
+    }
+    if (InputManager::isKeyHold(InputManager::Key::D)){
+        instance->setFlip(false);
     }
 
     //for controller 
     float axisH = 0; // ( -1 ~ 1 ) Horizontal input
     float axisV = 0; // ( -1 ~ 1 ) Vertical input
        
-
     //keyboard    
     if (InputManager::isKeyHold(InputManager::Key::A)){
-        //vx += -instance->getSpeed();
         axisV -= 1;
-        instance->setFlip(true);
     }
     if (InputManager::isKeyHold(InputManager::Key::D)){
-        //vx += instance->getSpeed();
         axisV += 1;
-        instance->setFlip(false);
     }
     if (InputManager::isKeyHold(InputManager::Key::W)){
-        //vy += -instance->getSpeed();
         axisH -= 1;
     }
     if (InputManager::isKeyHold(InputManager::Key::S)){
-        //vy += instance->getSpeed();
         axisH += 1;
-        //vy+=1;
     }
-    
     
     //normalize 
     float normalize = sqrt(axisH*axisH+axisV*axisV);
@@ -119,11 +112,85 @@ FSM<Player>* Player::RunningState::update(Player *instance, float dt){
     }else{
         movementY = 0;
         movementX = 0;
+        instance->isMove = 0;
     }
 
     float speed = instance->getSpeed();
+   
+    instance->setVelocityXY(movementX*speed,movementY*speed);
 
-    instance->setVelocityXY(movementX * speed, movementY * speed);
+    //turn
+    if (InputManager::isKeyHold(InputManager::Key::A)){
+        instance->setFlip(true);
+    }
+    if (InputManager::isKeyHold(InputManager::Key::D)){
+        instance->setFlip(false);
+    }
+}
 
+void Player::IdleState::enter(Player *instance){
+    instance->getAnimator()->setAnimation("idle");
+}
+
+FSM<Player>* Player::tryUpdate(){
+    if(isAttack){
+        if(comboCnt==2)return new Player::Attack2State;
+        else return new Player::Attack1State;
+    }
     return nullptr;
 }
+
+FSM<Player>* Player::IdleState::update(Player *instance, float dt){
+    instance->enAttack = true;
+    instance->getAnimator()->play(instance, dt);
+    auto tryAttack = instance->tryUpdate();
+    if(tryAttack)return tryAttack;
+    if(instance->isMove)return new Player::RunningState;
+    return nullptr;
+}
+
+void Player::RunningState::enter(Player *instance){
+    instance->getAnimator()->setAnimation("running");
+}
+
+FSM<Player>* Player::RunningState::update(Player *instance, float dt){
+    instance->getAnimator()->play(instance, dt);
+    if(instance->isAttack) return new Player::Attack1State;
+    if(!instance->isMove)return new Player::IdleState;
+    return nullptr;
+}
+
+void Player::Attack1State::enter(Player *instance){
+    instance->getAnimator()->setAnimation("attack1");
+}
+
+FSM<Player>* Player::Attack1State::update(Player *instance, float dt){
+    instance->getAnimator()->play(instance, dt);
+    if(instance->getAnimator()->getCurrentAnim()>=1){
+        instance->enAttack = true;
+    }
+    if(instance->getAnimator()->getCurrentAnim()>=2){
+        if(instance->comboCnt==2)return new Player::Attack2State;
+    }
+    if(instance->getAnimator()->isEnding()){
+        //if(instance->comboCnt==2)return new Player::Attack2State;
+        instance->isAttack = false;
+        return new Player::IdleState;
+    }
+    return nullptr;
+}
+
+void Player::Attack2State::enter(Player *instance){
+    instance->getAnimator()->setAnimation("attack2");
+}
+
+FSM<Player>* Player::Attack2State::update(Player *instance, float dt){
+    instance->getAnimator()->play(instance, dt);
+    if(instance->getAnimator()->isEnding()){
+        instance->enAttack = true;
+        instance->isAttack = false;
+        return new Player::IdleState;
+    }
+    return nullptr;
+}
+

@@ -7,11 +7,11 @@ void InputManager::update() {
     keyState = 0;
     // reset the mouse wheel scroll
     const Uint8* state = SDL_GetKeyboardState(NULL);
-
     if (state[SDL_SCANCODE_W]) keyState |= W;
     if (state[SDL_SCANCODE_A]) keyState |= A;
     if (state[SDL_SCANCODE_S]) keyState |= S;
     if (state[SDL_SCANCODE_D]) keyState |= D;
+    if (state[SDL_SCANCODE_J]) keyState |= J;
     if (state[SDL_SCANCODE_SPACE]) keyState |= SPACE;
     if (state[SDL_SCANCODE_ESCAPE]) keyState |= ESC;
 }
