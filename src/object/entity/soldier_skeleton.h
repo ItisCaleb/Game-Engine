@@ -20,6 +20,7 @@ class Skeleton : public Entity {
     bool setFlip(bool flip) {
         this->flip = flip;
     }
+    void onTrigger(CollideShape *shape);
 
    private:
     BoxCollideShape hitbox;
@@ -27,6 +28,7 @@ class Skeleton : public Entity {
     Animator animator;
     int speed;
     bool flip;
+    bool isAttacking;
     float idleTimer;
     float patrolTimer;
     float patrolSpeed;

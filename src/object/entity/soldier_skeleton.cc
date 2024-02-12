@@ -9,8 +9,9 @@ static int _idleWidth = 24;
 static int _idleHeight = 32;
 
 Skeleton::Skeleton()
-    : Entity("Skeleton",300, 360, 50, 50), hitbox(60,120,this), speed(400) {
+    : Entity("Skeleton",300, 360), hitbox(60,120), speed(400) {
     this->setProps(ObjectProperty::RIGID);
+    this->setProps(ObjectProperty::TRIGGER);
     //0~11 idle
     int r = ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Idle.png", 24, 32, 0, 0, this->sprites);
     this->animator.addAnimation("idle",r);
@@ -21,7 +22,7 @@ Skeleton::Skeleton()
     r = ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_React.png", 22, 32, 0, 0, this->sprites);
     this->animator.addAnimation("reaching",r);
     //28~45 attack
-    r = ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Attack.png", 33, 37, 0, 0, this->sprites);
+    r = ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Attack.png", 43, 37, 0, 0, this->sprites);
     this->animator.addAnimation("attacking",r);
     //46~53 hit
     r = ResourceManager::loadSprites("assets/temp/Skeleton/Sprite_Sheets/Skeleton_Hit.png", 30, 32, 0, 0, this->sprites);
@@ -33,17 +34,18 @@ Skeleton::Skeleton()
     if(this->sprites.size() == 0){
         printf("Error: Skeleton sprite not loaded\n");
     }   
-    Game::getScene()->addCollideShape(&this->hitbox);
+    this->attachHitbox(&this->hitbox);
     this->state = new Skeleton::IdleState();
     this->currentState = SkeletonState::Idle;
     this->state->enter(this);
-
+ 
     Player* player = dynamic_cast<Player*>(Game::getScene()->getObjectByTag("Player"));
     this->playerX = player->getX();
     this->playerY = player->getY();
     this->domainDistance = 90000;
     // init state
     this->patrolDirection = Direction::Left;
+    this->isAttacking = false;
 }
 Skeleton::~Skeleton() {}
 
@@ -72,6 +74,10 @@ void Skeleton::render(SDL_Renderer *renderer) {
     sprites[currentSprite]->render(renderer, x, y, 3, 3, this->flip);
 }
 
+void Skeleton::onTrigger(CollideShape *shape) {
+    this->isAttacking = true;
+}
+
 void Skeleton::IdleState::enter(Skeleton *instance) {
     instance->getAnimator()->setAnimation("idle");
     switch (instance->currentState){
@@ -88,6 +94,9 @@ FSM<Skeleton> *Skeleton::IdleState::update(Skeleton *instance, float dt) {
     instance->getAnimator()->play(instance, dt);
 
     Player *player = dynamic_cast<Player *>(Game::getScene()->getObjectByTag("Player"));
+    if(instance->isAttacking){
+        return new Skeleton::AttackingState;
+    }
     if (player) {
         instance->playerX = player->getX();
         instance->playerY = player->getY();
@@ -115,8 +124,11 @@ void Skeleton::PatrolState::enter(Skeleton *instance) {
 
 FSM<Skeleton> *Skeleton::PatrolState::update(Skeleton *instance, float dt) {
     instance->getAnimator()->play(instance, dt);
-
+    
     Player *player = dynamic_cast<Player *>(Game::getScene()->getObjectByTag("Player"));
+    if (instance->isAttacking) {
+        return new Skeleton::AttackingState;
+    }
     if (player) {
         instance->playerX = player->getX();
         instance->playerY = player->getY();
@@ -160,10 +172,12 @@ void Skeleton::ReachingState::enter(Skeleton *instance) {
 }
 FSM<Skeleton> *Skeleton::ReachingState::update(Skeleton *instance, float dt) {
     instance->getAnimator()->play(instance, dt);
-    
+    if (instance->isAttacking) {
+        return new Skeleton::AttackingState;
+    }
     if (instance->reachingTimer > 0) {
         printf("timer: %f\n", instance->reachingTimer);  // 這裡做一些攻擊動作
-        printf("dt: %f\n", dt);  // 這裡做一些攻擊動作
+        printf("dt: %f\n", dt);  // 這裡做一些攻擊動作              
         instance->reachingTimer -= dt;
     } else if (instance->reachingTimer <= 0) {
         return new Skeleton::PursuingState;
@@ -176,10 +190,14 @@ void Skeleton::PursuingState::enter(Skeleton *instance) {
     instance->currentState = SkeletonState::Pursuing;
     instance->patrolSpeed = 60.0f;
 }
+
 FSM<Skeleton> *Skeleton::PursuingState::update(Skeleton *instance, float dt) {
     instance->getAnimator()->play(instance, dt);
     instance->currentState = SkeletonState::Idle;
     Player *player = dynamic_cast<Player *>(Game::getScene()->getObjectByTag("Player"));
+    if (instance->isAttacking) {
+        return new Skeleton::AttackingState;
+    }
     if (player) {
         instance->playerX = player->getX();
         instance->playerY = player->getY();
@@ -195,6 +213,40 @@ FSM<Skeleton> *Skeleton::PursuingState::update(Skeleton *instance, float dt) {
         // 根據玩家位置設置圖像翻轉
         instance->setFlip(dx < 0);
     } else if (distance <= 10 || distance > instance->domainDistance) {
+        instance->isAttacking = false;
+        // 如果玩家超出範圍，可以切換回其他狀態
+        return new Skeleton::IdleState();  // 這裡假設返回到Idle狀態，根據需要調整
+    }
+    // return new Skeleton::IdleState;
+    return nullptr;
+}
+
+void Skeleton::AttackingState::enter(Skeleton *instance) {
+    instance->getAnimator()->setAnimation("attacking");
+    instance->currentState = SkeletonState::Attacking;
+    instance->patrolSpeed = 60.0f;
+}
+
+FSM<Skeleton> *Skeleton::AttackingState::update(Skeleton *instance, float dt) {
+    instance->getAnimator()->play(instance, dt);
+    instance->currentState = SkeletonState::Idle;
+    Player *player = dynamic_cast<Player *>(Game::getScene()->getObjectByTag("Player"));
+    if (player) {
+        instance->playerX = player->getX();
+        instance->playerY = player->getY();
+    }
+    float dx = instance->playerX - instance->getX();
+    float dy = instance->playerY - instance->getY();
+    float distance = dx * dx + dy * dy;
+    if (distance > 10 && distance <= instance->domainDistance) {
+        float speed = instance->getSpeed();
+        float angle = atan2(dy, dx);
+        instance->setX(instance->getX() + cos(angle) * instance->patrolSpeed * dt);
+        instance->setY(instance->getY() + sin(angle) * instance->patrolSpeed * dt);
+        // 根據玩家位置設置圖像翻轉
+        instance->setFlip(dx < 0);
+    } else if (distance <= 10 || distance > instance->domainDistance) {
+        instance->isAttacking = false;
         // 如果玩家超出範圍，可以切換回其他狀態
         return new Skeleton::IdleState();  // 這裡假設返回到Idle狀態，根據需要調整
     }
