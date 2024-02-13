@@ -11,11 +11,12 @@
 #include "engine/object.h"
 #include "engine/collide_shape.h"
 #include "engine/collide_engine.h"
+#include "engine/quad_tree.h"
 
 class Scene{
     public:
         Scene(int width, int height)
-            :width(width), height(height), collideEngine(width, height){}
+            :width(width), height(height), quadTree(width, height, 8, 4), collideEngine(quadTree){}
         virtual ~Scene();
         virtual void init() = 0;
         virtual void update(float dt);
@@ -42,6 +43,7 @@ class Scene{
         Sprite *foreground;
         std::set<Object*> objects;
         std::unordered_multimap<std::string, Object*> tagToObject;
+        QuadTree quadTree;
         CollideEngine collideEngine;
         void renderBackground(SDL_Renderer *renderer);
         void loadScene(std::string path);

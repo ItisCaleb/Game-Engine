@@ -13,6 +13,7 @@ class BoundingBox{
         float x, y;
         float w, h;
         bool isCollide(CollideShape *shape);
+        bool isCollide(BoundingBox *box);
 };
 
 class BoundingLine{

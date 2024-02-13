@@ -23,6 +23,17 @@ bool BoundingBox::isCollide(CollideShape *shape){
     }
 }
 
+bool BoundingBox::isCollide(BoundingBox *box){
+    float ax = this->x, ay = this->y;
+    float bx = box->x, by = box->y;
+    if (ay + this->h < by) return false;
+    if (ay > by + box->h) return false;
+    if (ax + this->w < bx) return false;
+    if (ax > bx + box->w) return false;
+    return true;
+}
+
+
 bool checkCollisionBB(BoundingBox *a, BoxCollideShape *b) {
     // two boxes
     float ax = a->x, ay = a->y;

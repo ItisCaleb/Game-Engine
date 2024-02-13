@@ -11,12 +11,22 @@ enum class ShapeType {
     Line,
     Point
 };
+class BoxCollideShape;
+class CircleCollideShape;
+class LineCollideShape;
+class PointCollideShape;
 
 class CollideShape {
     public:
         friend class Object;
         const ShapeType type;
         virtual bool isCollide(CollideShape *shape) = 0;
+        virtual bool isCollide(BoxCollideShape *shape) = 0 ;
+        virtual bool isCollide(CircleCollideShape *shape) = 0;
+        virtual bool isCollide(LineCollideShape *shape) = 0;
+        virtual bool isCollide(PointCollideShape *shape) = 0;
+        
+
         virtual void render(SDL_Renderer *renderer) = 0;
         Object *getObject(){
             return this->object;
@@ -27,6 +37,7 @@ class CollideShape {
             :type(type) {};
 };
 
+
 class BoxCollideShape: public CollideShape {
     public:
         BoxCollideShape(float offx, float offy, float w, float h)
@@ -36,6 +47,10 @@ class BoxCollideShape: public CollideShape {
         float offx, offy;
         float w, h;
         bool isCollide(CollideShape *shape);
+        bool isCollide(BoxCollideShape *shape);
+        bool isCollide(CircleCollideShape *shape);
+        bool isCollide(LineCollideShape *shape);
+        bool isCollide(PointCollideShape *shape);
         void render(SDL_Renderer *renderer);
         float getRealX(){
             if(this->object)
@@ -59,6 +74,10 @@ class CircleCollideShape : public CollideShape {
         float offx, offy;
         float r;
         bool isCollide(CollideShape *shape);
+        bool isCollide(BoxCollideShape *shape);
+        bool isCollide(CircleCollideShape *shape);
+        bool isCollide(LineCollideShape *shape);
+        bool isCollide(PointCollideShape *shape);
         void render(SDL_Renderer *renderer);
                 float getRealX(){
             if(this->object)
@@ -80,6 +99,10 @@ class LineCollideShape : public CollideShape {
         float x1, y1;
         float x2, y2;
         bool isCollide(CollideShape *shape);
+        bool isCollide(BoxCollideShape *shape);
+        bool isCollide(CircleCollideShape *shape);
+        bool isCollide(LineCollideShape *shape);
+        bool isCollide(PointCollideShape *shape);
         void render(SDL_Renderer *renderer);
         void update(float x1, float y1, float x2, float y2){
             this->x1 = x1;
@@ -97,6 +120,10 @@ class PointCollideShape : public CollideShape {
             : CollideShape(ShapeType::Point), offx(0), offy(0) {}
         float offx, offy;
         bool isCollide(CollideShape *shape);
+        bool isCollide(BoxCollideShape *shape);
+        bool isCollide(CircleCollideShape *shape);
+        bool isCollide(LineCollideShape *shape);
+        bool isCollide(PointCollideShape *shape);
         void render(SDL_Renderer *renderer);
                 float getRealX(){
             if(this->object)

@@ -48,12 +48,14 @@ class QuadTree{
         void insert(CollideShape *shape);
         void erase(CollideShape *shape);
         void query(CollideShape *shape, std::vector<CollideShape*> &collides);
+        void query(BoundingBox *box, std::vector<CollideShape*> &collides);
         void cleanup();
         std::vector<CollideShape*>& getAllShape();
         void drawGrid(SDL_Renderer *renderer);
 
     private:
         void findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes);
+        void findNodes(BoundingBox *box, std::vector<QuadNodeData> &nodes);
         void subDivide(QuadNodeData &data);
         void appendToElements(QuadNodeData &data, int shapdIdx);
         inline void getNodeShapes(int eleIdx, std::vector<CollideShape*> &shape, std::set<int> &pushed){

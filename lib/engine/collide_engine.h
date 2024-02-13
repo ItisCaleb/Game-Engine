@@ -22,8 +22,8 @@ struct TriggerKey{
 
 class CollideEngine{
     public:
-        CollideEngine(int w, int h)
-            :tree(w,h,8, 4){}
+        CollideEngine(QuadTree &tree)
+            :tree(tree){}
         void handle(float dt);
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
@@ -31,7 +31,7 @@ class CollideEngine{
         void drawShapes(SDL_Renderer *renderer);
     private:
         void insertTrigger(Object *a, Object *b);
-        QuadTree tree;
+        QuadTree &tree;
         std::vector<CollideShape*> collides;
 
         // trigger

@@ -47,6 +47,39 @@ void QuadTree::findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes){
     
 }
 
+void QuadTree::findNodes(BoundingBox *box, std::vector<QuadNodeData> &nodes){
+    std::stack<QuadNodeData> st;
+    QuadNodeData root = {this->boundary, 0, 0};
+    st.push(root);
+    while (!st.empty()){
+        auto node_data = st.top();st.pop();
+        auto& node = this->nodes[node_data.nodeIdx];
+        if(node.count != -1){
+            // if leaf
+            nodes.push_back(node_data);
+        }else{
+            BoundingBox &bd = node_data.boundary;
+            // else if branch
+            float half_w = bd.w/2;
+            float half_h = bd.h/2;
+            // top left
+            BoundingBox TL(bd.x, bd.y, half_w, half_h);
+            // top right
+            BoundingBox TR(bd.x + half_w, bd.y, half_w, half_h);
+            // bottom left
+            BoundingBox BL(bd.x, bd.y + half_h, half_w, half_h);
+            // bottom right
+            BoundingBox BR(bd.x + half_w, bd.y + half_h, half_w, half_h);
+            int nx = node.next;
+            if(TL.isCollide(box)) st.push({TL, nx, node_data.depth+1});
+            if(TR.isCollide(box)) st.push({TR, nx+1, node_data.depth+1});
+            if(BL.isCollide(box)) st.push({BL, nx+2, node_data.depth+1});
+            if(BR.isCollide(box)) st.push({BR, nx+3, node_data.depth+1});
+        }
+    }
+    
+}
+
 void QuadTree::appendToElements(QuadNodeData &data, int shapdIdx){
     int idx = this->elements.insert({-1, shapdIdx});
     auto& node = this->nodes[data.nodeIdx];
@@ -155,6 +188,17 @@ void QuadTree::erase(CollideShape *shape){
 void QuadTree::query(CollideShape *shape, std::vector<CollideShape*> &collides){
     this->nodeData.clear();
     this->findNodes(shape, this->nodeData);
+    std::set<int> pushed;
+    for(QuadNodeData &data: this->nodeData){
+        // if no element
+        auto &node = this->nodes[data.nodeIdx];
+        getNodeShapes(node.next, collides, pushed);
+    }
+}
+
+void QuadTree::query(BoundingBox *box, std::vector<CollideShape*> &collides){
+    this->nodeData.clear();
+    this->findNodes(box, this->nodeData);
     std::set<int> pushed;
     for(QuadNodeData &data: this->nodeData){
         // if no element

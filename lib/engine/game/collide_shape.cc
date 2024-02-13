@@ -3,33 +3,33 @@
 #include "engine/game.h"
 #include "engine/geomatry.h"
 
-static bool checkCollisionBB(BoxCollideShape *a, BoxCollideShape *b);
-static bool checkCollisionBC(BoxCollideShape *a, CircleCollideShape *b);
-static bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b);
-static bool checkCollisionBP(BoxCollideShape *a, PointCollideShape *b);
-static bool checkCollisionCC(CircleCollideShape *a, CircleCollideShape *b);
-static bool checkCollisionCP(CircleCollideShape *a, PointCollideShape *b);
-static bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b);
-static bool checkCollisionLL(LineCollideShape *a, LineCollideShape *b);
-static bool checkCollisionLP(LineCollideShape *a, PointCollideShape *b);
-static bool checkCollisionPP(PointCollideShape *a, PointCollideShape *b);
-
-
+inline static bool checkCollisionBB(BoxCollideShape *a, BoxCollideShape *b);
+inline static bool checkCollisionBC(BoxCollideShape *a, CircleCollideShape *b);
+inline static bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b);
+inline static bool checkCollisionBP(BoxCollideShape *a, PointCollideShape *b);
+inline static bool checkCollisionCC(CircleCollideShape *a, CircleCollideShape *b);
+inline static bool checkCollisionCP(CircleCollideShape *a, PointCollideShape *b);
+inline static bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b);
+inline static bool checkCollisionLL(LineCollideShape *a, LineCollideShape *b);
+inline static bool checkCollisionLP(LineCollideShape *a, PointCollideShape *b);
+inline static bool checkCollisionPP(PointCollideShape *a, PointCollideShape *b);
 
 bool BoxCollideShape::isCollide(CollideShape *shape) {
-    switch (shape->type) {
-        case ShapeType::Box:
-            return checkCollisionBB(this, reinterpret_cast<BoxCollideShape *>(shape));
-        case ShapeType::Circle:
-            return checkCollisionBC(this, reinterpret_cast<CircleCollideShape *>(shape));
-        case ShapeType::Line:
-            return checkCollisionBL(this, reinterpret_cast<LineCollideShape *>(shape));
-        case ShapeType::Point:
-            return checkCollisionBP(this, reinterpret_cast<PointCollideShape *>(shape));
-        default:
-            return false;
-    }
+    return shape->isCollide(this);
 }
+bool BoxCollideShape::isCollide(BoxCollideShape *shape){
+    return checkCollisionBB(this, shape);
+}
+bool BoxCollideShape::isCollide(CircleCollideShape *shape){
+    return checkCollisionBC(this, shape);
+}
+bool BoxCollideShape::isCollide(LineCollideShape *shape){
+    return checkCollisionBL(this, shape);
+}
+bool BoxCollideShape::isCollide(PointCollideShape *shape){
+    return checkCollisionBP(this, shape);
+}
+
 
 void BoxCollideShape::render(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
@@ -39,18 +39,20 @@ void BoxCollideShape::render(SDL_Renderer *renderer) {
 }
 
 bool CircleCollideShape::isCollide(CollideShape *shape) {
-    switch (shape->type) {
-        case ShapeType::Box:
-            return checkCollisionBC(reinterpret_cast<BoxCollideShape *>(shape), this);
-        case ShapeType::Circle:
-            return checkCollisionCC(this, reinterpret_cast<CircleCollideShape *>(shape));
-        case ShapeType::Line:
-            return checkCollisionCL(this, reinterpret_cast<LineCollideShape *>(shape));
-        case ShapeType::Point:
-            return checkCollisionCP(this, reinterpret_cast<PointCollideShape *>(shape));
-        default:
-            return false;
-    }
+    return shape->isCollide(this);
+}
+
+bool CircleCollideShape::isCollide(BoxCollideShape *shape){
+    return checkCollisionBC(shape, this);
+}
+bool CircleCollideShape::isCollide(CircleCollideShape *shape){
+    return checkCollisionCC(this, shape);
+}
+bool CircleCollideShape::isCollide(LineCollideShape *shape){
+    return checkCollisionCL(this, shape);
+}
+bool CircleCollideShape::isCollide(PointCollideShape *shape){
+    return checkCollisionCP(this, shape);
 }
 
 void CircleCollideShape::render(SDL_Renderer *renderer) {
@@ -90,18 +92,20 @@ void CircleCollideShape::render(SDL_Renderer *renderer) {
 }
 
 bool LineCollideShape::isCollide(CollideShape *shape) {
-    switch (shape->type) {
-        case ShapeType::Box:
-            return checkCollisionBL(reinterpret_cast<BoxCollideShape *>(shape), this);
-        case ShapeType::Circle:
-            return checkCollisionCL(reinterpret_cast<CircleCollideShape *>(shape), this);
-        case ShapeType::Line:
-            return checkCollisionLL(this, reinterpret_cast<LineCollideShape *>(shape));
-        case ShapeType::Point:
-            return checkCollisionLP(this, reinterpret_cast<PointCollideShape *>(shape));
-        default:
-            return false;
-    }
+    return shape->isCollide(this);
+}
+
+bool LineCollideShape::isCollide(BoxCollideShape *shape){
+    return checkCollisionBL(shape, this);
+}
+bool LineCollideShape::isCollide(CircleCollideShape *shape){
+    return checkCollisionCL(shape, this);
+}
+bool LineCollideShape::isCollide(LineCollideShape *shape){
+    return checkCollisionLL(this, shape);
+}
+bool LineCollideShape::isCollide(PointCollideShape *shape){
+    return checkCollisionLP(this, shape);
 }
 
 void LineCollideShape::render(SDL_Renderer *renderer) {
@@ -114,18 +118,20 @@ void LineCollideShape::render(SDL_Renderer *renderer) {
 }
 
 bool PointCollideShape::isCollide(CollideShape *shape) {
-    switch (shape->type) {
-        case ShapeType::Box:
-            return checkCollisionBP(reinterpret_cast<BoxCollideShape *>(shape), this);
-        case ShapeType::Circle:
-            return checkCollisionCP(reinterpret_cast<CircleCollideShape *>(shape), this);
-        case ShapeType::Line:
-            return checkCollisionLP(reinterpret_cast<LineCollideShape *>(shape), this);
-        case ShapeType::Point:
-            return checkCollisionPP(reinterpret_cast<PointCollideShape *>(shape), this);
-        default:
-            return false;
-    }
+    return shape->isCollide(this);
+}
+
+bool PointCollideShape::isCollide(BoxCollideShape *shape){
+    return checkCollisionBP(shape, this);
+}
+bool PointCollideShape::isCollide(CircleCollideShape *shape){
+    return checkCollisionCP(shape, this);
+}
+bool PointCollideShape::isCollide(LineCollideShape *shape){
+    return checkCollisionLP(shape, this);
+}
+bool PointCollideShape::isCollide(PointCollideShape *shape){
+    return checkCollisionPP(this, shape);
 }
 
 void PointCollideShape::render(SDL_Renderer *renderer) {
@@ -176,9 +182,9 @@ bool checkCollisionBL(BoxCollideShape *a, LineCollideShape *b) {
     LineCollideShape l2(ax2, ay, ax2, ay2);
     LineCollideShape l3(ax,  ay, ax2, ay);
     LineCollideShape l4(ax, ay2, ax2, ay2);
-    bool left = checkCollisionLL(&l1, b);
-    bool right = checkCollisionLL(&l2, b);
-    bool top = checkCollisionLL(&l3, b);
+    bool left   = checkCollisionLL(&l1, b);
+    bool right  = checkCollisionLL(&l2, b);
+    bool top    = checkCollisionLL(&l3, b);
     bool bottom = checkCollisionLL(&l4, b);
     return left || right || top || bottom;
 }
@@ -192,26 +198,30 @@ bool checkCollisionBP(BoxCollideShape *a, PointCollideShape *b) {
     if (ay > by) return false;
     return true;
 }
+
+
 bool checkCollisionCC(CircleCollideShape *a, CircleCollideShape *b) {
     // distance between two points <=  (ra + rb)
-    return dis(a->getRealX(), a->getRealY(), b->getRealX(), b->getRealY()) <= (a->r + b->r);
+    float ax = a->getRealX(), ay = a->getRealY();
+    float bx = b->getRealX(), by = b->getRealY();
+    return dis(ax, ay, bx, by) <= (a->r + b->r);
 }
 
-bool checkCollisionCP(CircleCollideShape *a, float x, float y) {
-    // distance between circle and points <=  r
-    return dis(a->getRealX(), a->getRealY(), x, y) <= a->r;
-}
 bool checkCollisionCP(CircleCollideShape *a, PointCollideShape *b) {
     // distance between circle and points <=  r
-    return dis(a->getRealX(), a->getRealY(), b->getRealX(), b->getRealY()) <= a->r;
+    float ax = a->getRealX(), ay = a->getRealY();
+    float bx = b->getRealX(), by = b->getRealY();
+    return dis(ax, ay, bx, by) <= (a->r);
 }
 bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b) {
     // line points in circle
-    if (dis(a->getRealX(), a->getRealY(), b->x1, b->y1) <= a->r || dis(a->getRealX(), a->getRealY(), b->x2, b->y2) <= a->r) return true;
+    float ax = a->getRealX(), ay = a->getRealY(), ar = a->r;
+    float bx1 = b->x1, by1 = b->y1, bx2 = b->x2, by2 = b->y2;
+    if (dis(ax, ay, bx1, by1) <= ar || dis(ax, ay, bx2, by2) <= ar) return true;
     // p  is the closest point on the line to the circle center
-    float u = ((a->getRealX() - b->x1) * (b->x2 - b->x1) + (a->getRealY() - b->y1) * (b->y2 - b->y1)) / ((b->x1 - b->x2) * (b->x1 - b->x2) + (b->y1 - b->y2) * (b->y1 - b->y2));
-    float x = b->x1 + u * (b->x2 - b->x1);
-    float y = b->y1 + u * (b->y2 - b->y1);
+    float u = ((ax - bx1) * (bx2 - bx1) + (ay - by1) * (by2 - by1)) / ((bx1 - bx2) * (bx1 - bx2) + (by1 - by2) * (by1 - by2));
+    float x = bx1 + u * (bx2 - bx1);
+    float y = by1 + u * (by2 - by1);
     // point p is on line
     PointCollideShape p(x, y);
     if (!checkCollisionLP(b, &p)) {
@@ -223,33 +233,37 @@ bool checkCollisionCL(CircleCollideShape *a, LineCollideShape *b) {
 }
 
 bool checkCollisionLL(LineCollideShape *a, LineCollideShape *b) {
+    float ax1 = a->x1, ay1 = a->y1, ax2 = a->x2, ay2 = a->y2;
+    float bx1 = b->x1, by1 = b->y1, bx2 = b->x2, by2 = b->y2;
     // calculate the denominator
-    float den = ((b->y2 - b->y1) * (a->x2 - a->x1) - (b->x2 - b->x1) * (a->y2 - a->y1));
+    float den = ((by2 - by1) * (ax2 - ax1) - (bx2 - bx1) * (ay2 - ay1));
     // denominator = 0
     if (den == 0) return false;
-    float ua = ((b->x2 - b->x1) * (a->y1 - b->y1) -
-                (b->y2 - b->y1) * (a->x1 - b->x1)) /
-               den;
-    float ub = ((a->x2 - a->x1) * (a->y1 - b->y1) -
-                (a->y2 - a->y1) * (a->x1 - b->x1)) /
-               den;
+    float ua = ((bx2 - bx1) * (ay1 - by1) -
+                (by2 - by1) * (ax1 - bx1)) / den;
+    float ub = ((ax2 - ax1) * (ay1 - by1) -
+                (ay2 - ay1) * (ax1 - bx1)) / den;
     // Let 's see if uA and uB tell us the lines are colliding
     return (ua >= 0 && ua <= 1) && (ub >= 0 && ub <= 1);
 }
 
 bool checkCollisionLP(LineCollideShape *a, PointCollideShape *b) {
+    float ax1 = a->x1, ay1 = a->y1, ax2 = a->x2, ay2 = a->y2;
+    float bx = b->getRealX(), by = b->getRealY();
     float epsilon = 0.0001;
     // length of line a
-    float length = dis(a->x1, a->y1, a->x2, a->y2);
+    float length = dis(ax1, ay1, ax2, ay2);
     // dis between line a point1 and point b
-    float dis_a1_b = dis(a->x1, a->y1, b->getRealX(), b->getRealY());
+    float dis_a1_b = dis(ax1, ay1, bx, by);
     // dis between line a point2 and point b
-    float dis_a2_b = dis(a->x2, a->y2, b->getRealX(), b->getRealY());
+    float dis_a2_b = dis(ax2, ay2, bx, by);
     // triangle law
     return std::abs(dis_a1_b + dis_a2_b - length) <= epsilon;
 }
 bool checkCollisionPP(PointCollideShape *a, PointCollideShape *b) {
     float epsilon = 0.0001;
     // two points
-    return std::abs(a->getRealX() - b->getRealX()) <= epsilon && std::abs(a->getRealY() - b->getRealY()) <= epsilon;
+    float ax = a->getRealX(), ay = a->getRealY();
+    float bx = b->getRealX(), by = b->getRealY();
+    return std::abs(ax - bx) <= epsilon && std::abs(ay - by) <= epsilon;
 }
