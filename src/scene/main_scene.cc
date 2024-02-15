@@ -9,7 +9,7 @@
 #include "object/wall.h"
 
 MainScene::MainScene()
-:Scene(5000, 5000){}
+:Scene(1<<14){}
 
 void MainScene::init(){
     srand( time(NULL) );

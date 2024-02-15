@@ -7,9 +7,8 @@
 
 class AStar{
     public:
-        inline static void query(Vector2d start, Vector2d dest, std::vector<Vector2d> &path);
-    private:
-        inline static void buildGraph(Vector2d start, Vector2d dest);
+        inline static void query(std::vector<uint8_t> graph,
+        Vector2d start, Vector2d dest, std::vector<Vector2d> &path);
 };
 
 #endif

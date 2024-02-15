@@ -44,7 +44,7 @@ struct QuadNodeData{
 
 class QuadTree{
     public:
-        QuadTree(int w, int h, int max_depth, int split_threshold);
+        QuadTree(int w,int max_depth, int split_threshold);
         void insert(CollideShape *shape);
         void erase(CollideShape *shape);
         void query(CollideShape *shape, std::vector<CollideShape*> &collides);

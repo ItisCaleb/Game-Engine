@@ -12,11 +12,13 @@
 #include "engine/collide_shape.h"
 #include "engine/collide_engine.h"
 #include "engine/quad_tree.h"
+#include "engine/path_finder.h"
 
 class Scene{
     public:
-        Scene(int width, int height)
-            :width(width), height(height), quadTree(width, height, 8, 4), collideEngine(quadTree){}
+        Scene(int width)
+            :width(width), quadTree(width, 8, 4),
+             collideEngine(quadTree), pathFinder(quadTree, width, 16){}
         virtual ~Scene();
         virtual void init() = 0;
         virtual void update(float dt);
@@ -26,9 +28,6 @@ class Scene{
         //get this scene width and height.
         int getWidth(){
             return width;
-        }
-        int getHeight(){
-            return height;
         }
         void addObject(Object *object);
         void removeObject(Object *object);
@@ -45,6 +44,7 @@ class Scene{
         std::unordered_multimap<std::string, Object*> tagToObject;
         QuadTree quadTree;
         CollideEngine collideEngine;
+        PathFinder pathFinder;
         void renderBackground(SDL_Renderer *renderer);
         void loadScene(std::string path);
         void updatePosition(float dt);

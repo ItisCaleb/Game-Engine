@@ -5,8 +5,8 @@
 #include <stack>
 #include <set>
 
-QuadTree::QuadTree(int w, int h, int max_depth, int split_threshold)
-:boundary(w,h),max_depth(max_depth),split_threshold(split_threshold){
+QuadTree::QuadTree(int w, int max_depth, int split_threshold)
+:boundary(w,w),max_depth(max_depth),split_threshold(split_threshold){
     QuadNode root;
     root.count = 0;
     root.next = -1;
