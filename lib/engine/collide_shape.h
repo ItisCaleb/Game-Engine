@@ -5,6 +5,7 @@
 
 #include "engine/object.h"
 
+
 enum class ShapeType {
     Box,
     Circle,
@@ -27,7 +28,7 @@ class CollideShape {
         virtual bool isCollide(PointCollideShape *shape) = 0;
         
 
-        virtual void render(SDL_Renderer *renderer) = 0;
+        virtual void render(Renderer *renderer) = 0;
         Object *getObject(){
             return this->object;
         }
@@ -51,7 +52,7 @@ class BoxCollideShape: public CollideShape {
         bool isCollide(CircleCollideShape *shape);
         bool isCollide(LineCollideShape *shape);
         bool isCollide(PointCollideShape *shape);
-        void render(SDL_Renderer *renderer);
+        void render(Renderer *renderer);
         float getRealX(){
             if(this->object)
                 return this->object->getX() + offx;
@@ -78,7 +79,7 @@ class CircleCollideShape : public CollideShape {
         bool isCollide(CircleCollideShape *shape);
         bool isCollide(LineCollideShape *shape);
         bool isCollide(PointCollideShape *shape);
-        void render(SDL_Renderer *renderer);
+        void render(Renderer *renderer);
                 float getRealX(){
             if(this->object)
                 return this->object->getX() + offx;
@@ -103,7 +104,7 @@ class LineCollideShape : public CollideShape {
         bool isCollide(CircleCollideShape *shape);
         bool isCollide(LineCollideShape *shape);
         bool isCollide(PointCollideShape *shape);
-        void render(SDL_Renderer *renderer);
+        void render(Renderer *renderer);
         void update(float x1, float y1, float x2, float y2){
             this->x1 = x1;
             this->y1 = y1;
@@ -124,7 +125,7 @@ class PointCollideShape : public CollideShape {
         bool isCollide(CircleCollideShape *shape);
         bool isCollide(LineCollideShape *shape);
         bool isCollide(PointCollideShape *shape);
-        void render(SDL_Renderer *renderer);
+        void render(Renderer *renderer);
                 float getRealX(){
             if(this->object)
                 return this->object->getX() + offx;

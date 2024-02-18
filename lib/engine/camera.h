@@ -15,6 +15,7 @@ public:
     // set camera center point
     void update(float targetX, float targetY);
     SDL_FRect apply(SDL_FRect &rect);
+    SDL_FRect apply(SDL_FRect *rect);
     void updateZoom(float targetZoom);
     float applyX(float x);
     float applyY(float y);

@@ -15,10 +15,10 @@ class PathFinder{
         void fillObstacle(LineCollideShape *shape);
         void fillObstacle(PointCollideShape *shape);
 
+        QuadTree &tree;
         int gridSize;
         int gridCount;
         std::vector<uint8_t> grid;
-        QuadTree &tree;
 
         // for searching obstacle
         std::vector<CollideShape*> search;

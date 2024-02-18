@@ -148,23 +148,24 @@ void drawImage(SDL_Renderer *renderer, void* texture, mu_Rect *rect){
     SDL_RenderCopyF(renderer, (SDL_Texture *)texture, NULL, &renderRect);
 }
 
-void GUIHelper::handleRender(SDL_Renderer *renderer){
+void GUIHelper::handleRender(Renderer *renderer){
     mu_Command *cmd = NULL;
+    SDL_Renderer *sdlRenderer = renderer->getRenderer();
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     while (mu_next_command(ctx, &cmd)) {
       switch (cmd->type) {
         case MU_COMMAND_TEXT:
-            drawText(renderer, cmd->text.font, cmd->text.str, cmd->text.pos, cmd->text.color); 
+            drawText(sdlRenderer, cmd->text.font, cmd->text.str, cmd->text.pos, cmd->text.color); 
             break;
         case MU_COMMAND_RECT:
-            drawRect(renderer,&cmd->rect.rect, cmd->rect.color); 
+            drawRect(sdlRenderer,&cmd->rect.rect, cmd->rect.color); 
             break;
         case MU_COMMAND_IMAGE:
-            drawImage(renderer, cmd->image.texture, &cmd->image.rect);
+            drawImage(sdlRenderer, cmd->image.texture, &cmd->image.rect);
             break;
         //case MU_COMMAND_ICON: r_draw_icon(cmd->icon.id, cmd->icon.rect, cmd->icon.color); break;
         case MU_COMMAND_CLIP: 
-            setClipRect(renderer, cmd->clip.rect); 
+            setClipRect(sdlRenderer, cmd->clip.rect); 
             break;
       }
     }

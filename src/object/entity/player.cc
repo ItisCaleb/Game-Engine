@@ -49,7 +49,7 @@ void Player::onTriggerExit(Object *obj){
     // do something
 }
 
-void Player::render(SDL_Renderer *renderer) {
+void Player::render(Renderer *renderer) {
     this->renderCurrentSprite(renderer, this->hitbox.w,
         this->hitbox.h, 3, 3, this->flip);
 }

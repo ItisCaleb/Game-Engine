@@ -14,7 +14,7 @@ static SDL_Texture* loadTexture(std::string resource){
         printf("Error: Unable to load surface from path: %s. SDL_image Error: %s\n", resource.c_str(), IMG_GetError());
         return nullptr;
     }
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::getRenderer(), surface);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::getRenderer()->getRenderer(), surface);
     if (!texture) {
         printf("Error: Unable to create texture from: %s. SDL Error %s\n", resource.c_str(), SDL_GetError());
         return nullptr;

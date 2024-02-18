@@ -106,7 +106,7 @@ void CollideEngine::handle(float dt){
     //tree.cleanup();
 }
 
-void CollideEngine::drawShapes(SDL_Renderer *renderer){
+void CollideEngine::drawShapes(Renderer *renderer){
     tree.cleanup();
     //tree.drawGrid(renderer);
     auto shapes = this->tree.getAllShape();

@@ -4,7 +4,7 @@
 #include "engine/game.h"
 #include "engine/resource_manager.h"
 
-void Scene::renderBackground(SDL_Renderer* renderer){
+void Scene::renderBackground(Renderer *renderer){
     if(!this->background) return;
 
     Camera *camera = Game::getCamera();
@@ -21,9 +21,9 @@ void Scene::renderBackground(SDL_Renderer* renderer){
     // set destination rect to cover the whole screen
     SDL_FRect destRect = {0, 0, static_cast<float>(srcRect.w), static_cast<float>(srcRect.h)};
     // apply camera
-    destRect = camera->apply(destRect);
+    
     // render
-    SDL_RenderCopyF(renderer, this->background->getTexture(), &srcRect, &destRect);
+    renderer->renderCopyF(this->background->getTexture(), &srcRect, &destRect);
 }
 
 void Scene::updatePosition(float dt){
@@ -52,7 +52,7 @@ void Scene::update(float dt){
 
 }
 
-void Scene::render(SDL_Renderer* renderer){
+void Scene::render(Renderer *renderer){
     this->renderBackground(renderer);
     for (auto o : this->objects) {
         o->render(renderer);

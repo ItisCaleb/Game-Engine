@@ -49,6 +49,14 @@ SDL_FRect Camera::apply(SDL_FRect &rect) {
         .h = rect.h * zoom};
 }
 
+SDL_FRect Camera::apply(SDL_FRect *rect) {
+    return SDL_FRect{
+        .x = (((rect->x - this->x) * zoom) + Game::getWidth()/2) , 
+        .y = (((rect->y - this->y) * zoom) + Game::getHeight()/2) , 
+        .w = rect->w * zoom, 
+        .h = rect->h * zoom};
+}
+
 void Camera::updateZoom(float targetZoom) {
     this->targetZoom = std::max(0.5f, std::min(targetZoom, 3.0f));
 }

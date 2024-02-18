@@ -261,14 +261,14 @@ std::vector<CollideShape*>& QuadTree::getAllShape(){
     return this->leaves;
 }
 
-void QuadTree::drawGrid(SDL_Renderer *renderer){
+void QuadTree::drawGrid(Renderer *renderer){
     this->nodeData.clear();
     BoxCollideShape bs(this->boundary.w, this->boundary.h);
     this->findNodes(&bs, this->nodeData);
     std::set<int> pushed;
     for(auto data: this->nodeData){
                 // draw grid
-        SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+        renderer->SetRenderDrawColor(0xFF, 0x00, 0x00, 0xFF);
 
         SDL_FRect rect = {
             data.boundary.x,
@@ -276,7 +276,6 @@ void QuadTree::drawGrid(SDL_Renderer *renderer){
             data.boundary.w,
             data.boundary.h
         };
-        auto r = Game::getCamera()->apply(rect);
-        SDL_RenderDrawRectF(renderer, &r);
+        renderer->RenderDrawRectF(&rect);
     }
 }

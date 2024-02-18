@@ -48,7 +48,7 @@ void MainScene::update(float dt){
 
 }
 
-void MainScene::render(SDL_Renderer* renderer){
+void MainScene::render(Renderer *renderer){
     Scene::render(renderer);
     this->collideEngine.drawShapes(renderer);
 }

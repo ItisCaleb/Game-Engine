@@ -2,6 +2,7 @@
 #define SPRITE_H_
 
 #include <SDL2/SDL.h>
+#include "engine/renderer.h"
 
 
 class Sprite {
@@ -9,7 +10,7 @@ class Sprite {
         Sprite(SDL_Texture *texture, int offX, int offY, int w, int h)
             :texture(texture),offX(offX),offY(offY),w(w),h(h){}
 
-        void render(SDL_Renderer *renderer, float x, float y,
+        void render(Renderer *renderer, float x, float y,
              float scaleX = 1, float scaleY = 1, bool flip=false);
         int getWidth(){
             return w;

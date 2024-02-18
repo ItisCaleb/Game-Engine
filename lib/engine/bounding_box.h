@@ -4,14 +4,12 @@
 #include "engine/collide_shape.h"
 #include "engine/geomatry.h"
 
-class BoundingBox{
+class BoundingBox: public SDL_FRect{
     public:
         BoundingBox(float x, float y, float w, float h)
-            :x(x),y(y),w(w),h(h){}
+            :SDL_FRect({x,y,w,h}){}
         BoundingBox(float w, float h)
-            :x(0),y(0),w(w),h(h){}
-        float x, y;
-        float w, h;
+            :SDL_FRect({0,0,w,h}){}
         bool isCollide(CollideShape *shape);
         bool isCollide(BoundingBox *box);
 };

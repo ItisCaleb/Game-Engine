@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+#include "engine/renderer.h"
+
+
 namespace _ObjectProperty{
     enum ObjectProperty{
         // will do physical collide
@@ -28,7 +31,7 @@ class Object{
         friend class Scene;
         virtual ~Object(){}
         virtual void update(float dt) = 0;
-        virtual void render(SDL_Renderer *renderer) = 0;
+        virtual void render(Renderer *renderer) = 0;
         std::string getTag(){
             return tag;
         }

@@ -13,7 +13,7 @@ class Wall: public Object{
                 this->attachHitbox(&hitbox);
             }
         void update(float dt){};
-        void render(SDL_Renderer *renderer){
+        void render(Renderer *renderer){
             if(sprite != NULL) sprite->render(renderer,this->x,this->y);
         }
     private:

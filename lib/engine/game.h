@@ -8,6 +8,7 @@
 #include "engine/scene.h"
 #include "engine/gui.h"
 #include "engine/collide_shape.h"
+#include "engine/renderer.h"
 
 
 class Game {
@@ -31,7 +32,7 @@ class Game {
         inline static SDL_Window* getWindow(){
             return window;
         }
-        inline static SDL_Renderer* getRenderer(){
+        inline static Renderer* getRenderer(){
             return renderer;
         }
         inline static Camera *getCamera(){
@@ -81,14 +82,14 @@ class Game {
         // game base resolution
         inline static int logicWidth, logicHeight;
         inline static SDL_Window *window;
-        inline static SDL_Renderer *renderer;
+        inline static Renderer *renderer;
 
         inline static Camera *camera;
         inline static Scene *scene;
         inline static std::vector<GUI*> guiStack;
         inline static int frameCount;
         inline static float fps;
-        static void initSDL(std::string windowName);
+        static SDL_Renderer* initSDL(std::string windowName);
 };
 
 #endif

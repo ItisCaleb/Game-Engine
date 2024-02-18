@@ -28,7 +28,7 @@ class CollideEngine{
         // add shape to collision detection
         void addCollideShape(CollideShape *shape);
         void removeCollideShape(CollideShape *shape);
-        void drawShapes(SDL_Renderer *renderer);
+        void drawShapes(Renderer *renderer);
     private:
         void insertTrigger(Object *a, Object *b);
         QuadTree &tree;

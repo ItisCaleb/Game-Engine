@@ -51,7 +51,7 @@ class QuadTree{
         void query(BoundingBox *box, std::vector<CollideShape*> &collides);
         void cleanup();
         std::vector<CollideShape*>& getAllShape();
-        void drawGrid(SDL_Renderer *renderer);
+        void drawGrid(Renderer *renderer);
 
     private:
         void findNodes(CollideShape *shape, std::vector<QuadNodeData> &nodes);

@@ -22,7 +22,7 @@ class Scene{
         virtual ~Scene();
         virtual void init() = 0;
         virtual void update(float dt);
-        virtual void render(SDL_Renderer *renderer);
+        virtual void render(Renderer *renderer);
         virtual void destroy() = 0;
     
         //get this scene width and height.
@@ -45,7 +45,7 @@ class Scene{
         QuadTree quadTree;
         CollideEngine collideEngine;
         PathFinder pathFinder;
-        void renderBackground(SDL_Renderer *renderer);
+        void renderBackground(Renderer *renderer);
         void loadScene(std::string path);
         void updatePosition(float dt);
 

@@ -15,7 +15,7 @@ class MainScene: public Scene{
         ~MainScene();
         void init();
         void update(float dt);
-        void render(SDL_Renderer *renderer);
+        void render(Renderer *renderer);
         void destroy();
 };
 

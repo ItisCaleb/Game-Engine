@@ -10,6 +10,7 @@
 #endif
 #include "engine/microui.h"
 #include "engine/font.h"
+#include "engine/renderer.h"
 
 
 
@@ -17,7 +18,7 @@ class GUIHelper{
     public:
         static void init();
         static void handleInput(SDL_Event &e);
-        static void handleRender(SDL_Renderer *renderer);
+        static void handleRender(Renderer *renderer);
         static void setCurrentFont(Font *font, int pt=14);
         static mu_Context* getContext();
 

@@ -9,7 +9,7 @@
 #include "engine/gui_helper.h"
 
 
-void Game::initSDL(std::string windowName){
+SDL_Renderer* Game::initSDL(std::string windowName){
     // Init everything
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         //handle error
@@ -64,16 +64,17 @@ void Game::initSDL(std::string windowName){
         exit(1);
     }
     Game::window = window;
-    Game::renderer = renderer;
+    return renderer;
 }
 
 void Game::init(std::string windowName, int width, int height){
     if (Game::already_init) return;
-    Game::initSDL(windowName);
+    SDL_Renderer *renderer = Game::initSDL(windowName);
     SDL_RenderSetLogicalSize(renderer, width, height);
     //float scale = std::min((float)windowWidth/width, (float)windowHeight/height);
     //SDL_RenderSetScale(renderer, scale, scale);
     Game::camera = new Camera(width, height);
+    Game::renderer = new Renderer(renderer, camera);
     Game::already_init = true;
     Game::running = true;
 
@@ -116,7 +117,8 @@ void Game::closeGUI(GUI* gui){
 
 
 void Game::destroy() {
-    SDL_DestroyRenderer(Game::renderer);
+    delete Game::camera;
+    delete Game::renderer;
     SDL_DestroyWindow(Game::window);
     IMG_Quit();
     TTF_Quit();
@@ -179,12 +181,13 @@ void Game::update(float dt) {
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(Game::renderer, 0, 255, 255, 255);
-    SDL_RenderClear(Game::renderer);
+    auto renderer = Game::renderer->getRenderer();
+    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+    SDL_RenderClear(renderer);
     Game::scene->render(Game::renderer);
 
     if(!guiStack.empty())
         GUIHelper::handleRender(Game::renderer);
-    SDL_RenderPresent(Game::renderer);
+    SDL_RenderPresent(renderer);
 }
 
