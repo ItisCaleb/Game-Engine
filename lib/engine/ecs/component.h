@@ -1,9 +1,11 @@
-#ifndef ECS_Component_H_
-#define ECS_Component_H_
+#ifndef ECS_COMPONENT_H_
+#define ECS_COMPONENT_H_
 
-#include "engine/ecs/entity.h"
+
+#include "define.h"
 #include <vector>
 #include <unordered_map>
+#include <assert.h>
 
 class Component{
 };
@@ -20,11 +22,11 @@ class ComponentArray : public IComponentArray
 public:
 	void insertData(Entity entity, T component)
 	{
-		assert(mEntityToIndexMap.find(entity) == mEntityToIndexMap.end() && "Component added to same entity more than once.");
+		assert(entityToIndex.find(entity) == entityToIndex.end() && "Component added to same entity more than once.");
 
 		// Put new entry at end and update the maps
 		size_t newIndex = mSize;
-		mEntityToIndexMap[entity] = newIndex;
+		entityToIndex[entity] = newIndex;
 		mIndexToEntityMap[newIndex] = entity;
 		mComponentArray[newIndex] = component;
 		++mSize;
@@ -32,19 +34,19 @@ public:
 
 	void removeData(Entity entity)
 	{
-		assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Removing non-existent component.");
+		assert(entityToIndex.find(entity) != entityToIndex.end() && "Removing non-existent component.");
 
 		// Copy element at end into deleted element's place to maintain density
-		size_t indexOfRemovedEntity = mEntityToIndexMap[entity];
+		size_t indexOfRemovedEntity = entityToIndex[entity];
 		size_t indexOfLastElement = mSize - 1;
 		mComponentArray[indexOfRemovedEntity] = mComponentArray[indexOfLastElement];
 
 		// Update map to point to moved spot
 		Entity entityOfLastElement = mIndexToEntityMap[indexOfLastElement];
-		mEntityToIndexMap[entityOfLastElement] = indexOfRemovedEntity;
+		entityToIndex[entityOfLastElement] = indexOfRemovedEntity;
 		mIndexToEntityMap[indexOfRemovedEntity] = entityOfLastElement;
 
-		mEntityToIndexMap.erase(entity);
+		entityToIndex.erase(entity);
 		mIndexToEntityMap.erase(indexOfLastElement);
 
 		--mSize;
@@ -52,15 +54,15 @@ public:
 
 	T& getData(Entity entity)
 	{
-		assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Retrieving non-existent component.");
+		assert(entityToIndex.find(entity) != entityToIndex.end() && "Retrieving non-existent component.");
 
 		// Return a reference to the entity's component
-		return mComponentArray[mEntityToIndexMap[entity]];
+		return mComponentArray[entityToIndex[entity]];
 	}
 
 	void entityDestroyed(Entity entity) override
 	{
-		if (mEntityToIndexMap.find(entity) != mEntityToIndexMap.end())
+		if (entityToIndex.find(entity) != entityToIndex.end())
 		{
 			// Remove the entity's component if it existed
 			removeData(entity);
@@ -75,7 +77,7 @@ private:
 	std::array<T, MAX_ENTITIES> mComponentArray;
 
 	// Map from an entity ID to an array index.
-	std::unordered_map<Entity, size_t> mEntityToIndexMap;
+	std::unordered_map<Entity, size_t> entityToIndex;
 
 	// Map from an array index to an entity ID.
 	std::unordered_map<size_t, Entity> mIndexToEntityMap;
@@ -91,11 +93,62 @@ class ComponentManager{
             static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
             auto type_name = typeid(T).name();
             if(components.find(type_name) != components.end()){
-                components.insert(type_name, {});
+				componentTypes.insert({type_name, nextType});
+                components.insert({type_name, new ComponentArray<T>()});
+				nextType++;
             }
         }
+		template <class T>
+		ComponentType getComponentType(){
+            static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+            auto type_name = typeid(T).name();
+            assert(componentTypes.find(type_name) != componentTypes.end());
+			return componentTypes[type_name];
+        }
+
+		template <class T>
+		void addComponent(Entity entity, T component){
+            static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+            this->getComponentArray<T>()->insertData(entity, component);
+			
+        }
+
+		template <class T>
+		void removeComponent(Entity entity){
+            static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+            this->getComponentArray<T>()->removeData(entity);
+        }
+
+		template<typename T>
+		T& getComponent(Entity entity)
+		{
+			static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+			// Get a reference to a component from the array for an entity
+			return this->getComponentArray<T>()->getData(entity);
+		}
+
+		void entityDestroyed(Entity entity){
+		// Notify each component array that an entity has been destroyed
+		// If it has a component for that entity, it will remove it
+			for (auto const& pair : components){
+				auto const& component = pair.second;
+
+				component->entityDestroyed(entity);
+			}
+		}
+
     private:
-        std::unordered_map<char*, std::vector<Component>> components;
+	    std::unordered_map<const char*, ComponentType> componentTypes;;
+        std::unordered_map<const char*, IComponentArray*> components;
+		ComponentType nextType = 0;
+
+		template<typename T>
+		ComponentArray<T>* getComponentArray(){
+			const char* typeName = typeid(T).name();
+			assert(componentTypes.find(typeName) != componentTypes.end());
+
+			return components[typeName];
+		}
 };
 
 #endif

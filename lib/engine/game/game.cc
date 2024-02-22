@@ -73,6 +73,7 @@ void Game::init(std::string windowName, int width, int height){
     SDL_RenderSetLogicalSize(renderer, width, height);
     //float scale = std::min((float)windowWidth/width, (float)windowHeight/height);
     //SDL_RenderSetScale(renderer, scale, scale);
+    Game::ecs = new ECS();
     Game::camera = new Camera(width, height);
     Game::renderer = new Renderer(renderer, camera);
     Game::already_init = true;
@@ -167,16 +168,16 @@ void Game::update(float dt) {
     // update fps
     Game::fps = 1.0f / dt;
 
-    Game::scene->update(dt);
+    //Game::scene->update(dt);
 
     // draw gui
-    if(!guiStack.empty()){
+    /*if(!guiStack.empty()){
         GUIHelper::begin();
         for(auto ui: guiStack){
             ui->draw();
         }
         GUIHelper::end();
-    }
+    }*/
         
 }
 
@@ -184,10 +185,10 @@ void Game::render() {
     auto renderer = Game::renderer->getRenderer();
     SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
     SDL_RenderClear(renderer);
-    Game::scene->render(Game::renderer);
+    //Game::scene->render(Game::renderer);
 
-    if(!guiStack.empty())
-        GUIHelper::handleRender(Game::renderer);
+    //if(!guiStack.empty())
+    //    GUIHelper::handleRender(Game::renderer);
     SDL_RenderPresent(renderer);
 }
 

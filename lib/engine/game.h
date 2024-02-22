@@ -9,6 +9,7 @@
 #include "engine/gui.h"
 #include "engine/collide_shape.h"
 #include "engine/renderer.h"
+#include "engine/ecs/ecs.h"
 
 
 class Game {
@@ -83,7 +84,7 @@ class Game {
         inline static int logicWidth, logicHeight;
         inline static SDL_Window *window;
         inline static Renderer *renderer;
-
+        inline static ECS *ecs;
         inline static Camera *camera;
         inline static Scene *scene;
         inline static std::vector<GUI*> guiStack;
