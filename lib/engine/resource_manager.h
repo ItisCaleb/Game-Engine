@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "engine/sprite.h"
+#include "engine/components/sprite.h"
 #include "engine/resource.h"
 
 class ResourceManager {

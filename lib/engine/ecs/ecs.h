@@ -50,6 +50,22 @@ class ECS{
             return compManager.getComponentType<T>();
         }
 
+        template <class T>
+        T* registerSystem(bool update){
+            return sysManager.registerSystem<T>(update);
+        }
+
+        template <class T>
+        void setSystemFlag(ComponentFlag flag){
+            return sysManager.setComponentFlag<T>(flag);
+        }
+
+        void update(float dt){
+            for (auto &system: sysManager.getSystem()){
+                system->update(dt);
+            }
+        }
+
 
     private:
         EntityManager entManager;

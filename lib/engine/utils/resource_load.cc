@@ -8,25 +8,10 @@
 #include "engine/game.h"
 #include "engine/font.h"
 
-static SDL_Texture* loadTexture(std::string resource){
-    SDL_Surface* surface = IMG_Load(resource.c_str());
-    if (!surface) {
-        printf("Error: Unable to load surface from path: %s. SDL_image Error: %s\n", resource.c_str(), IMG_GetError());
-        return nullptr;
-    }
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::getRenderer()->getRenderer(), surface);
-    if (!texture) {
-        printf("Error: Unable to create texture from: %s. SDL Error %s\n", resource.c_str(), SDL_GetError());
-        return nullptr;
-    }
-    SDL_FreeSurface(surface);
-    return texture;
-}
-
 // resource load functions
 
 template <>
-Sprite* ResourceManager::load(std::string resource) {
+SDL_Texture* ResourceManager::load(std::string resource) {
     std::filesystem::path resPath = resource;
     if (resPath.extension() == ".png" ||
         resPath.extension() == ".jpg" ||
@@ -36,15 +21,22 @@ Sprite* ResourceManager::load(std::string resource) {
         // we are going to store texture instead
         auto texture = (SDL_Texture*)searchPool(resource);
         if(!texture) {
-            texture = loadTexture(resource);
-            if(!texture) return nullptr;
+            SDL_Surface* surface = IMG_Load(resource.c_str());
+            if (!surface) {
+                printf("Error: Unable to load surface from path: %s. SDL_image Error: %s\n", resource.c_str(), IMG_GetError());
+                return nullptr;
+            }
+            texture = SDL_CreateTextureFromSurface(Game::getRenderer(), surface);
+            if (!texture) {
+                printf("Error: Unable to create texture from: %s. SDL Error %s\n", resource.c_str(), SDL_GetError());
+                return nullptr;
+            }
+            SDL_FreeSurface(surface);
             addToPool(resource, texture);
         }
-        int w, h;
-        SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-        return new Sprite(texture, 0, 0, w, h);
+        return texture;
     } else {
-        printf("Error: Unsupported format: \"%ls\". Can't load sprite from %s",
+        printf("Error: Unsupported format: \"%ls\". Can't load sprite from %s\n",
                resPath.extension().c_str(),
                resource.c_str());
         return nullptr;
@@ -52,12 +44,11 @@ Sprite* ResourceManager::load(std::string resource) {
 }
 
 template <> 
-void ResourceManager::destroy(Sprite *resource){
-    int ref = ResourceManager::removeFromPool(resource->getTexture());
+void ResourceManager::destroy(SDL_Texture *resource){
+    int ref = ResourceManager::removeFromPool(resource);
     if(ref == 0){
-        SDL_DestroyTexture(resource->getTexture());
+        SDL_DestroyTexture(resource);
     }
-    delete resource;
 }
 
 template <>
@@ -116,7 +107,7 @@ int ResourceManager::loadSprites(std::string resource, int clipW, int clipH, int
     // we are going to store texture instead
     auto texture = (SDL_Texture*)searchPool(resource);
     if(!texture) {
-        texture = loadTexture(resource);
+        texture = ResourceManager::load<SDL_Texture>(resource);
         if(!texture) return 0;
         addToPool(resource, texture);
     }
@@ -143,7 +134,7 @@ int ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec
     // we are going to store texture instead
     auto texture = (SDL_Texture*)searchPool(resource);
     if(!texture) {
-        texture = loadTexture(resource);
+        texture = ResourceManager::load<SDL_Texture>(resource);
         if(!texture) return 0;
         addToPool(resource, texture);
     }
@@ -167,9 +158,9 @@ int ResourceManager::loadSprites(std::string resource, std::vector<Sprite*> &vec
 void ResourceManager::destroySprites(std::vector<Sprite*> &vec){
     SDL_Texture *last = nullptr;
     for(auto s: vec){
-        if(!last || last != s->getTexture()){
-            last = s->getTexture();
-            ResourceManager::destroy(s);
+        if(!last || last != s->texture){
+            last = s->texture;
+            //ResourceManager::destroy(last);
         }
         delete s;
     }
@@ -180,7 +171,7 @@ void ResourceManager::destroySprites(std::vector<Sprite*> &vec){
 
 template <>
 AsyncResource<Sprite>* ResourceManager::loadAsync(std::string resource) {
-    auto res = new AsyncResource<Sprite>(resource, ResourceType::Sprite);
+    auto res = new AsyncResource<Sprite>(resource, ResourceType::Texture);
     pushToWorker(res);
     return res;
 }

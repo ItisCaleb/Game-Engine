@@ -5,11 +5,10 @@
 #include <string>
 
 #include "engine/camera.h"
-#include "engine/scene.h"
 #include "engine/gui.h"
 #include "engine/collide_shape.h"
-#include "engine/renderer.h"
 #include "engine/ecs/ecs.h"
+#include "engine/components/input.h"
 
 
 class Game {
@@ -20,7 +19,7 @@ class Game {
         static void handleInput();
         static void update(float dt);
         static void render();
-        static void setScene(Scene *scene);
+        //static void setScene(Scene *scene);
         static void openGUI(GUI* gui);
         static void closeGUI(GUI* gui);
 
@@ -33,14 +32,11 @@ class Game {
         inline static SDL_Window* getWindow(){
             return window;
         }
-        inline static Renderer* getRenderer(){
+        inline static SDL_Renderer* getRenderer(){
             return renderer;
         }
         inline static Camera *getCamera(){
             return camera;
-        }
-        inline static Scene *getScene(){
-            return scene;
         }
 
         // this is for logical width, to get window width, use Game::getWindowWidth()
@@ -73,6 +69,12 @@ class Game {
         inline static float getFPS(){
             return fps;
         }
+        inline static ECS* getECS(){
+            return ecs;
+        }
+        inline static Input* getInput(){
+            return input;
+        }
 
 
     private:
@@ -83,10 +85,11 @@ class Game {
         // game base resolution
         inline static int logicWidth, logicHeight;
         inline static SDL_Window *window;
-        inline static Renderer *renderer;
+        inline static SDL_Renderer *renderer;
         inline static ECS *ecs;
+        inline static Input *input;
         inline static Camera *camera;
-        inline static Scene *scene;
+       // inline static Scene *scene;
         inline static std::vector<GUI*> guiStack;
         inline static int frameCount;
         inline static float fps;

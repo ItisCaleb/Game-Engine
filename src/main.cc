@@ -5,10 +5,10 @@
 
 #include <engine/game.h>
 #include <engine/resource_manager.h>
-#include <engine/input_manager.h>
 #include <engine/timer.h>
+#include "systems/player_system.h"
 
-#include "scene/main_scene.h"
+//#include "scene/main_scene.h"
 
 int main(int argc, char **argv) {
 
@@ -19,7 +19,9 @@ int main(int argc, char **argv) {
     
     ResourceManager::startWorkerThread();
     Game::init("SDL Test", 1280, 768);
-    Game::setScene(new MainScene);
+    auto ecs = Game::getECS();
+    auto ps = ecs->registerSystem<PlayerSystem>(true);
+    ps->createPlayer();
     Timer timer;
     while (Game::isRunning()) {
         timer.start();

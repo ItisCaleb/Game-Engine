@@ -5,9 +5,14 @@
 
 #include <utility>
 
-#include "engine/input_manager.h"
 #include "engine/gui_helper.h"
+#include "engine/components/input.h"
+#include "engine/components/transform.h"
+#include "engine/components/sprite.h"
+#include "engine/systems/input_system.h"
+#include "engine/systems/render_system.h"
 
+static RenderSystem *renderSystem;
 
 SDL_Renderer* Game::initSDL(std::string windowName){
     // Init everything
@@ -75,26 +80,27 @@ void Game::init(std::string windowName, int width, int height){
     //SDL_RenderSetScale(renderer, scale, scale);
     Game::ecs = new ECS();
     Game::camera = new Camera(width, height);
-    Game::renderer = new Renderer(renderer, camera);
+    Game::renderer = renderer;
     Game::already_init = true;
     Game::running = true;
+
 
     Game::logicWidth = width;
     Game::logicHeight = height;
 
+    // input system
+    ecs->registerComponent<Input>();
+    ecs->registerComponent<Transform>();
+    ecs->registerComponent<Sprite>();
+    ecs->registerSystem<InputSystem>(true);
 
-    
+
+    renderSystem = ecs->registerSystem<RenderSystem>(false);
+    Entity inp = Input::create(ecs);
+    Game::input = &ecs->query<Input>(inp);
     GUIHelper::init();
 }
 
-
-void Game::setScene(Scene *scene) {
-    if(Game::scene){
-        delete Game::scene;
-    }
-    Game::scene = scene;
-    scene->init();
-}
 
 void Game::openGUI(GUI* gui){
     if(!gui->isOpened()){
@@ -119,7 +125,6 @@ void Game::closeGUI(GUI* gui){
 
 void Game::destroy() {
     delete Game::camera;
-    delete Game::renderer;
     SDL_DestroyWindow(Game::window);
     IMG_Quit();
     TTF_Quit();
@@ -155,20 +160,19 @@ void Game::handleInput(){
                 }
                 break;
             case SDL_MOUSEWHEEL:
-                InputManager::updateMouseWheelScroll(e.wheel.y);
                 break;
             default:
                 break;
         }
     }
-    InputManager::update();
 }
 
 void Game::update(float dt) {
     // update fps
     Game::fps = 1.0f / dt;
-
+    ecs->update(dt);
     //Game::scene->update(dt);
+
 
     // draw gui
     /*if(!guiStack.empty()){
@@ -182,10 +186,10 @@ void Game::update(float dt) {
 }
 
 void Game::render() {
-    auto renderer = Game::renderer->getRenderer();
+    auto renderer = Game::renderer;
     SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
     SDL_RenderClear(renderer);
-    //Game::scene->render(Game::renderer);
+    renderSystem->render(renderer);
 
     //if(!guiStack.empty())
     //    GUIHelper::handleRender(Game::renderer);

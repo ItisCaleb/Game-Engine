@@ -71,8 +71,8 @@ int asyncIOWorker(void* data) {
     
             // load resource based on type
             switch (res->type) {
-                case ResourceType::Sprite:
-                    res->resource = ResourceManager::load<Sprite>(res->getPath());
+                case ResourceType::Texture:
+                    res->resource = ResourceManager::load<SDL_Texture>(res->getPath());
                     break;
                 case ResourceType::JSON:
                     res->resource = ResourceManager::load<nlohmann::json>(res->getPath());

@@ -90,17 +90,16 @@ class ComponentManager{
     public:
         template <class T>
         void registerComponent(){
-            static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+            static_assert(std::is_base_of<Component, T>::value, "This isn't a component");
             auto type_name = typeid(T).name();
-            if(components.find(type_name) != components.end()){
-				componentTypes.insert({type_name, nextType});
-                components.insert({type_name, new ComponentArray<T>()});
-				nextType++;
-            }
+			assert(componentTypes.find(type_name) == componentTypes.end());
+			componentTypes.insert({type_name, nextType});
+            components.insert({type_name, new ComponentArray<T>()});
+			nextType++;
         }
 		template <class T>
 		ComponentType getComponentType(){
-            static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+            static_assert(std::is_base_of<Component, T>::value, "This isn't a component");
             auto type_name = typeid(T).name();
             assert(componentTypes.find(type_name) != componentTypes.end());
 			return componentTypes[type_name];
@@ -108,21 +107,21 @@ class ComponentManager{
 
 		template <class T>
 		void addComponent(Entity entity, T component){
-            static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+            static_assert(std::is_base_of<Component, T>::value, "This isn't a component");
             this->getComponentArray<T>()->insertData(entity, component);
 			
         }
 
 		template <class T>
 		void removeComponent(Entity entity){
-            static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+            static_assert(std::is_base_of<Component, T>::value, "This isn't a component");
             this->getComponentArray<T>()->removeData(entity);
         }
 
 		template<typename T>
 		T& getComponent(Entity entity)
 		{
-			static_assert(std::is_base_of<Component, T>::value, "This isn't a componment");
+			static_assert(std::is_base_of<Component, T>::value, "This isn't a component");
 			// Get a reference to a component from the array for an entity
 			return this->getComponentArray<T>()->getData(entity);
 		}
@@ -147,7 +146,7 @@ class ComponentManager{
 			const char* typeName = typeid(T).name();
 			assert(componentTypes.find(typeName) != componentTypes.end());
 
-			return components[typeName];
+			return static_cast<ComponentArray<T>*>(components[typeName]);
 		}
 };
 
